@@ -11,6 +11,7 @@ class admin{
     string data;
     char* messaggeError; 
     int shopKeeperCount,deliveryPersonCount,CustomerCount;
+
     static int callback(void* data, int argc, char** argv, char** azColName) 
     { 
         int i; 
@@ -22,6 +23,14 @@ class admin{
     
         printf("\n"); 
         return 0; 
+    }
+
+    static int addTransaction(void* data, int argc, char** argv, char** azColName,string add) 
+    { 
+        int n=strlen(argv[0])+add.size()+1;
+        argv[0]=(char*)realloc(argv[0]+0,sizeof(char)*n);
+        for(int i=strlen(argv[0]);i<n-1;++i) argv[0][i]=add[i-strlen(argv[0])];
+        return 0;
     }
 
     void createDataBase(){
@@ -96,10 +105,11 @@ class admin{
         else
             std::cout << "Record deleted Successfully!" << std::endl; 
     }
-
-    void update(string id){
-        string sql = "UPDATE FROM TRANSACTION WHERE ID="+id+";";
-        
+    // isPaid is 0 if money is refunded else it is 1;
+    void update(string id,bool isPaid,int moneyTransferred,int orderID){
+        string query = "SELECT TRANSACTION FROM TRANSACTION WHERE ID="+id+";";
+        string add = isPaid?"P":"R"+to_string(orderID)+","+to_string(moneyTransferred)+";";
+        sqlite3_exec(DB, query.c_str(), addTransaction, NULL, NULL,add); 
     }
 };
 int main(){
