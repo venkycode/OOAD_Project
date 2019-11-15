@@ -6,12 +6,13 @@ using namespace std;
 //Dont forget to close database 
 
 class admin{
-    sqlite3* DB;
-    int exit; 
-    string data;
-    char* messaggeError; 
-    int shopKeeperCount,deliveryPersonCount,CustomerCount;
-
+    static sqlite3* DB;
+    static int exit; 
+    static string data;
+    static char* messaggeError; 
+    static int shopKeeperCount,deliveryPersonCount,CustomerCount;
+    static string add;
+    static string temporaryID;
     static int callback(void* data, int argc, char** argv, char** azColName) 
     { 
         int i; 
@@ -25,11 +26,15 @@ class admin{
         return 0; 
     }
 
-    static int addTransaction(void* data, int argc, char** argv, char** azColName,string add) 
+    static int update(void* data, int argc, char** argv, char** azColName) 
     { 
-        int n=strlen(argv[0])+add.size()+1;
-        argv[0]=(char*)realloc(argv[0]+0,sizeof(char)*n);
-        for(int i=strlen(argv[0]);i<n-1;++i) argv[0][i]=add[i-strlen(argv[0])];
+        int n=strlen(argv[0])+add.size();
+        int originalLength = strlen(argv[0]);
+        char *tmp = (argv[0]+originalLength);
+        tmp = (char*)malloc(sizeof(char)*n);
+        for(int i=originalLength;i<n;++i) argv[0][i]=add[i-originalLength];
+        string sql = "UPDATE set TRANSACTION = \'"+string(argv[0])+"\' WHERE ID = "+temporaryID;
+        sqlite3_exec(DB, sql.c_str(), callback, NULL, NULL);
         return 0;
     }
 
@@ -106,10 +111,11 @@ class admin{
             std::cout << "Record deleted Successfully!" << std::endl; 
     }
     // isPaid is 0 if money is refunded else it is 1;
-    void update(string id,bool isPaid,int moneyTransferred,int orderID){
+    void addTransaction(string id,bool isPaid,int moneyTransferred,int orderID){
         string query = "SELECT TRANSACTION FROM TRANSACTION WHERE ID="+id+";";
         string add = isPaid?"P":"R"+to_string(orderID)+","+to_string(moneyTransferred)+";";
-        sqlite3_exec(DB, query.c_str(), addTransaction, NULL, NULL,add); 
+        temporaryID=id;
+        sqlite3_exec(DB, query.c_str(),update, NULL, NULL); 
     }
 };
 int main(){
