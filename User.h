@@ -15,6 +15,7 @@ class User{
     void editProfile();
     void forgotPassword();
     void assign(profile userProfile);
+    void inputPassword();
 
     void assign(profile userProfile){
         this->name=userProfile.name;
@@ -28,6 +29,22 @@ class User{
         this->isBlacklisted=userProfile.isBlackListed;
         this->isLoggedIn=1;
         this->userID=userProfile.id;
+    }
+
+    void inputPassword(profile userProfile){
+        cout<<"Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n" ;
+        cin>>userProfile.password;
+        while(!isPasswordCorrect(userProfile.password)){
+            cout<<"Your password does not satisfy our conditions"<<"\n";
+            cout<<"Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n" ;
+            cin>>userProfile.password;
+        }
+        cout<<"Confirm your password"<<"\n";
+        string temp;cin>>temp;
+        while(temp!=userProfile.password){
+            cout<<"Both passwords do not match each other"<<"\n";
+            inputPassword(userProfile);
+        }
     }
 
     void login(){
@@ -74,13 +91,7 @@ class User{
             cout<<"Your username should consist of nothing other than small letters and capital letters and numbers and underscores" << "\n" ;
             cin>>userProfile.username;
         }
-        cout<<"Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n" ;
-        cin>>userProfile.password;
-        while(!isPasswordCorrect(userProfile.password)){
-            cout<<"Your password does not satisfy our conditions"<<"\n";
-            cout<<"Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n" ;
-            cin>>userProfile.password;
-        }
+        inputPassword(userProfile);
         cout<<"Enter your address" << "\n" ;
         cin>>userProfile.address;
         cout<<"Press 1 if you are a customer"<<"\n";
@@ -98,6 +109,10 @@ class User{
 
     void updateProfile(){
         systemAdmin.editProfile(this->userID);
+    }
+
+    void forgotPassword(){
+
     }
 
 }

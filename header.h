@@ -32,7 +32,7 @@ typedef struct timex
 
 typedef struct product
 {
-
+    
 } product;
 
 typedef struct profile{
@@ -83,10 +83,7 @@ bool isPasswordCorrect(string password)
     }
     return (isSpecialCharacter & isNumber) & (isSmallLetter & isCapitalLetter);
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 872f71aeb177fedbf9fc8687493be90bf045c70c
 bool isContactCorrect(string contact){
     return contact.size()==10;
 }
