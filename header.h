@@ -30,6 +30,8 @@ typedef struct profile{
     string name,surname,email;
     string address;
     string username,password;
+    string contact;
+    enum typeOfUser type;
     bool isBlackListed;
 }profile;
 

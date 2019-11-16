@@ -15,6 +15,7 @@ class admin{
     static string temporaryID;// also helps in adding transactions and also in authentication
     static profile temporaryProfile;// helps in editing profile
     static string temporaryPassword;  // helps in authentication
+    
     static int callback(void* data, int argc, char** argv, char** azColName) 
     { 
         int i; 
@@ -55,7 +56,11 @@ class admin{
         temporaryID=argv[2] && argv[1] == temporaryPassword ? argv[2]: "#";
         return 0;
     }
-
+    static int check_username(void* data, int argc, char** argv, char** azColName) 
+    { 
+        temporaryID = argv[0] ? argv[0] : "#";
+        return 0;
+    }
 
     void createDataBase(){
         int exit = 0; 
@@ -128,7 +133,7 @@ class admin{
             cout << "Record inserted Successfully!" << endl; 
     }
 
-    void Delete(string id){
+    void deleteID(string id){
         string sql = "DELETE FROM PERSON WHERE ID="+id+";"; 
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
         if (exit != SQLITE_OK) { 
@@ -141,7 +146,7 @@ class admin{
     // isPaid is 0 if money is refunded else it is 1;
     void addTransaction(string id,bool isPaid,int moneyTransferred,int orderID){
         string query = "SELECT TRANSACTION FROM TRANSACTION WHERE ID="+id+";";
-        string add = isPaid?"P":"R"+to_string(orderID)+","+to_string(moneyTransferred)+";";
+        string add = to_string(orderID)+" | "+ (isPaid?"Paid":"Refunded") + " | "+ to_string(moneyTransferred)+"\n";
         temporaryID=id;
         sqlite3_exec(DB, query.c_str(),update, NULL, NULL); 
     }
@@ -242,9 +247,27 @@ class admin{
         sqlite3_exec(DB, query.c_str(),get_information, NULL, NULL);
         return temporaryProfile;
     }
+    // 1 -> signup done else Username already exists
+    void showTransaction(string id){
+        string query = "SELECT TRANSACTIONS FROM TRANSACTION WHERE ID = "+id+";";
+        int rc = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
+        if (rc != SQLITE_OK) 
+            cerr << "Error SELECT" << endl; 
+        else { 
+            cout << "Operation OK!" << endl; 
+        } 
+    }
 
-    v
-
+    bool signUp(profile addToDatabase){
+        string query = "SELECT ID FROM USER_MAP WHERE USERNAME = "+addToDatabase.username+";";
+        int rc=sqlite3_exec(DB, query.c_str(),check_username, NULL, NULL);
+        if(temporaryID=="#"){
+            Insert(addToDatabase.name,addToDatabase.surname,addToDatabase.email,\
+            addToDatabase.address,addToDatabase.username,addToDatabase.password,addToDatabase.contact,addToDatabase.type);
+            return 1; 
+        }
+        return 0;
+    }
 };
 int main(){
      
