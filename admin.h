@@ -25,6 +25,7 @@ class admin
     //ifstream personal_inventory_file;
     static map<string, vector<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
     static map<int,vector<product>> productId_to_product; 
+    static string temporaryPassword;
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
         int i;
@@ -62,14 +63,15 @@ class admin
         temporaryProfile.password = argv[6];
         return 0;
     }
-    static int update(void *data, int argc, char **argv, char **azColName)
-    {
 
-        return 0;
-    }
     static int check_username(void* data, int argc, char** argv, char** azColName) 
     { 
         temporaryID = argv[0] ? argv[0] : "#";
+        return 0;
+    }
+    static int get_username(void* data, int argc, char** argv, char** azColName) 
+    { 
+        temporaryID=argv[2] && argv[1] == temporaryPassword ? argv[2]: "#";
         return 0;
     }
 
