@@ -49,6 +49,12 @@ class admin{
         temporaryProfile.password = argv[6];
         return 0;
     }
+    static int update(void* data, int argc, char** argv, char** azColName) 
+    { 
+
+        return 0;
+    }
+
 
     void createDataBase(){
         int exit = 0; 
@@ -158,7 +164,7 @@ class admin{
     }
 
     void editProfile(string id){
-        string query = "SELECT * FROM TRANSACTION WHERE ID="+id+";";
+        string query = "SELECT * FROM PERSON WHERE ID="+id+";";
         sqlite3_exec(DB, query.c_str(),get_information, NULL, NULL);
         char check; 
         cout<<"Do you wish to change your name?(Y/n) :: ";
@@ -205,6 +211,10 @@ class admin{
             temporaryProfile.name = new_contact;
         }
         changeProfile(id,temporaryProfile.name,temporaryProfile.surname,temporaryProfile.email,temporaryProfile.address,temporaryProfile.username,temporaryProfile.password);
+    }
+    void authenticate(string username,string password){
+        string query = "SELECT ID FROM TRANSACTION WHERE ID="+username+";";
+        sqlite3_exec(DB, query.c_str(),get_information, NULL, NULL);
     }
 };
 int main(){
