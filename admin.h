@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+#include<Python.h>
+>>>>>>> 33e4e711f47a6beddfa3db502bcefff9d3d56f7e
 #include <sqlite3.h>
 #include <bits/stdc++.h>
 #include "header.h"
-
+#include "checks.h"
+#include "sha256.h"
 
 using namespace std;
 //Dont forget to close database
