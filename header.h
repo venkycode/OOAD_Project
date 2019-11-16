@@ -43,8 +43,6 @@ typedef struct order
     bool isPlaced;
 } order;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 bool isUsernameCorrect(string username)
 {
     for (auto y : username)
@@ -74,9 +72,8 @@ bool isPasswordCorrect(string password)
             isSpecialCharacter = 1;
     }
     return (isSpecialCharacter & isNumber) & (isSmallLetter & isCapitalLetter);
-=======
-=======
->>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
+}
+
 bool isContactCorrect(string contact){
     return contact.size()==10;
 }
