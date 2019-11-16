@@ -243,6 +243,7 @@ class admin{
         else { 
             cout << "Operation OK!" << endl; 
         }
+        temporaryProfile.id=temporaryID;
         query = "SELECT * FROM PERSON WHERE ID = "+temporaryID+";";
         sqlite3_exec(DB, query.c_str(),get_information, NULL, NULL);
         return temporaryProfile;
