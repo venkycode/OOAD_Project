@@ -10,6 +10,7 @@ class admin
     static sqlite3 *DB;
     static int exit;
     static string data;
+<<<<<<< HEAD
     static char *messaggeError;
     static int shopKeeperCount, deliveryPersonCount, CustomerCount; // helps in assigning the ID to everyone
     static string add;                                              //used for adding transactions
@@ -29,6 +30,25 @@ class admin
 
         printf("\n");
         return 0;
+=======
+    static char* messaggeError; 
+    static int shopKeeperCount,deliveryPersonCount,CustomerCount;// helps in assigning the ID to everyone 
+    static string add;//used for adding transactions
+    static string temporaryID;// also helps in adding transactions and also in authentication
+    static profile temporaryProfile;// helps in editing profile
+    static string temporaryPassword;  // helps in authentication
+    static int callback(void* data, int argc, char** argv, char** azColName) 
+    { 
+        int i; 
+        fprintf(stderr, "%s: ", (const char*)data); 
+    
+        for (i = 0; i < argc; i++) { 
+            printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL"); 
+        } 
+    
+        printf("\n"); 
+        return 0; 
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
     }
 
     static int update(void *data, int argc, char **argv, char **azColName)
@@ -54,9 +74,15 @@ class admin
         temporaryProfile.password = argv[6];
         return 0;
     }
+<<<<<<< HEAD
     static int update(void *data, int argc, char **argv, char **azColName)
     {
+=======
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
 
+    static int get_username(void* data, int argc, char** argv, char** azColName) 
+    { 
+        temporaryID=argv[2] && argv[1] == temporaryPassword ? argv[2]: "#";
         return 0;
     }
 
@@ -83,6 +109,7 @@ class admin
                      "PASSWORD     TEXT     NOT NULL);";
         string sql2 = "CREATE TABLE TRANSACTION("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
+<<<<<<< HEAD
                       "TRANSACTIONS  TEXT  NOT NULL );";
         string sql3 = "CREATE TABLE USER_MAP("
                       "USERNAME TEXT PRIMARY KEY     NOT NULL, "
@@ -90,6 +117,25 @@ class admin
 
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
+=======
+                      "NAME           TEXT    NOT NULL, "
+                      "SURNAME          TEXT     NOT NULL, "
+                      "EMAIL_ID      TEXT     NOT NULL, "
+                      "ADDRESS        CHAR(50), "
+                      "CONTACT_NO   TEXT  NOT NULL,"
+                      "USERNAME      TEXT   NOT NULL,"
+                      "PASSWORD     TEXT     NOT NULL);"; 
+        string sql2="CREATE TABLE TRANSACTION("
+                                                "ID TEXT PRIMARY KEY     NOT NULL, "
+                                                "TRANSACTIONS  TEXT  NOT NULL );";
+        string sql3="CREATE TABLE USER_MAP("
+                                                "USERNAME TEXT PRIMARY KEY     NOT NULL, "
+                                                "PASSWORD TEXT NOT NULL"
+                                                "ID  TEXT  NOT NULL );";
+
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);  
+        exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);  
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -132,6 +178,7 @@ class admin
             id = 'S' + to_string(shopKeeperCount++);
         }
         string sql("INSERT INTO PERSON VALUES(id, name, surname, email, address,contact, username,password);");
+<<<<<<< HEAD
         string sql1("INSERT INTO USER_MAP(username,id);");
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql1.c_str(), NULL, 0, &messaggeError);
@@ -140,6 +187,15 @@ class admin
             cerr << "Error Insert" << endl;
             sqlite3_free(messaggeError);
         }
+=======
+        string sql1("INSERT INTO USER_MAP(username,password,id);");
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
+        exit = sqlite3_exec(DB, sql1.c_str(), NULL, 0, &messaggeError); 
+        if (exit != SQLITE_OK) { 
+            cerr << "Error Insert" << endl; 
+            sqlite3_free(messaggeError); 
+        } 
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
         else
             cout << "Record inserted Successfully!" << endl;
     }
@@ -234,6 +290,7 @@ class admin
         if (check == 'Y' || check == 'y')
         {
             string new_contact;
+<<<<<<< HEAD
             cin >> new_contact;
             while (!isContactCorrect(new_contact))
             {
@@ -248,7 +305,48 @@ class admin
     {
         string query = "SELECT ID FROM TRANSACTION WHERE ID=" + username + ";";
         sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
+=======
+            cin>>new_contact;
+            while(!isContactCorrect(new_contact)){
+                cout<<"Enter a valid contact number"; 
+                cin>>new_contact;
+            }
+            temporaryProfile.name = new_contact;
+        }
+        cout<<"Do you wish to change your Contact number?(Y/n) :: ";
+        cin>>check;
+        if(check=='Y'||check=='y'){
+            string new_password;
+            cin>>new_password;
+            while(!isPasswordCorrect(new_password)){
+                cout<<"Enter a valid contact number"; 
+                cin>>new_password;
+            }
+            temporaryProfile.name = new_password;
+        }
+        changeProfile(id,temporaryProfile.name,temporaryProfile.surname,temporaryProfile.email,temporaryProfile.address,temporaryProfile.username,temporaryProfile.password);
     }
+
+    profile authenticate(string username,string password){
+        string query = "SELECT * FROM USER_MAP WHERE USERNAME = "+username+";";
+        int rc=sqlite3_exec(DB, query.c_str(),get_username, NULL, NULL);
+        if (rc != SQLITE_OK || temporaryID=="#"){ 
+            cerr << "Error SELECT" << endl; 
+            cout<<"INCORRECT Username or Password"<<endl;
+            temporaryProfile.name="#";
+            return temporaryProfile;
+        }
+        else { 
+            cout << "Operation OK!" << endl; 
+        }
+        query = "SELECT * FROM PERSON WHERE ID = "+temporaryID+";";
+        sqlite3_exec(DB, query.c_str(),get_information, NULL, NULL);
+        return temporaryProfile;
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
+    }
+
+    v
+
 };
 int main()
 {
