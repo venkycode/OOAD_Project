@@ -19,12 +19,12 @@ class admin
     static string temporaryID;                                      // also helps in adding transactions
     static profile temporaryProfile;                                // helps in editing profile
     static product *global_inventory_array;
-    static map<string, vector<int>> global_inven_map; //mapping from product name to product
+    static vector<product> global_inventory; //mapping from product name to product
     //static product* personal_inventory;
     ifstream global_inve_file;
     //ifstream personal_inventory_file;
     static map<string, vector<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
-    static map<int,vector<product>> productId_to_product; 
+    static vector<vector<product>> productId_to_product; 
     static string temporaryPassword;
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
@@ -133,7 +133,7 @@ class admin
         global_inve_file.read((char *)global_inventory_array, sizeof(getFileSize("global_inventory_db")));
 
         for(int i = 0 ; i < size ; ++i){
-            global_inven_map[global_inventory_array[i].product_name].push_back(global_inventory_array[i].product_id);
+            global_inventory.push_back(global_inventory_array[i]);
             personal_inventory[global_inventory_array[i].shopkeeper_id].push_back(global_inventory_array[i].product_id);
             productId_to_product[global_inventory_array[i].product_id].push_back(global_inventory_array[i]);
         }
