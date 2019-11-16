@@ -10,9 +10,11 @@ class admin{
     static int exit; 
     static string data;
     static char* messaggeError; 
-    static int shopKeeperCount,deliveryPersonCount,CustomerCount;
-    static string add;
-    static string temporaryID;
+    static int shopKeeperCount,deliveryPersonCount,CustomerCount;// helps in assigning the ID to everyone 
+    static string add;//used for adding transactions
+    static string temporaryID;// also helps in adding transactions
+    static profile temporaryProfile;// helps in editing profile
+
     static int callback(void* data, int argc, char** argv, char** azColName) 
     { 
         int i; 
@@ -38,6 +40,16 @@ class admin{
         return 0;
     }
 
+    static int get_information(void* data, int argc, char** argv, char** azColName){
+        temporaryProfile.name = argv[1];
+        temporaryProfile.surname = argv[2];
+        temporaryProfile.email = argv[3];
+        temporaryProfile.address = argv[4];
+        temporaryProfile.username = argv[5];
+        temporaryProfile.password = argv[6];
+        return 0;
+    }
+
     void createDataBase(){
         int exit = 0; 
         shopKeeperCount=deliveryPersonCount=CustomerCount=0;
@@ -54,19 +66,25 @@ class admin{
                       "SURNAME          TEXT     NOT NULL, "
                       "EMAIL_ID      TEXT     NOT NULL, "
                       "ADDRESS        CHAR(50), "
+                      "CONTACT_NO   TEXT  NOT NULL,"
                       "USERNAME      TEXT   NOT NULL,"
                       "PASSWORD     TEXT     NOT NULL);"; 
         string sql2="CREATE TABLE TRANSACTION("
                                                 "ID TEXT PRIMARY KEY     NOT NULL, "
                                                 "TRANSACTIONS  TEXT  NOT NULL );";
+        string sql3="CREATE TABLE USER_MAP("
+                                                "USERNAME TEXT PRIMARY KEY     NOT NULL, "
+                                                "ID  TEXT  NOT NULL );";
+
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);  
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);  
+        exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK) { 
-            std::cerr << "Error Create Table" << std::endl; 
+            cerr << "Error Create Table" << endl; 
             sqlite3_free(messaggeError); 
         } 
         else
-            std::cout << "Table created Successfully" << std::endl;
+            cout << "Table created Successfully" << endl;
     }
 
     void loadDatabase(){
@@ -79,7 +97,7 @@ class admin{
         string data("CALLBACK FUNCTION"); 
     }
 
-    void Insert(string name,string surname,string email,string address, string username,string password,enum typeOfUser type){
+    void Insert(string name,string surname,string email,string address, string username,string password,string contact,enum typeOfUser type){
         string id="";
         if(type==Customer){
             id='C'+to_string(CustomerCount++);
@@ -90,25 +108,27 @@ class admin{
         else {
             id='S'+to_string(shopKeeperCount++);
         }
-        string sql("INSERT INTO PERSON VALUES(id, name, surname, email, address, username,password);");
+        string sql("INSERT INTO PERSON VALUES(id, name, surname, email, address,contact, username,password);");
+        string sql1("INSERT INTO USER_MAP(username,id);");
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
+        exit = sqlite3_exec(DB, sql1.c_str(), NULL, 0, &messaggeError); 
         if (exit != SQLITE_OK) { 
-            std::cerr << "Error Insert" << std::endl; 
+            cerr << "Error Insert" << endl; 
             sqlite3_free(messaggeError); 
         } 
         else
-            std::cout << "Record inserted Successfully!" << std::endl; 
+            cout << "Record inserted Successfully!" << endl; 
     }
 
     void Delete(string id){
         string sql = "DELETE FROM PERSON WHERE ID="+id+";"; 
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
         if (exit != SQLITE_OK) { 
-            std::cerr << "Error DELETE" << std::endl; 
+            cerr << "Error DELETE" << endl; 
             sqlite3_free(messaggeError); 
         } 
         else
-            std::cout << "Record deleted Successfully!" << std::endl; 
+            cout << "Record deleted Successfully!" << endl; 
     }
     // isPaid is 0 if money is refunded else it is 1;
     void addTransaction(string id,bool isPaid,int moneyTransferred,int orderID){
@@ -116,6 +136,75 @@ class admin{
         string add = isPaid?"P":"R"+to_string(orderID)+","+to_string(moneyTransferred)+";";
         temporaryID=id;
         sqlite3_exec(DB, query.c_str(),update, NULL, NULL); 
+    }
+
+    void changeProfile(string id,string name, string surname, string email, string address, string username, string password){
+        string sql = "DELETE FROM PERSON WHERE ID="+id+";"; 
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
+        if (exit != SQLITE_OK) { 
+            cerr << "Error DELETE" << endl; 
+            sqlite3_free(messaggeError); 
+        } 
+        else
+            cout << "Record deleted Successfully!" << endl;
+        string sql1("INSERT INTO PERSON VALUES(id, name, surname, email, address,contact, username,password);");
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError); 
+        if (exit != SQLITE_OK) { 
+            cerr << "Error Insert" << endl; 
+            sqlite3_free(messaggeError); 
+        } 
+        else
+            cout << "Record inserted Successfully!" << endl; 
+    }
+
+    void editProfile(string id){
+        string query = "SELECT * FROM TRANSACTION WHERE ID="+id+";";
+        sqlite3_exec(DB, query.c_str(),get_information, NULL, NULL);
+        char check; 
+        cout<<"Do you wish to change your name?(Y/n) :: ";
+        cin>>check;
+        if(check=='Y'||check=='y'){
+            string new_name;
+            cin>>new_name;
+            temporaryProfile.name = new_name;
+        }
+        cout<<"Do you wish to change your Surname?(Y/n) :: ";
+        cin>>check;
+        if(check=='Y'||check=='y'){
+            string new_surname;
+            cin>>new_surname;
+            temporaryProfile.surname = new_surname;
+        }
+        cout<<"Do you wish to change your Email ID?(Y/n) :: ";
+        cin>>check;
+        if(check=='Y'||check=='y'){
+            string new_email;
+            cin>>new_email;
+            while(!isEmailCorrect(new_email)){
+                cout<<"Enter a valid Email address(Only IIT Jodhpur official email addresses are considered valid) ";
+                cin>>new_email;
+            }
+            temporaryProfile.email = new_email;
+        }
+        cout<<"Do you wish to change your address?(Y/n) :: ";
+        cin>>check;
+        if(check=='Y'||check=='y'){
+            string new_address;
+            cin>>new_address;
+            temporaryProfile.name = new_address;
+        }
+        cout<<"Do you wish to change your Contact number?(Y/n) :: ";
+        cin>>check;
+        if(check=='Y'||check=='y'){
+            string new_contact;
+            cin>>new_contact;
+            while(!isContactCorrect(new_contact)){
+                cout<<"Enter a valid contact number";
+                cin>>new_contact;
+            }
+            temporaryProfile.name = new_contact;
+        }
+        changeProfile(id,temporaryProfile.name,temporaryProfile.surname,temporaryProfile.email,temporaryProfile.address,temporaryProfile.username,temporaryProfile.password);
     }
 };
 int main(){
