@@ -1,3 +1,4 @@
+import sys
 import smtplib 
 
 # creates SMTP session 
@@ -10,10 +11,10 @@ s.starttls()
 s.login("lezendarysystem@gmail.com", "fuckusanskar") 
 
 # message to be sent 
-message = "fuckutanmay"
+message = "fuckutanmay "
 
 # sending the mail 
-s.sendmail("lezendarysystem@gmail.com", "tanmayp2019@gmail.com", message) 
+s.sendmail("lezendarysystem@gmail.com", i , message+i) 
 
 # terminating the session 
 s.quit()
