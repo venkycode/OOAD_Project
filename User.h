@@ -9,13 +9,24 @@ class User{
     bool isBlacklisted, isLoggedin;
     enum typeOfUser userType;
 
+    void login();
+    void signUp();
+    void editProfile();
+    void forgotPassword();
+
     void login(){
         cout<<"Enter username" << "\n";
         cin>>username;
         cout<<"Enter password" << "\n" ;
         cin >> password ;
-        profile userProfile=systemAdmin.authenticate(username,password);
-        if(userProfile)
+        profile UserProfile=systemAdmin.authenticate(username,password);
+        if(UserProfile.name=="#"){
+            cout<<"Press 1 if you forgot password" << "\n" ;
+            cout << "Press 2 if you do not have an account"<<"\n";
+            cout << "Press 3 if you want to log in again" << "\n" ;
+            int input;cin>>input;
+            if(input==1)
+        }
     }
 
 }
