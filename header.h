@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-<<<<<<< HEAD
 int getFileSize(const std::string &fileName)
 {
     ifstream file(fileName.c_str(), ifstream::in | ifstream::binary);
@@ -15,8 +14,7 @@ int getFileSize(const std::string &fileName)
     int fileSize = file.tellg();
     file.close();
 
-    return fileSize;
-=======
+    return fileSize;}
 template<typename T>
 T Min(T v) {
   return v;
@@ -24,7 +22,6 @@ T Min(T v) {
 template<typename T, typename... Args>
 T Min(T first, Args... args) {
   return min(first , Min(args...));
->>>>>>> 83daee71eb704e24b6dd0ef2c56967887438a569
 }
 
 enum typeOfUser
@@ -49,7 +46,6 @@ typedef struct timex
 
 typedef struct product
 {
-<<<<<<< HEAD
     int product_id;
     int product_type;
     char product_name[10];
@@ -57,9 +53,6 @@ typedef struct product
     int rating=0;                   //rating of the product
     char shopkeeper_id[10];
 
-=======
-    
->>>>>>> 83daee71eb704e24b6dd0ef2c56967887438a569
 } product;
 
 typedef struct profile{
