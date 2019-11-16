@@ -42,6 +42,7 @@ typedef struct order
 } order;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 bool isUsernameCorrect(string username)
 {
     for (auto y : username)
@@ -72,6 +73,8 @@ bool isPasswordCorrect(string password)
     }
     return (isSpecialCharacter & isNumber) & (isSmallLetter & isCapitalLetter);
 =======
+=======
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
 bool isContactCorrect(string contact){
     return contact.size()==10;
 }
@@ -91,5 +94,8 @@ bool isEmailCorrect(string email){
         }
     }
     return check;
+<<<<<<< HEAD
+>>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
+=======
 >>>>>>> 2d12555b9ad035f3daafc4b554fd696fcea39c3a
 }
