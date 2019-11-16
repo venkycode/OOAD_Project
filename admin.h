@@ -217,14 +217,18 @@ class admin{
             }
             temporaryProfile.name = new_contact;
         }
-        cout<<"Do you wish to change your Contact number?(Y/n) :: ";
+        cout<<"Do you wish to change your Password?(Y/n) :: ";
         cin>>check;
         if(check=='Y'||check=='y'){
-            string new_password;
+            string new_password, confirm_new_password;
             cin>>new_password;
-            while(!isPasswordCorrect(new_password)){
-                cout<<"Enter a valid contact number"; 
+            cout<<"Confirm Password: ";
+            cin>>confirm_new_password;
+            while(!(isPasswordCorrect(new_password)&&confirm_new_password==new_password)){
+                cout<<"Enter a valid Password: "; 
                 cin>>new_password;
+                cout<<"Confirm Password: ";
+                cin>>confirm_new_password;
             }
             temporaryProfile.name = new_password;
         }
