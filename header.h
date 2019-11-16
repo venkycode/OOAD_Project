@@ -23,6 +23,11 @@ typedef struct timex
 
 typedef struct product
 {
+    int product_id;
+    int product_type;
+    char product_name[10];
+    int deliveryCharge;
+    char shopkeeper_id[10];
 
 } product;
 
