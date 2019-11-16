@@ -1,5 +1,3 @@
-
-#include<Python.h>
 #include <sqlite3.h>
 #include <bits/stdc++.h>
 #include "header.h"
@@ -24,6 +22,7 @@ class admin
     ifstream global_inve_file;
     //ifstream personal_inventory_file;
     static map<string, vector<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
+    static map<string, string> ShopKeeperid_to_name ;
     static vector<vector<product>> productId_to_product; 
     static string temporaryPassword;
     static int callback(void *data, int argc, char **argv, char **azColName)
@@ -69,6 +68,7 @@ class admin
         temporaryID = argv[0] ? argv[0] : "#";
         return 0;
     }
+
     static int get_username(void* data, int argc, char** argv, char** azColName) 
     { 
         temporaryID=argv[2] && argv[1] == temporaryPassword ? argv[2]: "#";
