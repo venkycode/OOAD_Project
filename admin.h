@@ -1,9 +1,9 @@
-
 #include<Python.h>
 #include <sqlite3.h>
 #include <bits/stdc++.h>
 #include "header.h"
-
+#include "checks.h"
+#include "sha256.h"
 
 using namespace std;
 //Dont forget to close database
