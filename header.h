@@ -1,6 +1,22 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+int getFileSize(const std::string &fileName)
+{
+    ifstream file(fileName.c_str(), ifstream::in | ifstream::binary);
+
+    if(!file.is_open())
+    {
+        return -1;
+    }
+
+    file.seekg(0, ios::end);
+    int fileSize = file.tellg();
+    file.close();
+
+    return fileSize;
+}
+
 enum typeOfUser
 {
     Customer,
@@ -27,6 +43,7 @@ typedef struct product
     int product_type;
     char product_name[10];
     int deliveryCharge;
+    int rating=0;                   //rating of the product
     char shopkeeper_id[10];
 
 } product;
