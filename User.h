@@ -6,7 +6,7 @@ admin systemAdmin;
 
 class User
 {
-public:
+    public:
     string name, surname, emailID, contact, username, password, userID, address;
     bool isBlacklisted, isLoggedIn;
     enum typeOfUser userType;

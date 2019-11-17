@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-#include<Python.h>
->>>>>>> 33e4e711f47a6beddfa3db502bcefff9d3d56f7e
 #include <sqlite3.h>
 #include <bits/stdc++.h>
 #include "header.h"
@@ -13,6 +9,7 @@ using namespace std;
 
 class admin
 {
+    public :
     static sqlite3 *DB;
     static int exit;
     static string data;
@@ -22,13 +19,13 @@ class admin
     static string temporaryID;                                      // also helps in adding transactions
     static profile temporaryProfile;                                // helps in editing profile
     static product *global_inventory_array;
-    static vector<product> global_inventory; //mapping from product name to product
+    static map<string, vector<int>> global_inventory; //mapping from product name to product
     //static product* personal_inventory;
     ifstream global_inve_file;
     //ifstream personal_inventory_file;
     static map<string, vector<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
     static map<string, string> ShopKeeperid_to_name ;
-    static vector<vector<product>> productId_to_product; 
+    static map<int,product> productId_to_product; 
     static string temporaryPassword;
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
@@ -138,9 +135,9 @@ class admin
         global_inve_file.read((char *)global_inventory_array, sizeof(getFileSize("global_inventory_db")));
 
         for(int i = 0 ; i < size ; ++i){
-            global_inventory.push_back(global_inventory_array[i]);
+            global_inventory[global_inventory_array[i].product_name].push_back(global_inventory_array[i].product_id);
             personal_inventory[global_inventory_array[i].shopkeeper_id].push_back(global_inventory_array[i].product_id);
-            productId_to_product[global_inventory_array[i].product_id].push_back(global_inventory_array[i]);
+            productId_to_product[global_inventory_array[i].product_id]=(global_inventory_array[i]);
         }
         
         /*personal_inventory_file.open("personal_inventory_db", ios::binary);

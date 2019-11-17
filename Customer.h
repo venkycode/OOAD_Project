@@ -1,4 +1,5 @@
 #include "User.h"
+#include "stringMatching.h"
 
 class Customer:public User{
 
@@ -30,8 +31,12 @@ class Customer:public User{
         }
         vector<product> matches;
         for(auto currentProduct:systemAdmin.global_inventory){
-           bool doesMatch=isMatch(currentProduct.product_name,toBeSearched);
-           if(doesMatch&&currentProduct.count)matches.push_back(currentProduct);
+           bool doesMatch=isMatch(currentProduct.first,toBeSearched);
+           if(doesMatch){
+               for(auto ids:currentProduct.second){
+                   if(systemAdmin.productId_to_product[ids].count) matches.push_back(systemAdmin.productId_to_product[ids]);
+               }
+           }
         }
         if(response=='n'||response=='N');
         else if(input==1)sort(matches.begin(),matches.end(),sortByRating);
@@ -46,4 +51,7 @@ class Customer:public User{
             cout << "\n" ;
         }
     }
+    
+
+    
 };
