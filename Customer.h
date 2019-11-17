@@ -1,8 +1,8 @@
 #include "User.h"
 #include "stringMatching.h"
 
-class Customer:public User{
-
+class customer:public User{
+    public:
     bool sortByRating(product product1, product product2){
         return product1.rating > product2.rating ;
     }
@@ -52,6 +52,6 @@ class Customer:public User{
         }
     }
     
-
+    
     
 };
