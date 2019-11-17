@@ -62,9 +62,10 @@ typedef struct profile{
 typedef struct order
 {
     enum mode paymentMode;
-    int customerID;
+    char customerID[10], ShopKeeperID[10];
     int orderID;
     bool isPlaced;
+    timex remainingTime;
 } order;
 
 
