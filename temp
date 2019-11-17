@@ -11,7 +11,7 @@ s.starttls()
 s.login("lezendarysystem@gmail.com", "fuckusanskar") 
 
 # message to be sent 
-message = "fuckutanmay "
+message = "hitler never died"
 
 # sending the mail 
 s.sendmail("lezendarysystem@gmail.com", i , message+i) 

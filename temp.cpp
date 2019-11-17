@@ -9,7 +9,7 @@
 int main()
 {
     Py_Initialize();
-    char filename[]="temp.py";
+    char filename[]="temp";
     FILE* pyfile;
     pyfile=fopen(filename,"r");
     PyRun_SimpleString("i=\"pandit.1@iitj.ac.in\"\n");
