@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include "header.h"
 #include "admin.h"
 
 admin systemAdmin;
@@ -8,58 +7,52 @@ class User
 {
     public:
     string name, surname, emailID, contact, username, password, userID, address;
-    bool isBlacklisted, isLoggedIn;
+    bool isLoggedIn;
     enum typeOfUser userType;
 
-    void login();
-    void signUp();
-    void editProfile();
-    void forgotPassword();
-    void assign(profile userProfile);
-    void inputPassword();
 
-    void assign(profile userProfile)
+    void assign(profile &userProfile)
     {
-        this->name = userProfile.name;
-        this->surname = userProfile.surname;
-        this->emailID = userProfile.email;
-        this->address = userProfile.address;
-        this->username = userProfile.username;
-        this->password = userProfile.password;
-        this->contact = userProfile.contact;
-        this->userType = userProfile.type;
-        this->isBlacklisted = userProfile.isBlackListed;
-        this->isLoggedIn = 1;
-        this->userID = userProfile.id;
+        name = userProfile.name;
+        surname = userProfile.surname;
+        emailID = userProfile.email;
+        address = userProfile.address;
+        username = userProfile.username;
+        password = userProfile.password;
+        contact = userProfile.contact;
+        userType = userProfile.type;
+        isLoggedIn = 1;
+        userID = userProfile.id;
     }
 
-    void inputPassword(profile userProfile)
-    {    cout << "Enter your surname" << "\n";
-            cin >> userProfile.surname;
-        cout << "Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n";
-        cin >> userProfile.password;
-        while (!isPasswordCorrect(userProfile.password))
-        {
-            cout << "Your password does not satisfy our conditions" << "\n";
-            cout << "Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n";
-            cin >> userProfile.password;
-        }
-        cout << "Confirm your password" << "\n";
+    void inputPassword(profile &userProfile)
+    {    
         string temp;
-        cin >> temp;
-        while (temp != userProfile.password)
-        {
-            cout << "Both passwords do not match each other" << "\n";
-            inputPassword(userProfile);
-        }
+        do{
+            getline(cin, userProfile.password);
+            while (!isPasswordCorrect(userProfile.password))
+            {
+                cout << "Your password does not satisfy our conditions" << "\n";
+                cout << "Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n";
+                cout << "Try again" << "\n" ;
+                getline(cin, userProfile.password);
+            }
+            cout << "Confirm your password" << "\n";
+            getline(cin,temp);
+            if (temp != userProfile.password)
+            {
+                cout << "Both passwords do not match each other" << "\n";
+                cout << "Try again" << "\n" ;
+            }
+        }while(temp != userProfile.password);
     }
 
     void login()
     {
         cout << "Enter username" << "\n";
-        cin >> username;
+        getline(cin,username);
         cout << "Enter password" << "\n";
-        cin >> password;
+        getline(cin ,password);
         profile userProfile = systemAdmin.authenticate(username, password);
         if (userProfile.name == "#")
         {
@@ -69,11 +62,11 @@ class User
             int input;
             cin >> input;
             if (input == 1)
-                this->forgotPassword();
+                forgotPassword();
             else if (input == 2)
-                this->signUp();
+                signUp();
             else
-                this->login();
+                login();
         }
         assign(userProfile);
     }
@@ -81,7 +74,6 @@ class User
     void signUp()
     {
         profile userProfile;
-        cin >> userProfile.address;
         cout << "Press 1 if you are a customer" << "\n";
         cout << "Press 2 if you are a shopkeeper" << "\n";
         cout << "Press 3 if you are a delivery person" << "\n";
@@ -105,28 +97,33 @@ class User
         cin >> userProfile.contact;
         while (!isContactCorrect(userProfile.contact))
         {
-            cout << "Your contact number is invalid" << "\n";
+            cout << "Your contact number is invalid. Try again" << "\n";
             cin >> userProfile.contact;
         }
         cout << "Enter your email-id" << "\n";
-        cin >> userProfile.email;
+        getline(cin, userProfile.email);
+        getline(cin, userProfile.email);
         while (!isEmailCorrect(userProfile.email))
         {
             cout << "Use iitj email id" << "\n";
-            cin >> userProfile.email;
+            getline(cin, userProfile.email);
         }
         cout << "Your username should consist of nothing other than small letters and capital letters and numbers and underscores" << "\n";
         cout << "Enter your username" << "\n";
-        cin >> userProfile.username;
+        getline(cin, userProfile.username);
         while (!isUsernameCorrect(userProfile.username))
         {
             cout << "Your username does not satisfy our conditions" << "\n";
             cout << "Your username should consist of nothing other than small letters and capital letters and numbers and underscores" << "\n";
-            cin >> userProfile.username;
+            cout << "Try again" << "\n" ;
+            getline(cin, userProfile.username);
         }
+        cout << "Your password should consist of at least one small letter, one capital letter, one number and one special character" << "\n";
+        cout << "Enter password" << "\n" ;
         inputPassword(userProfile);
         cout << "Enter your address" << "\n";
-        userProfile.isBlackListed = 1;
+        getline(cin , userProfile.address);
+        cout<<userProfile.password<<endl;
         systemAdmin.signUp(userProfile);
         assign(userProfile);
         if(this->userType==(enum typeOfUser)ShopKeeper)systemAdmin.ShopKeeperid_to_name[this->userID]= this->name;
@@ -134,7 +131,7 @@ class User
 
     void updateProfile()
     {
-        systemAdmin.editProfile(this->userID);
+        systemAdmin.editProfile(userID);
     }
 
     void forgotPassword()
@@ -142,5 +139,8 @@ class User
     }
 };
 
-
-
+int main(){
+    User u;
+    systemAdmin.loadDatabase();
+    u.login();
+}

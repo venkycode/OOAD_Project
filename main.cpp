@@ -16,6 +16,7 @@ int main(){
     if(temp.userType==Customer){
         customer temp2 ;
         temp2.search();
+        
     }
     else if(temp.userType==ShopKeeper){
 
