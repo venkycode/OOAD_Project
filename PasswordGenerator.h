@@ -18,7 +18,7 @@ string PasswordGenerator()
 {
     srand(time(0));
     string password = "";
-    int len = rand()%7 +5;
+    int len = rand()%4 +8;
     bool countUpperCase=0, countLowerCase=0, countNumber = 0, countSpecial = 0;
     for(int i=0; i < len; i++)
     {

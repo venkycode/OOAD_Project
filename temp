@@ -10,11 +10,8 @@ s.starttls()
 # Authentication 
 s.login("lezendarysystem@gmail.com", "fuckusanskar") 
 
-# message to be sent 
-message = "hitler never died"
-
 # sending the mail 
-s.sendmail("lezendarysystem@gmail.com", i , message+i) 
+s.sendmail("lezendarysystem@gmail.com", i , j) 
 
 # terminating the session 
 s.quit()

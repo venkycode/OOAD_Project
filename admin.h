@@ -1,11 +1,12 @@
 #include <sqlite3.h>
 #include "header.h"
 #include "checks.h"
+#include "PasswordGenerator.h"
+#include "forgotPassword.h"
 
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
 string temporaryPassword;
-map<string,string> ShopKeeperId_to_name;
 string add;
 
 class admin
@@ -47,12 +48,6 @@ public:
         temporaryProfile.contact = argv[5];
         temporaryProfile.username = argv[6];
         temporaryProfile.password = argv[7];
-        return 0;
-    }
-
-    static int fillShopKeeperMap(void *data, int argc, char **argv, char **azColName)
-    {
-        ShopKeeperId_to_name[argv[0]]=argv[1];
         return 0;
     }
 
@@ -102,19 +97,7 @@ public:
 
     void loadDatabase()
     {
-        createDataBase();
-
-        string t="#";
-        string query = "SELECT * FROM PERSON WHERE SURNAME = \'" + t + "\';";
-        int rc = sqlite3_exec(DB, query.c_str(), fillShopKeeperMap, NULL, NULL);
-        if (rc != SQLITE_OK)
-        {
-            cerr << "Error SELECT" << endl;
-        }
-        else
-        {
-            cout << "Operation OK!" << endl;
-        }    
+        createDataBase();  
         
         global_inve_file.open("global_inventory_db", ios::in);
 
@@ -466,6 +449,18 @@ public:
     {
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id]=productToInsert;
+    }
+
+    void forgotPassword(string username){
+        string new_password = "Your new Password is : "+PasswordGenerator();
+        string query = "SELECT ID FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
+        sqlite3_exec(DB, query.c_str(), get_ID, NULL, NULL);
+        string query = "SELECT * FROM PERSON WHERE ID = \'" + temporaryID + "\';";
+        sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
+        temporaryProfile.password = new_password;
+        sendPasswordToEmail(temporaryProfile.email,new_password);
+        changeProfile(temporaryID, temporaryProfile.name,temporaryProfile.surname,\
+        temporaryProfile.email,temporaryProfile.address,temporaryProfile.username,temporaryProfile.password,temporaryProfile.contact);
     }
 
 };
