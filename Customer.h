@@ -3,15 +3,15 @@
 
 class customer:public User{
     public:
-    bool sortByRating(product product1, product product2){
+    static bool sortByRating(product product1, product product2){
         return product1.rating > product2.rating ;
     }
 
-    bool sortByIncreasingPrice(product product1, product product2){
+    static bool sortByIncreasingPrice(product product1, product product2){
         return product1.price < product2.price ;
     }
 
-    bool sortByDecreasingPrice(product product1, product product2){
+    static bool sortByDecreasingPrice(product product1, product product2){
         return product1.price > product2.price ;
     }
 

@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "header.h"
+//#include "header.h"
 #include "admin.h"
 
 admin systemAdmin;
@@ -11,14 +11,14 @@ class User
     bool isBlacklisted, isLoggedIn;
     enum typeOfUser userType;
 
-    void login();
-    void signUp();
-    void editProfile();
-    void forgotPassword();
-    void assign(profile userProfile);
-    void inputPassword();
+    // void login();
+    // void signUp();
+    // void editProfile();
+    // void forgotPassword();
+    // void assignUserProfile(profile);
+    // void inputPassword();
 
-    void assign(profile userProfile)
+    void assignUserProfile(profile userProfile)
     {
         this->name = userProfile.name;
         this->surname = userProfile.surname;
@@ -75,7 +75,7 @@ class User
             else
                 this->login();
         }
-        assign(userProfile);
+        assignUserProfile(userProfile);
     }
 
     void signUp()
@@ -128,7 +128,7 @@ class User
         cout << "Enter your address" << "\n";
         userProfile.isBlackListed = 1;
         systemAdmin.signUp(userProfile);
-        assign(userProfile);
+        assignUserProfile(userProfile);
         if(this->userType==(enum typeOfUser)ShopKeeper)systemAdmin.ShopKeeperid_to_name[this->userID]= this->name;
     }
 
