@@ -1,6 +1,8 @@
 #include "User.h"
 #include "stringMatching.h"
 
+//isblacklisted to be updated in admin.h
+
 class customer:public User{
     public:
     static bool sortByRating(product product1, product product2){

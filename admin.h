@@ -110,7 +110,7 @@ public:
         int rc=sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
         if(rc!=SQLITE_OK) cout<<"Error select" << "\n" ;
         else cout<<"Operation OK" << "\n" ;
-        return id ;
+        return temporaryID ;
     }
 
     void loadDatabase()
@@ -416,7 +416,6 @@ public:
         temporaryID = "#";
         string query = "SELECT * FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         sqlite3_exec(DB, query.c_str(), check_username, NULL, NULL); // only checks if username is taken or not i.e. returns 0 only if it is taken
-        cout<<temporaryID<<endl;
         if (temporaryID != "#") return 1;
         else return 0;
     }
@@ -481,44 +480,7 @@ public:
         temporaryProfile.email,temporaryProfile.address,temporaryProfile.username,temporaryProfile.password,temporaryProfile.contact);
     }
 
-};
-
-/*int main()
-{
-    admin s;
-    s.loadDatabase();
-    string temp = "fsdfse";
-    enum typeOfUser t = Customer;
-    profile tanmay = {temp, temp, temp, temp, temp, temp, temp, temp, t};
-    cout << s.signUp(tanmay);
-    //s.Insert(temp,temp,temp,temp,temp,temp,temp,t);
-    //profile temp1 = s.authenticate(temp,temp);//cout<<"sefe"<<endl;
-    //cout<<endl<<temp1.id<<' '<<temp1.name<<' '<<temp1.surname<<' '<<temp1.email<<' '<<temp1.address<<' '<<temp1.contact<<' '<<temp1.username<<' '<<temp1.password<<endl;
-    //s.addTransaction(temp1.id,1,1000000,121);
-    //s.showTransaction(temp1.id);
-    //s.deleteID(temp1.id,temp1.username);
-    s.addToBlacklist(temp);
-    product p1,p2;
-    p1.count=4;
-    p1.deliveryCharge=50;
-    p1.product_id=50;
-    strcpy(p1.product_name,"lrx");
-    s.insertProduct(p1);
-    p2.count=5;
-    p2.deliveryCharge=50;
-    p2.product_id=40;
-    s.insertProduct(p2);
-    strcpy(p2.product_name,"ven");
-    for(auto i: s.productId_to_product)
-    {
-        cout<<"->>>>> " <<i.first<<" "<<i.second.product_name<<endl;
-    }
-    s.dumpData();
-    cout << s.isBlackListed("Da") << endl;
-    return 0;
-}*/
-
-void assign_order(string id, int orderID){
+    void assign_order(string id, int orderID){
         string temp = '\'' + id + "\'," + to_string(orderID);
         string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
@@ -555,6 +517,10 @@ void assign_order(string id, int orderID){
         sqlite3_exec(DB, query.c_str(), check_avail, NULL, NULL);
         return temporaryID == "#";
     }
+
+};
+
+    
 
 /*int main(){
     admin s;

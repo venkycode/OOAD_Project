@@ -139,6 +139,11 @@ class User
 
     void forgotPassword()
     {
+        cout << "Enter username" << "\n" ;
+        getline(cin,username);
+        if(systemAdmin.isBlackListed(username))cout<<"You are blacklisted" << "\n" ;
+        else if(!systemAdmin.isUsernameTaken(username)) cout<<"This username does not exist" << "\n" ;
+        else systemAdmin.forgotPassword(username);
     }
 };
 

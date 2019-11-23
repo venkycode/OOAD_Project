@@ -35,8 +35,8 @@ int product_id;
     char shopkeeper_id[10];
     int count,price;
 */
-/*
-int main(){
+
+/*int main(){
 
     customer c;
     systemAdmin.loadDatabase();
@@ -44,7 +44,7 @@ int main(){
     //cout<<systemAdmin.nameFromId("S0")<<endl;
     //cout<<systemAdmin.nameFromId("C0")<<endl;
     c.login();
-    /*product p,q,r;
+    product p,q,r;
     p.product_type =0;
     p.product_id=0;
     char* t="aaaac",*u="aaaad",*v="aaaaa";
@@ -72,5 +72,5 @@ int main(){
     systemAdmin.global_inven_map[p.product_name].insert(0);
     systemAdmin.global_inven_map[q.product_name].insert(1);
     systemAdmin.global_inven_map[r.product_name].insert(2);
-    //c.search();
-}**/
+    c.search();
+}*/
