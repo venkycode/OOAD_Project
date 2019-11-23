@@ -66,7 +66,10 @@ class User
             else if (input == 2)
                 signUp();
             else
+            {
+                getline(cin,username);
                 login();
+            }
         }
         assignUserProfile(userProfile);
     }
