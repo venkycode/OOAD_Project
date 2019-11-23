@@ -30,7 +30,6 @@ typedef struct product
     int rating=0;                   //rating of the product
     char shopkeeper_id[10];
     int count,price;
- 
 } product;
  
 typedef struct profile{

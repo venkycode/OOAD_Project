@@ -21,6 +21,7 @@ public:
     fstream global_inve_file;
     //ifstream personal_inventory_file;
     map<string, set<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
+    map<int, product> productId_to_product;
 
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
@@ -55,7 +56,7 @@ public:
 
 
     string nameFromId(string id){
-        temporaryID = "#";
+        temporaryID = "#";  
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
         if (rc != SQLITE_OK)
@@ -414,9 +415,15 @@ public:
     bool isUsernameTaken(string username){
         temporaryID = "#";
         string query = "SELECT * FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
-        sqlite3_exec(DB, query.c_str(), check_username, NULL, NULL); // only checks if username is taken or not i.e. returns 0 only if it is taken
-        if (temporaryID != "#") return 1;
-        else return 0;
+        int rc=sqlite3_exec(DB, query.c_str(), check_username, NULL, NULL); // only checks if username is taken or not i.e. returns 0 only if it is taken
+        if (rc != SQLITE_OK)
+            cerr << "Error SELECT" << endl;
+        else
+        {
+            cout << "Operation OK!" << endl;
+            if (temporaryID != "#") return 1;
+            else return 0;
+        }
     }
 
     string signUp(profile addToDatabase)
