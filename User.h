@@ -114,10 +114,10 @@ class User
         cout << "Your username should consist of nothing other than small letters and capital letters and numbers and underscores" << "\n";
         cout << "Enter your username" << "\n";
         getline(cin, userProfile.username);
-        while (!isUsernameCorrect(userProfile.username))
+        while (!isUsernameCorrect(userProfile.username)||systemAdmin.isUsernameTaken(userProfile.username))
         {
-            cout << "Your username does not satisfy our conditions" << "\n";
-            cout << "Your username should consist of nothing other than small letters and capital letters and numbers and underscores" << "\n";
+            if(!isUsernameCorrect(userProfile.username)) cout << "Your username does not satisfy our conditions" << "\n";
+            else cout << "This username is taken" << "\n" ;
             cout << "Try again" << "\n" ;
             getline(cin, userProfile.username);
         }
@@ -127,6 +127,7 @@ class User
         cout << "Enter your address" << "\n";
         getline(cin , userProfile.address);
         systemAdmin.signUp(userProfile);
+
         assignUserProfile(userProfile);
         //if(this->userType==(enum typeOfUser)ShopKeeper)systemAdmin.ShopKeeperid_to_name[this->userID]= this->name;
     }

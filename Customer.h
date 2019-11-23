@@ -41,7 +41,7 @@ class customer:public User{
         if(response=='n'||response=='N');
         else if(input==1)sort(matches.begin(),matches.end(),sortByRating);
         else if(input==2)sort(matches.begin(),matches.end(),sortByIncreasingPrice);
-        else sort(matches.begin(),matches.end(),sortByDecreasingPrice);
+        else sort(matches.begin(),matches.end(ortByDecreasingPrice);
         for(auto currentProduct:matches){
             cout<< "Shopkeeper : " << ShopKeeperId_to_name[currentProduct.shopkeeper_id] << "\n" ;
             cout << "Rating : " << currentProduct.rating << "\n" ;

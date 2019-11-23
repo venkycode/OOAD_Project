@@ -157,7 +157,7 @@ public:
         }*/
     }
 
-    void Insert(string name, string surname, string email, string address, string username, string password, string contact, enum typeOfUser type)
+    string Insert(string name, string surname, string email, string address, string username, string password, string contact, enum typeOfUser type)
     {
         string id = "";
         if (type == Customer)
@@ -204,6 +204,7 @@ public:
         }
         else
             cout << "Record inserted Successfully!" << endl;
+        return id;
     }
 
     profile authenticate(string username, string password)
@@ -406,28 +407,24 @@ public:
 
     static int check_username(void *data, int argc, char **argv, char **azColName)
     {
+        cout<<"k\n";
         temporaryID = argv[0];
         return 0;
     }
 
-    bool signUp(profile addToDatabase)
-    {
+    bool isUsernameTaken(string username){
         temporaryID = "#";
-        string query = "SELECT * FROM USER_MAP WHERE USERNAME = \'" + addToDatabase.username + "\';";
+        string query = "SELECT * FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         sqlite3_exec(DB, query.c_str(), check_username, NULL, NULL); // only checks if username is taken or not i.e. returns 0 only if it is taken
+        cout<<temporaryID<<endl;
+        if (temporaryID != "#") return 1;
+        else return 0;
+    }
 
-        if (temporaryID != "#")
-        {
-            cerr << "You cant use Username" << endl;
-            return 0;
-        }
-        else
-        {
-            cout << "you can use Username" << endl;
-            Insert(addToDatabase.name, addToDatabase.surname, addToDatabase.email,
+    string signUp(profile addToDatabase)
+    {
+        return Insert(addToDatabase.name, addToDatabase.surname, addToDatabase.email,
                    addToDatabase.address, addToDatabase.username, addToDatabase.password, addToDatabase.contact, addToDatabase.type);
-            return 1;
-        }
     }
 
     void addToBlacklist(string username)
