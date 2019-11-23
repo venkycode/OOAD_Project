@@ -4,8 +4,6 @@
 
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
-string temporaryPassword;
-map<string,string> ShopKeeperId_to_name;
 string add;
 
 class admin
@@ -23,7 +21,6 @@ public:
     fstream global_inve_file;
     //ifstream personal_inventory_file;
     map<string, set<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
-    map<int, product> productId_to_product;
 
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
@@ -50,10 +47,26 @@ public:
         return 0;
     }
 
-    static int fillShopKeeperMap(void *data, int argc, char **argv, char **azColName)
+    static int get_name(void *data, int argc, char **argv, char **azColName)
     {
-        ShopKeeperId_to_name[argv[0]]=argv[1];
+        temporaryID = argv[1];
         return 0;
+    }
+
+
+    string nameFromId(string id){
+        temporaryID = "#";
+        string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
+        int rc = sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "Error SELECT" << endl;
+        }
+        else
+        {
+            cout << "Operation OK!" << endl;
+        } 
+        return temporaryID;
     }
 
     void createDataBase()
@@ -99,22 +112,9 @@ public:
     }
 
     
-
     void loadDatabase()
     {
-        createDataBase();
-
-        string t="#";
-        string query = "SELECT * FROM PERSON WHERE SURNAME = \'" + t + "\';";
-        int rc = sqlite3_exec(DB, query.c_str(), fillShopKeeperMap, NULL, NULL);
-        if (rc != SQLITE_OK)
-        {
-            cerr << "Error SELECT" << endl;
-        }
-        else
-        {
-            cout << "Operation OK!" << endl;
-        }    
+        createDataBase();   
         
         global_inve_file.open("global_inventory_db", ios::in);
 
@@ -407,7 +407,6 @@ public:
 
     static int check_username(void *data, int argc, char **argv, char **azColName)
     {
-        cout<<"k\n";
         temporaryID = argv[0];
         return 0;
     }
@@ -416,7 +415,6 @@ public:
         temporaryID = "#";
         string query = "SELECT * FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         sqlite3_exec(DB, query.c_str(), check_username, NULL, NULL); // only checks if username is taken or not i.e. returns 0 only if it is taken
-        cout<<temporaryID<<endl;
         if (temporaryID != "#") return 1;
         else return 0;
     }

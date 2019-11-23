@@ -31,5 +31,5 @@ int main(){
     User u;
     systemAdmin.loadDatabase();
     u.signUp();
-    for(auto y:ShopKeeperId_to_name)cout<<y.first<<" "<<y.second<<endl;
+    
 }
