@@ -80,10 +80,15 @@ public:
                       "ID  TEXT  NOT NULL );";
         string sql4 = "CREATE TABLE BLACKLISTED("
                       "USERNAME TEXT PRIMARY KEY     NOT NULL );";
+        string sql5 = "CREATE TABLE ASSIGNED_ORDER("
+                            "ID TEXT PRIMARY KEY     NOT NULL, "
+                            "ORDER_ID  INT  NOT NULL );";     
+
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql4.c_str(), NULL, 0, &messaggeError);
+        exit = sqlite3_exec(DB, sql5.c_str(), NULL, 0, &messaggeError);
         if (exit == SQLITE_OK)
         {
             cerr << "Error Create Table" << endl;
@@ -513,10 +518,48 @@ public:
     return 0;
 }*/
 
-int main(){
+void assign_order(string id, int orderID){
+        string temp = '\'' + id + "\'," + to_string(orderID);
+        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert    " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+ 
+    void finish_order(string id){
+        string sql = "DELETE FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+ 
+    static int check_avail(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[0];
+        return 0;
+    }
+ 
+    bool isAvailable(string id){
+        temporaryID = "#";
+        string query = "SELECT * FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), check_avail, NULL, NULL);
+        return temporaryID == "#";
+    }
+
+/*int main(){
     admin s;
     s.loadDatabase();
     //profile tanmay = s.authenticate("dwaa","Your new Password is : !!4E^tQx0");
     s.forgotPassword("dwaa");
     //s.signUp(tanmay);
-}
+}*/
