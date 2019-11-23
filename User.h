@@ -138,8 +138,4 @@ class User
     }
 };
 
-int main(){
-    User u;
-    systemAdmin.loadDatabase();
-    u.login();
-}
+

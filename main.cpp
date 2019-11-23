@@ -1,7 +1,7 @@
 //#include "header.h"
-#include "Customer.h"
+#include "User.h"
 
-int main(){
+/*int main(){
     User temp ;
     cout<<"Press 1 to login if you already have an account" << "else press 2 to sign up" << "\n";
     cout<<"Press 3 if you forgot your password" << "\n";
@@ -24,4 +24,13 @@ int main(){
     else{
         
     }
+}*/
+
+int main(){
+
+    User u;
+    systemAdmin.loadDatabase();
+    //u.signUp();
+    u.login();
+    for(auto y:ShopKeeperId_to_name)cout<<y.first<<" "<<y.second<<endl;
 }

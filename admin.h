@@ -5,6 +5,7 @@
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
 string temporaryPassword;
+map<string,string> ShopKeeperId_to_name;
 string add;
 
 class admin
@@ -46,6 +47,12 @@ public:
         temporaryProfile.contact = argv[5];
         temporaryProfile.username = argv[6];
         temporaryProfile.password = argv[7];
+        return 0;
+    }
+
+    static int fillShopKeeperMap(void *data, int argc, char **argv, char **azColName)
+    {
+        ShopKeeperId_to_name[argv[0]]=argv[1];
         return 0;
     }
 
@@ -91,9 +98,23 @@ public:
             cout << "Table created Successfully" << endl;
     }
 
+    
+
     void loadDatabase()
     {
         createDataBase();
+
+        string t="#";
+        string query = "SELECT * FROM PERSON WHERE SURNAME = \'" + t + "\';";
+        int rc = sqlite3_exec(DB, query.c_str(), fillShopKeeperMap, NULL, NULL);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "Error SELECT" << endl;
+        }
+        else
+        {
+            cout << "Operation OK!" << endl;
+        }    
         
         global_inve_file.open("global_inventory_db", ios::in);
 
@@ -452,7 +473,7 @@ public:
 
 };
 
-int main()
+/*int main()
 {
     admin s;
     s.loadDatabase();
@@ -485,4 +506,4 @@ int main()
     s.dumpData();
     cout << s.isBlackListed("Da") << endl;
     return 0;
-}
+}*/

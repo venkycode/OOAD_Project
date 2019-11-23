@@ -30,7 +30,7 @@ class customer:public User{
             cin>>input;
         }
         vector<product> matches;
-        for(auto currentProduct:systemAdmin.global_inventory){
+        for(auto currentProduct:systemAdmin.global_inven_map){
            bool doesMatch=isMatch(currentProduct.first,toBeSearched);
            if(doesMatch){
                for(auto ids:currentProduct.second){
@@ -43,7 +43,7 @@ class customer:public User{
         else if(input==2)sort(matches.begin(),matches.end(),sortByIncreasingPrice);
         else sort(matches.begin(),matches.end(),sortByDecreasingPrice);
         for(auto currentProduct:matches){
-            cout<< "Shopkeeper : " << systemAdmin.ShopKeeperid_to_name[currentProduct.shopkeeper_id] << "\n" ;
+            cout<< "Shopkeeper : " << ShopKeeperId_to_name[currentProduct.shopkeeper_id] << "\n" ;
             cout << "Rating : " << currentProduct.rating << "\n" ;
             cout << "Quantity : " << currentProduct.count << "\n" ;
             cout << "Price : " << currentProduct.price << "\n" ;
