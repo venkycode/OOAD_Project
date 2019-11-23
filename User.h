@@ -11,7 +11,7 @@ class User
     enum typeOfUser userType;
 
 
-    void assign(profile &userProfile)
+    void assignUserProfile(profile &userProfile)
     {
         name = userProfile.name;
         surname = userProfile.surname;
@@ -68,7 +68,7 @@ class User
             else
                 login();
         }
-        assign(userProfile);
+        assignUserProfile(userProfile);
     }
 
     void signUp()
@@ -123,10 +123,9 @@ class User
         inputPassword(userProfile);
         cout << "Enter your address" << "\n";
         getline(cin , userProfile.address);
-        cout<<userProfile.password<<endl;
         systemAdmin.signUp(userProfile);
-        assign(userProfile);
-        if(this->userType==(enum typeOfUser)ShopKeeper)systemAdmin.ShopKeeperid_to_name[this->userID]= this->name;
+        assignUserProfile(userProfile);
+        //if(this->userType==(enum typeOfUser)ShopKeeper)systemAdmin.ShopKeeperid_to_name[this->userID]= this->name;
     }
 
     void updateProfile()
