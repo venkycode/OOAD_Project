@@ -1,4 +1,6 @@
 #include <sqlite3.h>
+#include <chrono>
+#include <ctime>
 #include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
@@ -8,6 +10,7 @@ string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
 string temporaryPassword;
 string add;
+int temporaryOrderID; //used in assigning the order to the delivery person
 
 class admin
 {
@@ -65,13 +68,13 @@ public:
             std::cout << "Created Database Successfully!" << std::endl;
         string sql = "CREATE TABLE PERSON("
                      "ID TEXT PRIMARY KEY     NOT NULL, "
-                     "NAME           TEXT    NOT NULL, "
-                     "SURNAME          TEXT     NOT NULL, "
-                     "EMAIL_ID      TEXT     NOT NULL, "
-                     "ADDRESS        CHAR(50), "
+                     "NAME    TEXT    NOT NULL, "
+                     "SURNAME   TEXT     NOT NULL, "
+                     "EMAIL_ID   TEXT     NOT NULL, "
+                     "ADDRESS    CHAR(50), "
                      "CONTACT_NO   TEXT  NOT NULL,"
-                     "USERNAME      TEXT   NOT NULL,"
-                     "PASSWORD     TEXT     NOT NULL);";
+                     "USERNAME    TEXT   NOT NULL,"
+                     "PASSWORD   TEXT   NOT NULL);";
         string sql2 = "CREATE TABLE USER_TRANSACTION("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "TRANSACTIONS  TEXT  NOT NULL );";
@@ -82,8 +85,10 @@ public:
                       "USERNAME TEXT PRIMARY KEY     NOT NULL );";
         string sql5 = "CREATE TABLE ASSIGNED_ORDER("
                             "ID TEXT PRIMARY KEY     NOT NULL, "
-                            "ORDER_ID  INT  NOT NULL );";     
-
+                            "ORDER_ID  TEXT  NOT NULL );"; 
+        string sql5 = "CREATE TABLE WISHLIST("
+                            "ID TEXT PRIMARY KEY     NOT NULL, "
+                            "ITEMS  TEXT  NOT NULL );"; 
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
@@ -376,11 +381,14 @@ public:
         return 0;
     }
 
-    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID)
+    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder, string paymentUsing)
     {
+        string temp = "Using ";
+        if(payment_mode == "CASH ON DELIVERY")temp="";
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
-        add = to_string(orderID) + " | " + (isPaid ? "Paid" : "Refunded") + " | " + to_string(moneyTransferred) + "\n";
-        temporaryID = id;
+        add = to_string(orderID) + " | " + (isPaid ? "Paid" : "Refunded") + " | " + to_string(moneyTransferred) +\
+              " | " + payment_mode + " | " + temp + paymentUsing + " | " + timeOfOrder+ "\n";
+        temporaryID = id; 
         sqlite3_exec(DB, query.c_str(), update, NULL, NULL);
         exit = sqlite3_exec(DB, temporaryID.c_str(), callback, NULL, &messaggeError);
         if (exit != SQLITE_OK)
@@ -481,7 +489,7 @@ public:
     }
 
     void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\'," + to_string(orderID);
+        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';
         string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
@@ -507,20 +515,145 @@ public:
  
     static int check_avail(void *data, int argc, char **argv, char **azColName)
     {
-        temporaryID = argv[0];
+        temporaryID = argv[1];
         return 0;
     }
  
-    bool isAvailable(string id){
-        temporaryID = "#";
+    int AssignedOrderId(string id){
+        temporaryID = "-1";
         string query = "SELECT * FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
         sqlite3_exec(DB, query.c_str(), check_avail, NULL, NULL);
-        return temporaryID == "#";
+        return stoi(temporaryID);
+    }
+    
+    static int get_wishList(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[1];
+        return 0;
+    }
+
+    void deleteWishList(string id){
+        string sql = "DELETE FROM WISHLIST WHERE ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+
+    void insertWishList(string id, string wishlist){
+        string temp = '\'' + id + "\',\'" + wishlist +'\'';
+        string sql("INSERT INTO WISHLIST VALUES(" + temp + ");");;
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert    " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+
+    void addToWishList(string id, string name){
+        temporaryID = "";
+        string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
+        if(temporaryID.size()!=0)deleteWishList(id);
+        temporaryID += "#"+name;
+        insertWishList(id,temporaryID);
+    }
+
+    set<string> Wishlist(string id){
+        temporaryID = "";
+        string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
+        string tmp = "";
+        set<string> wishlist;
+        for(auto i: temporaryID){
+            if(i!='#')tmp+=i;
+            else wishlist.insert(tmp),tmp = "";
+        }
+        if(tmp.size()!=0)wishlist.insert(tmp);
+        return wishlist;
+    }
+
+    void changeWishList(string id, set<string> new_wishlist){
+        deleteWishList(id);
+        for(auto i: new_wishlist){
+            addToWishList(id, i);
+        }
+    }
+
+    void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
+        auto current_clock = chrono::system_clock::now();
+        time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
+        string currentTime = ctime(&cur_time);
+        string tempMode = "";
+        int totalCost = 0;
+        for(auto i: Cart){
+            totalCost += i.Product.price + i.Product.deliveryCharge;
+        }
+        cout<<"Total Cost =  "<<totalCost<<endl;
+        string cardNumber, expiry_Date, Cvv,paymentUsing = "";
+        switch (payment_mode)
+        {
+        case cashOnDelivery:
+            tempMode = "CASH ON DELIVERY";
+            break;
+        case onlineBanking:
+            cout<<"Enter card number (****-****-****-****)"<<endl;
+            do{
+                cin>>cardNumber;
+            }while(!isCorrectCardNumber(cardNumber));
+            paymentUsing = cardNumber;
+            cout<<"Enter Expiry Date (mm/yy)"<<endl;
+            do{
+                cin>>expiry_Date;
+            }while(!isCorrectDate(expiry_Date));
+            cout<<"Enter Cvv (***)"<<endl;
+            do{
+                cin>>Cvv;
+            }while(isCorrectCvv(Cvv));
+            tempMode = "ONLINE BANKING";
+            break;
+        case Paytm:
+            cout<< "Do you wish to use your current number(Y/n): "<<contact<<endl;
+            char choice;
+            cin>>choice;
+            if(!(choice == 'Y' || choice == 'y')){
+                do{
+                    cin>>contact;
+                }while(isContactCorrect(contact));
+            }
+            paymentUsing = contact;
+            tempMode = "PAYTM";
+            break;
+        case GooglePay:
+            cout<< "Do you wish to use your current number(Y/n): "<<contact<<endl;
+            char choice;
+            cin>>choice;
+            if(!(choice == 'Y' || choice == 'y')){
+                do{
+                    cin>>contact;
+                }while(isContactCorrect(contact));
+            }
+            paymentUsing = contact;
+            tempMode = "GOOGLE PAY";
+            break;
+        default:
+            cerr<<"No such banking option"<<endl;
+            break;
+        }
+        int orderID1 =122;
+        addTransaction(id,1,totalCost,orderID1, tempMode,currentTime,paymentUsing);
+        
     }
 
 };
 
-    
 
 /*int main(){
     admin s;
