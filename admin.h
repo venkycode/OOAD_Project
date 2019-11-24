@@ -379,11 +379,13 @@ public:
         return 0;
     }
 
-    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder)
+    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder, string paymentUsing)
     {
+        string temp = "Using ";
+        if(payment_mode == "CASH ON DELIVERY")temp="";
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
         add = to_string(orderID) + " | " + (isPaid ? "Paid" : "Refunded") + " | " + to_string(moneyTransferred) +\
-              " | " + payment_mode + " | " + timeOfOrder+ "\n";
+              " | " + payment_mode + " | " + temp + paymentUsing + " | " + timeOfOrder+ "\n";
         temporaryID = id; 
         sqlite3_exec(DB, query.c_str(), update, NULL, NULL);
         exit = sqlite3_exec(DB, temporaryID.c_str(), callback, NULL, &messaggeError);
@@ -522,7 +524,7 @@ public:
         return temporaryOrderID;
     }
 
-    void payment(vector <order> Cart, enum mode payment_mode, string contact){
+    void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
         auto current_clock = chrono::system_clock::now();
         time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
         string currentTime = ctime(&cur_time);
@@ -532,7 +534,7 @@ public:
             totalCost += i.Product.price + i.Product.deliveryCharge;
         }
         cout<<"Total Cost =  "<<totalCost<<endl;
-        string cardNumber, expiry_Date, Cvv;
+        string cardNumber, expiry_Date, Cvv,paymentUsing = "";
         switch (payment_mode)
         {
         case cashOnDelivery:
@@ -543,6 +545,7 @@ public:
             do{
                 cin>>cardNumber;
             }while(!isCorrectCardNumber(cardNumber));
+            paymentUsing = cardNumber;
             cout<<"Enter Expiry Date (mm/yy)"<<endl;
             do{
                 cin>>expiry_Date;
@@ -562,6 +565,7 @@ public:
                     cin>>contact;
                 }while(isContactCorrect(contact));
             }
+            paymentUsing = contact;
             tempMode = "PAYTM";
             break;
         case GooglePay:
@@ -573,17 +577,20 @@ public:
                     cin>>contact;
                 }while(isContactCorrect(contact));
             }
+            paymentUsing = contact;
             tempMode = "GOOGLE PAY";
             break;
         default:
             cerr<<"No such banking option"<<endl;
             break;
         }
+        int orderID1 =122;
+        addTransaction(id,1,totalCost,orderID1, tempMode,currentTime,paymentUsing);
+        
     }
 
 };
 
-    
 
 /*int main(){
     admin s;
