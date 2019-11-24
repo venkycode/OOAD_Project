@@ -1,18 +1,20 @@
 #include "User.h"
 #include "stringMatching.h"
 
+//isblacklisted to be updated in admin.h
+
 class customer:public User{
     public:
     static bool sortByRating(product product1, product product2){
-        return product1.rating > product2.rating ;
+        return (product1.rating > product2.rating) ;
     }
 
     static bool sortByIncreasingPrice(product product1, product product2){
-        return product1.price < product2.price ;
+        return (product1.price < product2.price) ;
     }
 
     static bool sortByDecreasingPrice(product product1, product product2){
-        return product1.price > product2.price ;
+        return (product1.price > product2.price) ;
     }
 
     void search(){
@@ -30,20 +32,31 @@ class customer:public User{
             cin>>input;
         }
         vector<product> matches;
+        bool isFullMatchPossible=0;
+        for(auto currentProduct: systemAdmin.global_inven_map){
+            if(toBeSearched==currentProduct.first) {
+                isFullMatchPossible=1;break;
+            }
+        }
         for(auto currentProduct:systemAdmin.global_inven_map){
-           bool doesMatch=isMatch(currentProduct.first,toBeSearched);
-           if(doesMatch){
+           bool toAdd=0;
+           if(isFullMatchPossible){
+               if(toBeSearched==currentProduct.first) toAdd=1;
+           } 
+           else toAdd=isMatch(currentProduct.first,toBeSearched);
+           if(toAdd){
                for(auto ids:currentProduct.second){
                    if(systemAdmin.productId_to_product[ids].count) matches.push_back(systemAdmin.productId_to_product[ids]);
                }
            }
         }
-        if(response=='n'||response=='N');
+        if(response!='y'&& response!='Y');
         else if(input==1)sort(matches.begin(),matches.end(),sortByRating);
         else if(input==2)sort(matches.begin(),matches.end(),sortByIncreasingPrice);
-        else sort(matches.begin(),matches.end(ortByDecreasingPrice);
+        else sort(matches.begin(),matches.end(),sortByDecreasingPrice);
         for(auto currentProduct:matches){
-            cout<< "Shopkeeper : " << ShopKeeperId_to_name[currentProduct.shopkeeper_id] << "\n" ;
+            cout << "Product name : " << string(currentProduct.product_name) << "\n" ;
+            cout<< "Shopkeeper : " << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n" ;
             cout << "Rating : " << currentProduct.rating << "\n" ;
             cout << "Quantity : " << currentProduct.count << "\n" ;
             cout << "Price : " << currentProduct.price << "\n" ;

@@ -1,6 +1,10 @@
-#include <bits/stdc++.h>
+
+#include"colormod.h"
 using namespace std;
- 
+
+fstream logStream("log.txt",ios::out|ios::app);
+
+
 enum typeOfUser
 {
     Customer,
@@ -30,7 +34,6 @@ typedef struct product
     int rating=0;                   //rating of the product
     char shopkeeper_id[10];
     int count,price;
- 
 } product;
  
 typedef struct profile{
@@ -44,10 +47,8 @@ typedef struct profile{
  
 typedef struct order
 {
-    enum mode paymentMode;
-    char customerID[10], ShopKeeperID[10];
+    product Product;
     int orderID;
-    bool isPlaced;
     timeStamp remainingTime;
 } order;
  

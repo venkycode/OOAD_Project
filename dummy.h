@@ -1,7 +1,7 @@
 #include <sqlite3.h>
 #include <chrono>
 #include <ctime>
-//#include "header.h"
+#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
 #include "forgotPassword.h"
@@ -247,27 +247,23 @@ public:
     {
         string query = "SELECT ID FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_ID, NULL, NULL);
-        if (rc != SQLITE_OK || temporaryID == "#" ||isBlackListed(username))
+        if (rc != SQLITE_OK || temporaryID == "#")
         {
-            //cerr << "Error SELECT" << endl;
-            printHeader();
-            cout <<fgred<< "\t\t\t\t\t\t\t\t\t\tINCORRECT Username or Password!!!!" << endl;
+            cerr << "Error SELECT" << endl;
+            cout << "INCORRECT Username or Password" << endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
         else
         {
-            logStream << "Operation OK!" << endl;
+            cout << "Operation OK!" << endl;
         }
         temporaryProfile.id = temporaryID;
         query = "SELECT * FROM PERSON WHERE ID = \'" + temporaryID + "\';";
         sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         if (temporaryProfile.password != password)
         {
-            delayBy(0);
-            printHeader();
-           cout <<fgred<< "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" << endl;
-           cout<<endl;
+            cout << "INCORRECT Username or Password" << endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
@@ -311,21 +307,21 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            logStream << "Error DELETE" << endl;
+            cerr << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            logStream << "Record deleted Successfully!" << endl;
+            cout << "Record deleted Successfully!" << endl;
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string sql1("INSERT INTO PERSON VALUES(" + temp1 + ");");
         exit = sqlite3_exec(DB, sql1.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            logStream << "Error Insert" << endl;
+            cerr << "Error Insert" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            logStream << "Record inserted Successfully!" << endl;
+            cout << "Record inserted Successfully!" << endl;
     }
 
     void editProfile(string id)
@@ -575,7 +571,6 @@ public:
         }
         cout<<"Total Cost =  "<<totalCost<<endl;
         string cardNumber, expiry_Date, Cvv;
-        char choice;
         switch (payment_mode)
         {
         case cashOnDelivery:
@@ -598,7 +593,7 @@ public:
             break;
         case Paytm:
             cout<< "Do you wish to use your current number(Y/n): "<<contact<<endl;
-            
+            char choice;
             cin>>choice;
             if(!(choice == 'Y' || choice == 'y')){
                 do{
@@ -609,6 +604,7 @@ public:
             break;
         case GooglePay:
             cout<< "Do you wish to use your current number(Y/n): "<<contact<<endl;
+            char choice;
             cin>>choice;
             if(!(choice == 'Y' || choice == 'y')){
                 do{
@@ -621,21 +617,6 @@ public:
             cerr<<"No such banking option"<<endl;
             break;
         }
-    }
-
-    void setSystemState(int cusCnt, int shpCnt , int delCnt,int prodCnt,int ordCnt )
-    {
-        remove("systemState");
-        fstream file;
-        file.open("systemState",ios::out);
-        systemState madeUpState;
-        madeUpState.CustomerCount=cusCnt;
-        madeUpState.shopKeeperCount=shpCnt;
-        madeUpState.deliveryPersonCount=delCnt;
-        madeUpState.orderCount=ordCnt;
-        madeUpState.productCount=prodCnt;
-        file.write((char*)&madeUpState,sizeof(systemState));
-        file.close();
     }
 
 };

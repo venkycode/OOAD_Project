@@ -1,7 +1,8 @@
 //#include "header.h"
-#include "User.h"
-#include "colormod.h"
-#include <pthread.h>
+//#include "User.h"
+//#include "colormod.h"
+//#include <pthread.h>
+#include "Customer.h"
 
 /*int main(){
     User temp ;
@@ -27,36 +28,43 @@
         
     }
 }*/
-
-const string clearscreen = "\033[2J";
-const string cursorAdjust = "\033[1;1H";
-
+User* runTimeUser;
+void mainPage()
+    {
+        int choice;
+        runTimeUser=new User;
+        printHeader();
+        cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "LOGIN[" << fgred << "1" << fggreen << "]" << endl;
+        cout << endl;
+        cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "SIGN UP[" << fgred << "2" << fggreen << "]" << endl;
+        cout << endl;
+        cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
+        cin >> choice;
+        if (choice == 1)
+            runTimeUser->login();
+        else if (choice == 2)
+            runTimeUser-> signUp();
+        else
+        {
+            cout << printtabs(9) << fgred << "Invalid Choice...!!" << endl;
+            delayBy(1);
+            cout<<endl;
+            cout << printtabs(9) << fggreen << "Redirecting to Main Page..." << endl;
+            delayBy(3);
+            mainPage();
+        }
+}
 int main()
 {
 
+    logStream << ">>> !!! START OF LOG !!! <<<<<\n";
+    systemAdmin.setSystemState(0,1,0,0,0);
     systemAdmin.loadDatabase();
-    Color::Modifier bgred(Color::BG_RED);
-    Color::Modifier fgred(Color::FG_RED);
-    Color::Modifier fgblue(Color::FG_BLUE);
-    Color::Modifier fggreen(Color::FG_GREEN);
-    Color::Modifier bgblue(Color::BG_BLUE);
-    Color::Modifier bgdef(Color::BG_DEFAULT);
     cout << clearscreen;
     cout << cursorAdjust;
-    int choice;
-    cout << "\t\t\t\t\t\t\t\t\t" << bgblue << fgred << "ONLINE DELIVERY SYSTEM " << bgdef << endl;
-    cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "LOGIN[" << fgred << "1" << fggreen << "]" << endl;
-    cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "SIGN UP[" << fgred << "2" << fggreen << "]" << endl;
-    cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
-    cin >> choice;
-    if (choice == 1)
-    {
-        cout << clearscreen;
-        cout << cursorAdjust;
-        cout << "\t\t\t\t\t\t\t\t\t" << bgblue << fgred << "ONLINE DELIVERY SYSTEM " << bgdef << endl;
-        cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
-        string username;
-        string password;
-        cin >> username;
-    }
+    mainPage();
+    logStream << ">>> !!! END OF LOG !!! <<<<<\n";
+    systemAdmin.dumpData();
+    logStream.close();
+    
 }
