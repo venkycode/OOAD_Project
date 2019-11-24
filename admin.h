@@ -68,13 +68,13 @@ public:
             std::cout << "Created Database Successfully!" << std::endl;
         string sql = "CREATE TABLE PERSON("
                      "ID TEXT PRIMARY KEY     NOT NULL, "
-                     "NAME           TEXT    NOT NULL, "
-                     "SURNAME          TEXT     NOT NULL, "
-                     "EMAIL_ID      TEXT     NOT NULL, "
-                     "ADDRESS        CHAR(50), "
+                     "NAME    TEXT    NOT NULL, "
+                     "SURNAME   TEXT     NOT NULL, "
+                     "EMAIL_ID   TEXT     NOT NULL, "
+                     "ADDRESS    CHAR(50), "
                      "CONTACT_NO   TEXT  NOT NULL,"
-                     "USERNAME      TEXT   NOT NULL,"
-                     "PASSWORD     TEXT     NOT NULL);";
+                     "USERNAME    TEXT   NOT NULL,"
+                     "PASSWORD   TEXT   NOT NULL);";
         string sql2 = "CREATE TABLE USER_TRANSACTION("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "TRANSACTIONS  TEXT  NOT NULL );";
@@ -85,8 +85,10 @@ public:
                       "USERNAME TEXT PRIMARY KEY     NOT NULL );";
         string sql5 = "CREATE TABLE ASSIGNED_ORDER("
                             "ID TEXT PRIMARY KEY     NOT NULL, "
-                            "ORDER_ID  INT  NOT NULL );";     
-
+                            "ORDER_ID  TEXT  NOT NULL );"; 
+        string sql5 = "CREATE TABLE WISHLIST("
+                            "ID TEXT PRIMARY KEY     NOT NULL, "
+                            "ITEMS  TEXT  NOT NULL );"; 
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
@@ -487,7 +489,7 @@ public:
     }
 
     void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\'," + to_string(orderID);
+        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';
         string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
@@ -518,10 +520,71 @@ public:
     }
  
     int AssignedOrderId(string id){
-        temporaryOrderID = -1;
+        temporaryID = "-1";
         string query = "SELECT * FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
         sqlite3_exec(DB, query.c_str(), check_avail, NULL, NULL);
-        return temporaryOrderID;
+        return stoi(temporaryID);
+    }
+    
+    static int get_wishList(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[1];
+        return 0;
+    }
+
+    void deleteWishList(string id){
+        string sql = "DELETE FROM WISHLIST WHERE ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+
+    void insertWishList(string id, string wishlist){
+        string temp = '\'' + id + "\',\'" + wishlist +'\'';
+        string sql("INSERT INTO WISHLIST VALUES(" + temp + ");");;
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert    " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+
+    void addToWishList(string id, string name){
+        temporaryID = "";
+        string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
+        if(temporaryID.size()!=0)deleteWishList(id);
+        temporaryID += "#"+name;
+        insertWishList(id,temporaryID);
+    }
+
+    set<string> Wishlist(string id){
+        temporaryID = "";
+        string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
+        string tmp = "";
+        set<string> wishlist;
+        for(auto i: temporaryID){
+            if(i!='#')tmp+=i;
+            else wishlist.insert(tmp),tmp = "";
+        }
+        if(tmp.size()!=0)wishlist.insert(tmp);
+        return wishlist;
+    }
+
+    void changeWishList(string id, set<string> new_wishlist){
+        deleteWishList(id);
+        for(auto i: new_wishlist){
+            addToWishList(id, i);
+        }
     }
 
     void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
