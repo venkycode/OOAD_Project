@@ -64,7 +64,4 @@ class customer:public User{
             cout << "\n" ;
         }
     }
-    
-    
-    
 };

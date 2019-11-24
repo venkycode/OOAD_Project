@@ -1,7 +1,7 @@
 #include <sqlite3.h>
 #include <chrono>
 #include <ctime>
-#include "header.h"
+//#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
 #include "forgotPassword.h"
@@ -62,14 +62,7 @@ public:
         temporaryProfile.password = argv[7];
         return 0;
     }
-
-    static int fillShopKeeperMap(void *data, int argc, char **argv, char **azColName)
-    {
-        ShopKeeperId_to_name[argv[0]]=argv[1];
-        return 0;
-    }
-
-    void createDataBase()
+        void createDataBase()
     {
         int exit = 0;
         shopKeeperCount = deliveryPersonCount = CustomerCount = 0;
@@ -83,13 +76,13 @@ public:
             std::cout << "Created Database Successfully!" << std::endl;
         string sql = "CREATE TABLE PERSON("
                      "ID TEXT PRIMARY KEY     NOT NULL, "
-                     "NAME           TEXT    NOT NULL, "
-                     "SURNAME          TEXT     NOT NULL, "
-                     "EMAIL_ID      TEXT     NOT NULL, "
-                     "ADDRESS        CHAR(50), "
+                     "NAME    TEXT    NOT NULL, "
+                     "SURNAME   TEXT     NOT NULL, "
+                     "EMAIL_ID   TEXT     NOT NULL, "
+                     "ADDRESS    CHAR(50), "
                      "CONTACT_NO   TEXT  NOT NULL,"
-                     "USERNAME      TEXT   NOT NULL,"
-                     "PASSWORD     TEXT     NOT NULL);";
+                     "USERNAME    TEXT   NOT NULL,"
+                     "PASSWORD   TEXT   NOT NULL);";
         string sql2 = "CREATE TABLE USER_TRANSACTION("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "TRANSACTIONS  TEXT  NOT NULL );";
@@ -100,15 +93,15 @@ public:
                       "USERNAME TEXT PRIMARY KEY     NOT NULL );";
         string sql5 = "CREATE TABLE ASSIGNED_ORDER("
                             "ID TEXT PRIMARY KEY     NOT NULL, "
-                            "ORDER_ID  INT  NOT NULL );";     
-
- 
+                            "ORDER_ID  TEXT  NOT NULL );"; 
+        string sql5 = "CREATE TABLE WISHLIST("
+                            "ID TEXT PRIMARY KEY     NOT NULL, "
+                            "ITEMS  TEXT  NOT NULL );"; 
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql4.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql5.c_str(), NULL, 0, &messaggeError);
-
         if (exit == SQLITE_OK)
         {
             cerr << "Error Create Table" << endl;
@@ -137,18 +130,6 @@ public:
     {
         createDataBase();
 
-        string t="#";
-        string query = "SELECT * FROM PERSON WHERE SURNAME = \'" + t + "\';";
-        int rc = sqlite3_exec(DB, query.c_str(), fillShopKeeperMap, NULL, NULL);
-        if (rc != SQLITE_OK)
-        {
-            cerr << "Error SELECT" << endl;
-        }
-        else
-        {
-            cout << "Operation OK!" << endl;
-        }    
-        
         global_inve_file.open("global_inventory_db", ios::in);
 
         if (!global_inve_file.is_open())
@@ -247,23 +228,27 @@ public:
     {
         string query = "SELECT ID FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_ID, NULL, NULL);
-        if (rc != SQLITE_OK || temporaryID == "#")
+        if (rc != SQLITE_OK || temporaryID == "#" ||isBlackListed(username))
         {
-            cerr << "Error SELECT" << endl;
-            cout << "INCORRECT Username or Password" << endl;
+            //cerr << "Error SELECT" << endl;
+            printHeader();
+            cout <<fgred<< "\t\t\t\t\t\t\t\t\t\tINCORRECT Username or Password!!!!" << endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
         else
         {
-            cout << "Operation OK!" << endl;
+            logStream << "Operation OK!" << endl;
         }
         temporaryProfile.id = temporaryID;
         query = "SELECT * FROM PERSON WHERE ID = \'" + temporaryID + "\';";
         sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         if (temporaryProfile.password != password)
         {
-            cout << "INCORRECT Username or Password" << endl;
+            delayBy(0);
+            printHeader();
+           cout <<fgred<< "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" << endl;
+           cout<<endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
@@ -307,21 +292,21 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully!" << endl;
+            logStream << "Record deleted Successfully!" << endl;
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string sql1("INSERT INTO PERSON VALUES(" + temp1 + ");");
         exit = sqlite3_exec(DB, sql1.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert" << endl;
+            logStream << "Error Insert" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     void editProfile(string id)
@@ -411,11 +396,13 @@ public:
         return 0;
     }
 
-    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder)
+    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder, string paymentUsing)
     {
+        string temp = "Using ";
+        if(payment_mode == "CASH ON DELIVERY")temp="";
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
         add = to_string(orderID) + " | " + (isPaid ? "Paid" : "Refunded") + " | " + to_string(moneyTransferred) +\
-              " | " + payment_mode + " | " + timeOfOrder+ "\n";
+              " | " + payment_mode + " | " + temp + paymentUsing + " | " + timeOfOrder+ "\n";
         temporaryID = id; 
         sqlite3_exec(DB, query.c_str(), update, NULL, NULL);
         exit = sqlite3_exec(DB, temporaryID.c_str(), callback, NULL, &messaggeError);
@@ -429,6 +416,7 @@ public:
             fprintf(stdout, "Operation done successfully\n");
         }
     }
+
 
     void showTransaction(string id)
     {
@@ -444,7 +432,6 @@ public:
 
     static int check_username(void *data, int argc, char **argv, char **azColName)
     {
-        //cout<<"k\n";
         temporaryID = argv[0];
         return 0;
     }
@@ -453,7 +440,6 @@ public:
         temporaryID = "#";
         string query = "SELECT * FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         sqlite3_exec(DB, query.c_str(), check_username, NULL, NULL); // only checks if username is taken or not i.e. returns 0 only if it is taken
-        //cout<<temporaryID<<endl;
         if (temporaryID != "#") return 1;
         else return 0;
     }
@@ -523,8 +509,7 @@ public:
     }
 
     void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\'," + to_string(orderID);
-        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
+        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -554,13 +539,74 @@ public:
     }
  
     int AssignedOrderId(string id){
-        temporaryOrderID = -1;
+        temporaryID = "-1";
         string query = "SELECT * FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
         sqlite3_exec(DB, query.c_str(), check_avail, NULL, NULL);
-        return temporaryOrderID;
+        return stoi(temporaryID);
+    }
+    
+    static int get_wishList(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[1];
+        return 0;
     }
 
-    void payment(vector <order> Cart, enum mode payment_mode, string contact){
+    void deleteWishList(string id){
+        string sql = "DELETE FROM WISHLIST WHERE ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+
+    void insertWishList(string id, string wishlist){
+        string temp = '\'' + id + "\',\'" + wishlist +'\'';
+        string sql("INSERT INTO WISHLIST VALUES(" + temp + ");");;
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert    " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+
+    void addToWishList(string id, string name){
+        temporaryID = "";
+        string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
+        if(temporaryID.size()!=0)deleteWishList(id);
+        temporaryID += "#"+name;
+        insertWishList(id,temporaryID);
+    }
+
+    set<string> Wishlist(string id){
+        temporaryID = "";
+        string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
+        sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
+        string tmp = "";
+        set<string> wishlist;
+        for(auto i: temporaryID){
+            if(i!='#')tmp+=i;
+            else wishlist.insert(tmp),tmp = "";
+        }
+        if(tmp.size()!=0)wishlist.insert(tmp);
+        return wishlist;
+    }
+
+    void changeWishList(string id, set<string> new_wishlist){
+        deleteWishList(id);
+        for(auto i: new_wishlist){
+            addToWishList(id, i);
+        }
+    }
+
+        void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
         auto current_clock = chrono::system_clock::now();
         time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
         string currentTime = ctime(&cur_time);
@@ -570,7 +616,7 @@ public:
             totalCost += i.Product.price + i.Product.deliveryCharge;
         }
         cout<<"Total Cost =  "<<totalCost<<endl;
-        string cardNumber, expiry_Date, Cvv;
+        string cardNumber, expiry_Date, Cvv,paymentUsing = "";
         switch (payment_mode)
         {
         case cashOnDelivery:
@@ -581,6 +627,7 @@ public:
             do{
                 cin>>cardNumber;
             }while(!isCorrectCardNumber(cardNumber));
+            paymentUsing = cardNumber;
             cout<<"Enter Expiry Date (mm/yy)"<<endl;
             do{
                 cin>>expiry_Date;
@@ -600,6 +647,7 @@ public:
                     cin>>contact;
                 }while(isContactCorrect(contact));
             }
+            paymentUsing = contact;
             tempMode = "PAYTM";
             break;
         case GooglePay:
@@ -611,47 +659,29 @@ public:
                     cin>>contact;
                 }while(isContactCorrect(contact));
             }
+            paymentUsing = contact;
             tempMode = "GOOGLE PAY";
             break;
         default:
             cerr<<"No such banking option"<<endl;
             break;
         }
+        int orderID1 =122;
+        addTransaction(id,1,totalCost,orderID1, tempMode,currentTime,paymentUsing);
+        }
+    void setSystemState(int cusCnt, int shpCnt , int delCnt,int prodCnt,int ordCnt )
+    {
+        remove("systemState");
+        fstream file;
+        file.open("systemState",ios::out);
+        systemState madeUpState;
+        madeUpState.CustomerCount=cusCnt;
+        madeUpState.shopKeeperCount=shpCnt;
+        madeUpState.deliveryPersonCount=delCnt;
+        madeUpState.orderCount=ordCnt;
+        madeUpState.productCount=prodCnt;
+        file.write((char*)&madeUpState,sizeof(systemState));
+        file.close();
     }
 
 };
-
-/*int main()
-{
-    admin s;
-    s.loadDatabase();
-    string temp = "fsdfse";
-    enum typeOfUser t = Customer;
-    profile tanmay = {temp, temp, temp, temp, temp, temp, temp, temp, t};
-    cout << s.signUp(tanmay);
-    //s.Insert(temp,temp,temp,temp,temp,temp,temp,t);
-    //profile temp1 = s.authenticate(temp,temp);//cout<<"sefe"<<endl;
-    //cout<<endl<<temp1.id<<' '<<temp1.name<<' '<<temp1.surname<<' '<<temp1.email<<' '<<temp1.address<<' '<<temp1.contact<<' '<<temp1.username<<' '<<temp1.password<<endl;
-    //s.addTransaction(temp1.id,1,1000000,121);
-    //s.showTransaction(temp1.id);
-    //s.deleteID(temp1.id,temp1.username);
-    s.addToBlacklist(temp);
-    product p1,p2;
-    p1.count=4;
-    p1.deliveryCharge=50;
-    p1.product_id=50;
-    strcpy(p1.product_name,"lrx");
-    s.insertProduct(p1);
-    p2.count=5;
-    p2.deliveryCharge=50;
-    p2.product_id=40;
-    s.insertProduct(p2);
-    strcpy(p2.product_name,"ven");
-    for(auto i: s.productId_to_product)
-    {
-        cout<<"->>>>> " <<i.first<<" "<<i.second.product_name<<endl;
-    }
-    s.dumpData();
-    cout << s.isBlackListed("Da") << endl;
-    return 0;
-}*/
