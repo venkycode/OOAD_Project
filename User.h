@@ -47,12 +47,12 @@ class User
         }while(temp != userProfile.password);
     }
 
-    void login()
+    void login(string username,string password)
     {
-        cout << "Enter username" << "\n";
-        getline(cin,username);
-        cout << "Enter password" << "\n";
-        getline(cin ,password);
+        //cout << "Enter username" << "\n";
+        //getline(cin,username);
+        //cout << "Enter password" << "\n";
+        //getline(cin ,password);
         profile userProfile = systemAdmin.authenticate(username, password);
         if (userProfile.name == "#")
         {

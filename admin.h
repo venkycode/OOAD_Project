@@ -1,6 +1,13 @@
 #include <sqlite3.h>
 #include "header.h"
 #include "checks.h"
+typedef struct systemState
+{
+    int shopKeeperCount, deliveryPersonCount, CustomerCount;
+    int orderCount, productCount;
+
+} systemState;
+systemState state;
 
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
@@ -124,7 +131,10 @@ public:
              global_inve_file.close();
             global_inve_file.open("global_inventory_db", ios::in);
         }
-
+        ifstream sysfile;
+        sysfile.open("systemState",ios::in);
+        sysfile.read((char*)&state,sizeof(systemState));
+        sysfile.close();
         global_inve_file.seekg(0, ios::end);
         int fileSize = global_inve_file.tellg();
         cout<<fileSize<<endl;
@@ -460,7 +470,12 @@ public:
         remove("global_inventory_db");
         global_inve_file.open("global_inventory_db",ios::out);
         global_inve_file.write((char*)global_inventory_array,productId_to_product.size()*sizeof(product));
-        global_inve_file.close();   
+        global_inve_file.close(); 
+        remove("systemState");
+        fstream outSysState;
+        outSysState.open("systemState",ios::out);
+        outSysState.write((char*)&state,sizeof(systemState));
+        outSysState.close();
     }
     void insertProduct(product productToInsert)
     {

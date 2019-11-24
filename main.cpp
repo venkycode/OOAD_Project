@@ -1,5 +1,7 @@
 //#include "header.h"
 #include "User.h"
+#include "colormod.h"
+#include <pthread.h>
 
 /*int main(){
     User temp ;
@@ -26,10 +28,35 @@
     }
 }*/
 
-int main(){
+const string clearscreen = "\033[2J";
+const string cursorAdjust = "\033[1;1H";
 
-    User u;
+int main()
+{
+
     systemAdmin.loadDatabase();
-    u.signUp();
-    for(auto y:ShopKeeperId_to_name)cout<<y.first<<" "<<y.second<<endl;
+    Color::Modifier bgred(Color::BG_RED);
+    Color::Modifier fgred(Color::FG_RED);
+    Color::Modifier fgblue(Color::FG_BLUE);
+    Color::Modifier fggreen(Color::FG_GREEN);
+    Color::Modifier bgblue(Color::BG_BLUE);
+    Color::Modifier bgdef(Color::BG_DEFAULT);
+    cout << clearscreen;
+    cout << cursorAdjust;
+    int choice;
+    cout << "\t\t\t\t\t\t\t\t\t" << bgblue << fgred << "ONLINE DELIVERY SYSTEM " << bgdef << endl;
+    cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "LOGIN[" << fgred << "1" << fggreen << "]" << endl;
+    cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "SIGN UP[" << fgred << "2" << fggreen << "]" << endl;
+    cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
+    cin >> choice;
+    if (choice == 1)
+    {
+        cout << clearscreen;
+        cout << cursorAdjust;
+        cout << "\t\t\t\t\t\t\t\t\t" << bgblue << fgred << "ONLINE DELIVERY SYSTEM " << bgdef << endl;
+        cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
+        string username;
+        string password;
+        cin >> username;
+    }
 }
