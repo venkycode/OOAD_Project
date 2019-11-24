@@ -33,7 +33,12 @@ bool isPasswordCorrect(string password)
 }
 
 bool isContactCorrect(string contact){
-    return contact.size()==10;
+    int len = contact.size();
+    if(len!=10)return 0;
+    for(int i=0;i<10;++i){
+        if(contact[i]<'0' || contact[i]>'9')return 0;
+    }
+    return 1;
 }
 
 bool isEmailCorrect(string email){
@@ -51,4 +56,30 @@ bool isEmailCorrect(string email){
         }
     }
     return check;
+}
+
+bool isCorrectCardNumber(string cardNumber){
+    int len = cardNumber.size();
+    if(len!=20)return 0;
+    int pos = 4;
+    bool fl = 1;
+    for(int i=0;i<20;++i){
+        if(i==pos && cardNumber[pos]!='-')fl=0;
+        else if(pos==i)pos+=5;
+        else if(!(cardNumber[i]>='0'&&cardNumber[i]<='9'))fl=0;
+    }
+    return fl;
+}
+
+bool isCorrectDate(string date){
+    int len = date.size();
+    if(len!=5 || date[2]!='/' || date[0]<'0' || date[0]>'1' || date[1]<'0' || date[1]>'9' ||date[3]!='2' || \
+    date[4]<'0'||date[4]>'9')return 0;
+}
+
+bool isCorrectCvv(string Cvv){
+    int len = Cvv.size();
+    if(len!=3)return 0;
+    for(int i=0;i<3;++i)if(Cvv[i]<'0'||Cvv[i]>'9')return 0;
+    return 1;
 }

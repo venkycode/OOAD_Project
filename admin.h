@@ -1,4 +1,6 @@
 #include <sqlite3.h>
+#include <chrono>
+#include <ctime>
 #include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
@@ -8,6 +10,7 @@ string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
 string temporaryPassword;
 string add;
+int temporaryOrderID; //used in assigning the order to the delivery person
 
 class admin
 {
@@ -376,11 +379,12 @@ public:
         return 0;
     }
 
-    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID)
+    void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder)
     {
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
-        add = to_string(orderID) + " | " + (isPaid ? "Paid" : "Refunded") + " | " + to_string(moneyTransferred) + "\n";
-        temporaryID = id;
+        add = to_string(orderID) + " | " + (isPaid ? "Paid" : "Refunded") + " | " + to_string(moneyTransferred) +\
+              " | " + payment_mode + " | " + timeOfOrder+ "\n";
+        temporaryID = id; 
         sqlite3_exec(DB, query.c_str(), update, NULL, NULL);
         exit = sqlite3_exec(DB, temporaryID.c_str(), callback, NULL, &messaggeError);
         if (exit != SQLITE_OK)
@@ -507,15 +511,74 @@ public:
  
     static int check_avail(void *data, int argc, char **argv, char **azColName)
     {
-        temporaryID = argv[0];
+        temporaryID = argv[1];
         return 0;
     }
  
-    bool isAvailable(string id){
-        temporaryID = "#";
+    int AssignedOrderId(string id){
+        temporaryOrderID = -1;
         string query = "SELECT * FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
         sqlite3_exec(DB, query.c_str(), check_avail, NULL, NULL);
-        return temporaryID == "#";
+        return temporaryOrderID;
+    }
+
+    void payment(vector <order> Cart, enum mode payment_mode, string contact){
+        auto current_clock = chrono::system_clock::now();
+        time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
+        string currentTime = ctime(&cur_time);
+        string tempMode = "";
+        int totalCost = 0;
+        for(auto i: Cart){
+            totalCost += i.Product.price + i.Product.deliveryCharge;
+        }
+        cout<<"Total Cost =  "<<totalCost<<endl;
+        string cardNumber, expiry_Date, Cvv;
+        switch (payment_mode)
+        {
+        case cashOnDelivery:
+            tempMode = "CASH ON DELIVERY";
+            break;
+        case onlineBanking:
+            cout<<"Enter card number (****-****-****-****)"<<endl;
+            do{
+                cin>>cardNumber;
+            }while(!isCorrectCardNumber(cardNumber));
+            cout<<"Enter Expiry Date (mm/yy)"<<endl;
+            do{
+                cin>>expiry_Date;
+            }while(!isCorrectDate(expiry_Date));
+            cout<<"Enter Cvv (***)"<<endl;
+            do{
+                cin>>Cvv;
+            }while(isCorrectCvv(Cvv));
+            tempMode = "ONLINE BANKING";
+            break;
+        case Paytm:
+            cout<< "Do you wish to use your current number(Y/n): "<<contact<<endl;
+            char choice;
+            cin>>choice;
+            if(!(choice == 'Y' || choice == 'y')){
+                do{
+                    cin>>contact;
+                }while(isContactCorrect(contact));
+            }
+            tempMode = "PAYTM";
+            break;
+        case GooglePay:
+            cout<< "Do you wish to use your current number(Y/n): "<<contact<<endl;
+            char choice;
+            cin>>choice;
+            if(!(choice == 'Y' || choice == 'y')){
+                do{
+                    cin>>contact;
+                }while(isContactCorrect(contact));
+            }
+            tempMode = "GOOGLE PAY";
+            break;
+        default:
+            cerr<<"No such banking option"<<endl;
+            break;
+        }
     }
 
 };
