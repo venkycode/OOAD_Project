@@ -32,12 +32,12 @@ bool isPasswordCorrect(string password)
     return (isSpecialCharacter & isNumber) & (isSmallLetter & isCapitalLetter);
 }
 
-bool isContactCorrect(string contact, int* tried=NULL)
+bool isContactCorrect(string contact, int *tried = NULL)
 {
-    int dummyVar=0;
-    if(tried==NULL)
+    int dummyVar = 0;
+    if (tried == NULL)
     {
-        tried=&dummyVar;
+        tried = &dummyVar;
     }
     int len = contact.size();
     if (len != 10)
@@ -68,15 +68,20 @@ bool isContactCorrect(string contact, int* tried=NULL)
             cout << printtabs(8);
             cout << fgred << "Invalid contact number .." << endl;
             //cout<<"here we are"<<endl;
-            *tried=1;
+            *tried = 1;
             return 0;
         }
     }
     return 1;
 }
 
-bool isEmailCorrect(string email)
+bool isEmailCorrect(string email, int *tried = NULL)
 {
+    int dummyVar = 0;
+    if (tried == NULL)
+    {
+        tried = &dummyVar;
+    }
     int n = email.size();
     int pos = -1;
     string collegeID = "iitj.ac.in";
@@ -89,14 +94,37 @@ bool isEmailCorrect(string email)
         }
     }
     if (pos == -1 || n - pos != collegeID.size())
+    {
+        cout << cursorUp;
+        cout << deleteLine;
+        if (*tried == 1)
+        {
+            cout << cursorUp;
+            cout << deleteLine;
+        }
+        cout << printtabs(9);
+        cout << fgred << "Invalid Email Id.. Only use IITJ email id" << endl;
+        *tried = 1;
+
         return 0;
+    }
     bool check = 1;
     for (int i = pos; i < n; ++i)
     {
         if (email[i] != collegeID[i - pos])
         {
-            check = 0;
-            break;
+            cout << cursorUp;
+            cout << deleteLine;
+            if (*tried == 1)
+            {
+                cout << cursorUp;
+                cout << deleteLine;
+            }
+            cout << printtabs(9);
+            cout << fgred << "Invalid Email Id.. Only use IITJ email id" << endl;
+            *tried = 1;
+
+            return 0;
         }
     }
     return check;

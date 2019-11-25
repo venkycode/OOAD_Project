@@ -8,6 +8,8 @@ public:
     string name, surname, emailID, contact, username, password, userID, address;
     bool isLoggedIn;
     enum typeOfUser userType;
+    profile finalProfile;
+
 
     void assignUserProfile(profile &userProfile)
     {
@@ -21,6 +23,7 @@ public:
         userType = userProfile.type;
         isLoggedIn = 1;
         userID = userProfile.id;
+        finalProfile=userProfile;
     }
 
     void inputPassword(profile &userProfile)
@@ -157,6 +160,7 @@ public:
             printOption(9, 2, "Contact Number ", 0);
             cout << fgblue << ">>";
             cin >> userProfile.contact;
+            delayBy(0.4);
 
         } while (!isContactCorrect(userProfile.contact,&triedYet));
 
@@ -164,43 +168,80 @@ public:
         // cout << "Enter your contact number"
         //      << "\n";
         // cin >> userProfile.contact;
-        while (!isContactCorrect(userProfile.contact))
+        // while (!isContactCorrect(userProfile.contact))
+        // {
+        //     cout << "Your contact number is invalid. Try again"
+        //          << "\n";
+        //     cin >> userProfile.contact;
+        // }
+        // cout << "Enter your email-id"
+        //      << "\n";
+        // getline(cin, userProfile.email);
+        // getline(cin, userProfile.email);
+        // while (!isEmailCorrect(userProfile.email))
+        // {
+        //     cout << "Use iitj email id"
+        //          << "\n";
+        //     getline(cin, userProfile.email);
+        // }
+        triedYet=0;
+        do
         {
-            cout << "Your contact number is invalid. Try again"
-                 << "\n";
-            cin >> userProfile.contact;
-        }
-        cout << "Enter your email-id"
-             << "\n";
-        getline(cin, userProfile.email);
-        getline(cin, userProfile.email);
-        while (!isEmailCorrect(userProfile.email))
-        {
-            cout << "Use iitj email id"
-                 << "\n";
-            getline(cin, userProfile.email);
-        }
-        cout << "Your username should consist of nothing other than small letters and capital letters and numbers and underscores"
-             << "\n";
-        cout << "Enter your username"
-             << "\n";
-        getline(cin, userProfile.username);
+            //cout<<endl;
+            printOption(9, 2, "e-MAIL ID ", 0);
+            cout << fgblue << ">>";
+            cin >> userProfile.email;
+            delayBy(0.4);
+
+        } while (!isEmailCorrect(userProfile.email,&triedYet));
+
+        cout<<printtabs(8);
+        cout << fgred<<"Your username should consist of nothing other than small letters \n"<<
+        printtabs(8)<<" and capital letters and numbers \n"
+        <<printtabs(8)<<" and underscores"
+             << endl;
+        // cout << "Enter your username"
+        //      << "\n";
+        printOption(9,0,"Username");
+        cout<<fgblue<<">>";
+        //getline(cin, userProfile.username);
+        cin>>userProfile.username;
+        triedYet=0;
         while (!isUsernameCorrect(userProfile.username) || systemAdmin.isUsernameTaken(userProfile.username))
         {
             if (!isUsernameCorrect(userProfile.username))
-                cout << "Your username does not satisfy our conditions"
-                     << "\n";
+            {
+                deleteUnwanted(triedYet,3);
+                cout<<printtabs(8);
+                cout << fgred<<"Your username does not satisfy our conditions ! ! !"
+                     << endl;
+            }
             else
-                cout << "This username is taken"
-                     << "\n";
-            cout << "Try again"
-                 << "\n";
-            getline(cin, userProfile.username);
+            {
+                deleteUnwanted(triedYet,3);
+                printtabs(8);
+                cout<<fgred;
+                cout << "This username is taken !!!"
+                     << endl;
+            }
+            cout<<fgred;
+            printtabs(8);
+            cout << "Try again!!!"
+                 << endl;
+            printOption(9,0,"Username");
+            cout<<fgblue<<">>";
+            cin>>userProfile.username;
+            delayBy(0.4);
+            triedYet=1;
+            //getline(cin, userProfile.username);
         }
-        cout << "Your password should consist of at least one small letter, one capital letter, one number and one special character"
-             << "\n";
-        cout << "Enter password"
-             << "\n";
+        cout<<fgblue<<printtabs(8);
+        cout << "Your password should consist of at least one small letter\n"+printtabs(8)+", one capital letter, one number and one special character"
+             << endl;
+        printOption(8,0,"Password ");
+        cout<<fgblue<<">> " ;
+        // cout << "Enter password"
+        //      << "\n";
         inputPassword(userProfile);
         cout << "Enter your address"
              << "\n";
@@ -229,4 +270,5 @@ public:
         else
             systemAdmin.forgotPassword(username);
     }
+
 };

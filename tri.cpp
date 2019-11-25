@@ -1,10 +1,15 @@
-#include<bits/stdc++.h>
-
+#include "Customer.h"
 using namespace std;
+
+User tmpUser;
 
 
 int main()
 {
-    std::cout << "\x1b]50;" << font_name << "\a" << std::flush;   
+    tmpUser.emailID="ssss@iitj.ac.in";
+    tmpUser.isLoggedIn=0;
+    customer* cust=dynamic_cast<customer*>(&tmpUser);
+    cout<<cust.emailID;
+    tmpUser->updateProfile();
     return 0;
 }
