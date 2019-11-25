@@ -19,6 +19,7 @@ profile temporaryProfile; // helps in editing profile
 string temporaryPassword;
 map<string,string> ShopKeeperId_to_name;
 string add;
+vector<int> tempOrderofCustomer;
 int temporaryOrderID; //used in assigning the order to the delivery person
 
 class admin
@@ -62,7 +63,7 @@ public:
         temporaryProfile.password = argv[7];
         return 0;
     }
-        void createDataBase()
+    void createDataBase()
     {
         int exit = 0;
         shopKeeperCount = deliveryPersonCount = CustomerCount = 0;
@@ -109,7 +110,7 @@ public:
         exit = sqlite3_exec(DB, sql5.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql6.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql7.c_str(), NULL, 0, &messaggeError);
-        exit = sqlite3_exec(DB, sql7.c_str(), NULL, 0, &messaggeError);
+        exit = sqlite3_exec(DB, sql8.c_str(), NULL, 0, &messaggeError);
         if (exit == SQLITE_OK)
         {
             cerr << "Error Create Table" << endl;
@@ -425,6 +426,38 @@ public:
         }
     }
 
+    static int get_transaction(void *data, int argc, char **argv, char **azColName)
+    {
+        int len = strlen(argv[0]);
+        bool fl = 1;
+        string temp="";
+        for(int i=0; i<len; ++i){
+            if(argv[0][i] == '\n'){
+                fl=1;
+                continue;
+            }
+            if(argv[0][i] == ' ' && fl){
+                fl=0;
+                tempOrderofCustomer.push_back(stoi(temp));
+            }
+            if(fl){
+                temp+=argv[0][i];
+            }
+        }
+        return 0;
+    }
+
+    vector<int> orderIdsofCustomer(string id){
+        string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
+        int exit = sqlite3_exec(DB, query.c_str(), get_transaction, NULL, NULL);
+        if (exit != SQLITE_OK)
+            cerr << "Error SELECT" << endl;
+        else
+        {
+            cout << "Operation OK!" << endl;
+        }
+        return tempOrderofCustomer;
+    }
 
     void showTransaction(string id)
     {
@@ -517,7 +550,8 @@ public:
     }
 
     void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
+        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';    
+        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -614,14 +648,36 @@ public:
         }
     }
 
-    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId){
+    static int get_Status(void *data, int argc, char **argv, char **azColName)
+    {
+        int len = strlen(argv[0]);
+        temporaryID = "";
+        for(int i=len-9;i<len-1;++i)temporaryID.push_back(argv[0][i]);
+        return 0;
+    }
+
+    string get_orderStatus(string id){
+        temporaryID = "#";
+        string query = "SELECT ORDER FROM ORDERS WHERE ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, query.c_str(), get_Status, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Operation   " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Operation done Successfully!" << endl;
+        return temporaryID;
+    }
+
+    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
         string tempOrder = customerId+": ";
         for(auto i: order){
             tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
         }
         tempOrder += "[" + payementMode +"] ";
         if(payementUsing.length())tempOrder += "["+payementUsing+"] ";
-        tempOrder += "["+curTime+"]";
+        tempOrder += "["+curTime+"] " + "Time Remaining: ["+ time_remaining+"]";
         string temp = '\'' + id + "\',\'" + tempOrder +'\'';
         string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
