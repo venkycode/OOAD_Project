@@ -1,14 +1,15 @@
 #include "User.h"
 
-class deliverPerson : User{
+class deliverPerson : public User{
     public:
     int assignedOrderId;// -1 if none is assigned
     deliverPerson(profile Profile){
-        login(Profile);
+        assignUserProfile(Profile);
         assignedOrderId = systemAdmin.AssignedOrderId(Profile.id);
     }
     deliverPerson(){
-        signUp();
+        //signUp();
+        login();  ///TEMPORARY CHANGE
         assignedOrderId = -1;
     }
 

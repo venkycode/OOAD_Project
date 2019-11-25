@@ -1,23 +1,23 @@
 #include <sqlite3.h>
 #include <chrono>
 #include <ctime>
+#include<bits/stdc++.h>
+#include<unistd.h>
 //#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
-#include "forgotPassword.h"
+//#include "forgotPassword.h"
 
 typedef struct systemState
 {
     int shopKeeperCount, deliveryPersonCount, CustomerCount;
-    int orderCount, productCount;
+    int OrderCount, productCount;
 
 } systemState;
 systemState state;
 
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
-string temporaryPassword;
-map<string,string> ShopKeeperId_to_name;
 string add;
 int temporaryOrderID; //used in assigning the order to the delivery person
 
@@ -228,7 +228,8 @@ public:
     profile authenticate(string username, string password)
     {
         string query = "SELECT ID FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
-        int rc = sqlite3_exec(DB, query.c_str(), get_ID, NULL, NULL);
+        int rc = sqlite3_exec(DB, query.c_str(), get_ID, NULL, NULL); 
+        string tmp = temporaryID;
         if (rc != SQLITE_OK || temporaryID == "#" ||isBlackListed(username))
         {
             //cerr << "Error SELECT" << endl;
@@ -241,15 +242,15 @@ public:
         {
             logStream << "Operation OK!" << endl;
         }
-        temporaryProfile.id = temporaryID;
-        query = "SELECT * FROM PERSON WHERE ID = \'" + temporaryID + "\';";
+        temporaryProfile.id = tmp;
+        query = "SELECT * FROM PERSON WHERE ID = \'" + tmp + "\';";
         sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         if (temporaryProfile.password != password)
         {
             delayBy(0);
             printHeader();
-           cout <<fgred<< "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" << endl;
-           cout<<endl;
+            cout <<fgred<< "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" <<endl;
+            cout<<endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
@@ -385,14 +386,10 @@ public:
         changeProfile(id, temporaryProfile.name, temporaryProfile.surname, temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
     }
     static int update(void *data, int argc, char **argv, char **azColName)
-    {
-        int n = strlen(argv[0]) + add.size();
-        int originalLength = strlen(argv[0]);
-        char *tmp = (argv[0] + originalLength);
-        tmp = (char *)malloc(sizeof(char) * n);
-        for (int i = originalLength; i < n; ++i)
-            argv[0][i] = add[i - originalLength];
-        string sql = "UPDATE USER_TRANSACTION set TRANSACTIONS = \'" + string(argv[0]) + "\' WHERE ID = \'" + temporaryID + '\'';
+    {   
+        if(argv[0]==NULL)argv[0]="";
+        string tmp = argv[0]+add;
+        string sql = "UPDATE USER_TRANSACTION set TRANSACTIONS = \'" + tmp + "\' WHERE ID = \'" + temporaryID + '\'';
         temporaryID = sql;
         return 0;
     }
@@ -496,7 +493,7 @@ public:
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id]=productToInsert;
     }
-    void forgotPassword(string username){
+    /*void forgotPassword(string username){
         string new_password = PasswordGenerator();
         string message = "Your new Password is : "+new_password;
         string query = "SELECT ID FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
@@ -507,7 +504,7 @@ public:
         sendPasswordToEmail(temporaryProfile.email,new_password);
         changeProfile(temporaryID, temporaryProfile.name,temporaryProfile.surname,\
         temporaryProfile.email,temporaryProfile.address,temporaryProfile.username,temporaryProfile.password,temporaryProfile.contact);
-    }
+    }*/
 
     void assign_order(string id, int orderID){
         string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
@@ -586,7 +583,7 @@ public:
         insertWishList(id,temporaryID);
     }
 
-    set<string> Wishlist(string id){
+    set<string> returnWishlist(string id){
         temporaryID = "";
         string query = "SELECT * FROM WISHLIST WHERE ID = \'" + id + "\';";
         sqlite3_exec(DB, query.c_str(), get_wishList, NULL, NULL);
@@ -607,14 +604,16 @@ public:
         }
     }
 
-        void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
+    void payment(vector <pair<product,int>> Cart, enum mode payment_mode, string contact, string id){
         auto current_clock = chrono::system_clock::now();
         time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
         string currentTime = ctime(&cur_time);
         string tempMode = "";
         int totalCost = 0;
-        for(auto i: Cart){
-            totalCost += i.Product.price + i.Product.deliveryCharge;
+        for(auto currentProduct: Cart){
+            productId_to_product[currentProduct.first.product_id].rating++;
+            productId_to_product[currentProduct.first.product_id].count -= currentProduct.second;
+            totalCost += (currentProduct.first.price + currentProduct.first.deliveryCharge)*currentProduct.second;
         }
         cout<<"Total Cost =  "<<totalCost<<endl;
         string cardNumber, expiry_Date, Cvv,paymentUsing = "";
@@ -668,10 +667,26 @@ public:
             cerr<<"No such banking option"<<endl;
             break;
         }
-        int orderID1 =122;
+        int orderID1 =state.OrderCount++;  cout<<id<<" "<<orderID1<<" "<<tempMode<<" "<<paymentUsing<<endl;
         addTransaction(id,1,totalCost,orderID1, tempMode,currentTime,paymentUsing);
-        }
-    void setSystemState(int cusCnt, int shpCnt , int delCnt,int prodCnt,int ordCnt )
+    }
+
+    void addToInventory(product productToAdd){
+        personal_inventory[productToAdd.shopkeeper_id].insert(productToAdd.product_id);
+        productId_to_product[productToAdd.product_id]=productToAdd;
+        global_inven_map[productToAdd.product_name].insert(productToAdd.product_id);
+    }
+
+    void changeProductCount(int productID, int changedCount){
+        productId_to_product[productID].count=changedCount;
+    }
+
+    void changeProductPrice(int productID, int changedPrice){
+        productId_to_product[productID].price=changedPrice;
+    }
+
+
+    void setSystemState(int cusCnt, int shpCnt , int delCnt,int prodCnt,int indOrdCnt, int compOrdCnt )
     {
         remove("systemState");
         fstream file;
@@ -680,7 +695,8 @@ public:
         madeUpState.CustomerCount=cusCnt;
         madeUpState.shopKeeperCount=shpCnt;
         madeUpState.deliveryPersonCount=delCnt;
-        madeUpState.orderCount=ordCnt;
+        madeUpState.OrderCount=indOrdCnt;
+        madeUpState.OrderCount=compOrdCnt;
         madeUpState.productCount=prodCnt;
         file.write((char*)&madeUpState,sizeof(systemState));
         file.close();

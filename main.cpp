@@ -43,7 +43,10 @@ void mainPage()
         if (choice == 1)
             runTimeUser->login();
         else if (choice == 2)
-            runTimeUser-> signUp();
+            {
+                runTimeUser-> signUp();
+                mainPage();
+            }
         else
         {
             cout << printtabs(9) << fgred << "Invalid Choice...!!" << endl;
@@ -58,7 +61,7 @@ int main()
 {
 
     logStream << ">>> !!! START OF LOG !!! <<<<<\n";
-    systemAdmin.setSystemState(0,1,0,0,0);
+    //systemAdmin.setSystemState(0,1,0,0,0,0);
     systemAdmin.loadDatabase();
     cout << clearscreen;
     cout << cursorAdjust;
