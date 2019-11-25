@@ -25,6 +25,5 @@ void sendPasswordToEmail(string email, string new_password, string check = "0")
     PyRun_SimpleString(temp2);
     PyRun_SimpleString(temp3);
     PyRun_SimpleFile(pyfile,filename);
-    PyRun_SimpleString("print(i)\n");
     Py_Finalize();
 }
