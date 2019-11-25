@@ -17,13 +17,23 @@ class deliverPerson : public User{
         return assignedOrderId == -1;
     }
 
-    void updateStatus(order &Order, timeStamp timeRemaining){
-        Order.remainingTime = timeRemaining;
+    void checkIfOrderIsAssigned(){
+        if(assignedOrderId==-1){
+            cout<<"No order is assigned" << "\n";
+            return;
+        }
+        cout<<"You have been assigned an order";     //INCOMPLETE
+        
+    }
+
+    void updateStatus(){
+        /*cout<<"Enter the expected time left" << "\n";
+        
         if(timeRemaining.days == 0 && timeRemaining.hours == 0 && timeRemaining.minutes == 0){
             systemAdmin.finish_order(userID);
             assignedOrderId = -1;
             systemAdmin.insert_unassigned_deliveryPerson(userID);
-        }
+        }*/
     }
 
     void assignOrder(int orderId){

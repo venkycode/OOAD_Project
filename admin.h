@@ -6,7 +6,7 @@
 //#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
-#include "forgotPassword.h"
+//#include "forgotPassword.h"
 
 typedef struct systemState
 {
@@ -30,7 +30,6 @@ public:
     string data;
     char *messaggeError;
 
-    int shopKeeperCount, deliveryPersonCount, CustomerCount; // helps in assigning the ID to everyone
     product *global_inventory_array;
     map<string, set<int>> global_inven_map; //mapping from product name to product
     //this is comment static product* personal_inventory;
@@ -66,7 +65,6 @@ public:
     void createDataBase()
     {
         int exit = 0;
-        shopKeeperCount = deliveryPersonCount = CustomerCount = 0;
         exit = sqlite3_open("userDatabase.db", &DB);
         if (exit)
         {
@@ -95,7 +93,7 @@ public:
         string sql5 = "CREATE TABLE ASSIGNED_ORDER("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "ORDER_ID  TEXT  NOT NULL );";
-        string sql6 = "CREAFTE TABLE WISHLIST("
+        string sql6 = "CREATE TABLE WISHLIST("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "ITEMS  TEXT  NOT NULL );";
         string sql7 = "CREATE TABLE ORDERS("
@@ -193,15 +191,15 @@ public:
         string id = "";
         if (type == Customer)
         {
-            id = 'C' + to_string(CustomerCount++);
+            id = 'C' + to_string(state.CustomerCount++);
         }
         else if (type == deliveryPerson)
         {
-            id = 'D' + to_string(deliveryPersonCount++);
+            id = 'D' + to_string(state.deliveryPersonCount++);
         }
         else
         {
-            id = 'S' + to_string(shopKeeperCount++);
+            id = 'S' + to_string(state.shopKeeperCount++);
         }
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string temp = '\'' + username + '\'' + ',' + '\'' + id + '\'';
@@ -430,7 +428,6 @@ public:
         }
     }
 
-<<<<<<< HEAD
     static int get_transaction(void *data, int argc, char **argv, char **azColName)
     {
         int len = strlen(argv[0]);
@@ -444,6 +441,7 @@ public:
             if(argv[0][i] == ' ' && fl){
                 fl=0;
                 tempOrderofCustomer.push_back(stoi(temp));
+                temp = "";
             }
             if(fl){
                 temp+=argv[0][i];
@@ -464,10 +462,6 @@ public:
         return tempOrderofCustomer;
     }
 
-||||||| merged common ancestors
-
-=======
->>>>>>> 0fc9761ff89b0441a6262d5372e71c670a255d59
     void showTransaction(string id)
     {
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
@@ -524,31 +518,13 @@ public:
         return temporaryID != "#";
     }
 
-    void dumpData()
-    {
-        global_inventory_array = (product *)malloc(productId_to_product.size() * sizeof(product));
-        int index = 0;
-        for (auto i : productId_to_product)
-        {
-            global_inventory_array[index] = i.second;
-            index++;
-        }
-        remove("global_inventory_db");
-        global_inve_file.open("global_inventory_db", ios::out);
-        global_inve_file.write((char *)global_inventory_array, productId_to_product.size() * sizeof(product));
-        global_inve_file.close();
-        remove("systemState");
-        fstream outSysState;
-        outSysState.open("systemState", ios::out);
-        outSysState.write((char *)&state, sizeof(systemState));
-        outSysState.close();
-    }
+    
     void insertProduct(product productToInsert)
     {
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id] = productToInsert;
     }
-    void forgotPassword(string username)
+    /*void forgotPassword(string username)
     {
         string new_password = PasswordGenerator();
         string message = "Your new Password is : " + new_password;
@@ -560,22 +536,12 @@ public:
         sendPasswordToEmail(temporaryProfile.email, new_password);
         changeProfile(temporaryID, temporaryProfile.name, temporaryProfile.surname,
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
-    }
+    }*/
 
-<<<<<<< HEAD
-    void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';    
-        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
-||||||| merged common ancestors
-    void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
-=======
     void assign_order(string id, int orderID)
     {
         string temp = '\'' + id + "\',\'" + to_string(orderID) + '\'';
         string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");
-        ;
->>>>>>> 0fc9761ff89b0441a6262d5372e71c670a255d59
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -685,7 +651,6 @@ public:
             addToWishList(id, i);
         }
     }
-<<<<<<< HEAD
 
     static int get_Status(void *data, int argc, char **argv, char **azColName)
     {
@@ -709,7 +674,7 @@ public:
         return temporaryID;
     }
 
-    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
+    void insertOrder(string id, vector<pair<int,int>> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
         string tempOrder = customerId+": ";
         for(auto i: order){
             tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
@@ -719,34 +684,6 @@ public:
         tempOrder += "["+curTime+"] " + "Time Remaining: ["+ time_remaining+"]";
         string temp = '\'' + id + "\',\'" + tempOrder +'\'';
         string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
-||||||| merged common ancestors
-
-    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId){
-        string tempOrder = customerId+": ";
-        for(auto i: order){
-            tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
-        }
-        tempOrder += "[" + payementMode +"] ";
-        if(payementUsing.length())tempOrder += "["+payementUsing+"] ";
-        tempOrder += "["+curTime+"]";
-        string temp = '\'' + id + "\',\'" + tempOrder +'\'';
-        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
-=======
-    void insertOrder(string id, vector<int, int> order, string payementUsing, string payementMode, string curTime, string customerId)
-    {
-        string tempOrder = customerId + ": ";
-        for (auto i : order)
-        {
-            tempOrder += "[" + to_string(i.first) + " | " + to_string(i.second) + "] ";
-        }
-        tempOrder += "[" + payementMode + "] ";
-        if (payementUsing.length())
-            tempOrder += "[" + payementUsing + "] ";
-        tempOrder += "[" + curTime + "]";
-        string temp = '\'' + id + "\',\'" + tempOrder + '\'';
-        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");
-        ;
->>>>>>> 0fc9761ff89b0441a6262d5372e71c670a255d59
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -879,6 +816,12 @@ public:
         int orderID1 = state.OrderCount++;
         cout << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
         addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
+        string deliveryPersonID=find_unassigned_deliveryPerson();
+        if(deliveryPersonID=="#")cout<<"No delivery person is available" << "\n";
+        else {
+            assign_order(deliveryPersonID, orderID1);
+            delete_unassigned_deliveryPerson(deliveryPersonID);
+        }
     }
 
     void addToInventory(product productToAdd)
@@ -898,7 +841,7 @@ public:
         productId_to_product[productID].price = changedPrice;
     }
 
-    void setSystemState(int cusCnt, int shpCnt, int delCnt, int prodCnt, int indOrdCnt, int compOrdCnt)
+    void setSystemState(int cusCnt, int shpCnt, int delCnt, int prodCnt, int OrdCnt)
     {
         remove("systemState");
         fstream file;
@@ -907,10 +850,29 @@ public:
         madeUpState.CustomerCount = cusCnt;
         madeUpState.shopKeeperCount = shpCnt;
         madeUpState.deliveryPersonCount = delCnt;
-        madeUpState.OrderCount = indOrdCnt;
-        madeUpState.OrderCount = compOrdCnt;
+        madeUpState.OrderCount = OrdCnt;
         madeUpState.productCount = prodCnt;
         file.write((char *)&madeUpState, sizeof(systemState));
         file.close();
+    }
+
+    ~admin()
+    {
+        global_inventory_array = (product *)malloc(productId_to_product.size() * sizeof(product));
+        int index = 0;
+        for (auto i : productId_to_product)
+        {
+            global_inventory_array[index] = i.second;
+            index++;
+        }
+        remove("global_inventory_db");
+        global_inve_file.open("global_inventory_db", ios::out);
+        global_inve_file.write((char *)global_inventory_array, productId_to_product.size() * sizeof(product));
+        global_inve_file.close();
+        remove("systemState");
+        fstream outSysState;
+        outSysState.open("systemState", ios::out);
+        outSysState.write((char *)&state, sizeof(systemState));
+        outSysState.close();
     }
 };

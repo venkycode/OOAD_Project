@@ -52,7 +52,7 @@ public:
         } while (temp != userProfile.password);
     }
 
-    void login()
+    profile login()
     {
         printHeader();
         cout << endl;
@@ -89,10 +89,11 @@ public:
             else
             {
                 //getline(cin,username);
-                login();
+                userProfile= login();
             }
         }
         assignUserProfile(userProfile);
+        return userProfile;
     }
 
     void signUp()
@@ -207,7 +208,9 @@ public:
         cout << "Enter your address"
              << "\n";
         getline(cin, userProfile.address);
-        systemAdmin.signUp(userProfile);
+        userProfile.id =systemAdmin.signUp(userProfile);
+        assignUserProfile(userProfile);
+        cout<<userProfile.id<<" "<<userID<<endl;
     }
 
     void updateProfile()

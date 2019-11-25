@@ -57,7 +57,7 @@ typedef struct profile{
 typedef struct order
 {
     vector<pair<int, int>> cart;
-    int OrderID;
+    int OrderID, customerID;
     timeStamp remainingTime;
 } order;
  

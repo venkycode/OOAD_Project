@@ -138,7 +138,7 @@ class customer:public User{
             swap(cart[i],cart.back());
             cart.pop_back();
         }
-
+        cout<<userID<<endl;
         systemAdmin.payment(cart, paymentMode,contact, userID);
         cart.clear();
     }
@@ -174,4 +174,15 @@ class customer:public User{
         tempWishlist.erase(tempWishlist.find(toRemove));
         systemAdmin.changeWishList(userID, tempWishlist);
     }
+
+    void displayYourOrders(){
+        vector<int> orders=systemAdmin.orderIdsofCustomer(userID);
+        for(auto y:orders)cout<<y<<" ";cout<<endl;
+    }
+
+    /*void checkStatus(){
+        cout<<"Enter the ID of order you want to check for status" << "\n";
+        int orderID;cin>>orderID;
+        systemAdmin.get_orderStatus(orderID);
+    }*/
 };
