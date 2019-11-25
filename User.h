@@ -103,7 +103,7 @@ public:
         srand(time(0));
         int len = 6;
         for(int i=0;i<len;++i)OTP.push_back((char)(rand()%10 + '0'));
-        sendPasswordToEmail(mailID, OTP, 1);
+        sendPasswordToEmail(mailID, OTP, "1");
         string tempOTP;
         do{
             cout << "Please verify your email:: Enter your OTP "<<endl;

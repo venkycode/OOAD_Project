@@ -1,3 +1,4 @@
+
 import sys
 import smtplib 
 
@@ -11,7 +12,11 @@ s.starttls()
 s.login("lezendarysystem@gmail.com", "fuckusanskar") 
 
 # sending the mail 
-s.sendmail("lezendarysystem@gmail.com", i , j) 
+if k == "1":
+    s.sendmail("lezendarysystem@gmail.com", i ,"\nYour OTP is: "+ j) 
+else :
+    s.sendmail("lezendarysystem@gmail.com", i ,"\nYour new password is: "+ j) 
+
 
 # terminating the session 
 s.quit()
