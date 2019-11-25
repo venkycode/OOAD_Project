@@ -1,4 +1,4 @@
-#include<termios.h>
+//#include<termios.h>
 #include "admin.h"
 admin systemAdmin;
 
