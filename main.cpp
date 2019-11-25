@@ -40,12 +40,11 @@ void mainPage()
 void customerDashBoard(customer* customerObject)
 {
     printHeader();
-    delayBy(1.5);
-    printtabs(14);
-    printOption(0,0,"Welcome",0);
-    cout<<fgblue<<customerObject->name<<fggreen<<":)";
-
-
+    delayBy(1);
+    printOption(9,0,"Welcome ",0);
+    cout<<fgblue<<customerObject->name<<fggreen<<" :)";
+    cout<<endl;
+    printOption(9,3,"");
 }
 
 int main()
