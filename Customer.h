@@ -212,9 +212,9 @@ class customer : public User
         for(auto y:orders)cout<<y<<" ";cout<<endl;
     }
 
-    /*void checkStatus(){
+    void checkStatus(){
         cout<<"Enter the ID of order you want to check for status" << "\n";
         int orderID;cin>>orderID;
-        systemAdmin.get_orderStatus(orderID);
-    }*/
+        cout<<"time left : "<<systemAdmin.get_orderStatus(to_string(orderID));
+    }
 };

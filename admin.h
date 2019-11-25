@@ -663,7 +663,7 @@ public:
 
     string get_orderStatus(string id){
         temporaryID = "#";
-        string query = "SELECT ORDER FROM ALL_ORDERS_DB WHERE ID = \'" + id + "\';";
+        string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, query.c_str(), get_Status, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
