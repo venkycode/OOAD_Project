@@ -74,7 +74,6 @@ public:
         logStream.flush();
         cout << endl;
         profile userProfile = systemAdmin.authenticate(username, password);
-        
         if (userProfile.name == "#")
         {
             //printHeader();
@@ -258,6 +257,7 @@ public:
         cout<<fgblue<<">> " ;
         // cout << "Enter password"
         //      << "\n";
+        getline(cin,password);
         inputPassword(userProfile);
         cout << "Enter your address"
              << "\n";
@@ -266,7 +266,6 @@ public:
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;
         //sendOTP(userProfile.email);
-        systemAdmin.signUp(userProfile);
     }
 
     void updateProfile()

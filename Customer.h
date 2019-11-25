@@ -19,6 +19,11 @@ class customer : public User
         address = userProfile.address;
     }
 
+    /////////////TEMPORARY CHANGE/////////////
+    customer(){
+        login();
+    }
+
     static bool sortByRating(product product1, product product2)
     {
         return (product1.rating > product2.rating);

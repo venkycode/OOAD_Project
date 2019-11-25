@@ -96,9 +96,12 @@ public:
         string sql6 = "CREATE TABLE WISHLIST("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "ITEMS  TEXT  NOT NULL );";
-        string sql7 = "CREATE TABLE ORDERS("
+        string sql7 = "CREATE TABLE ALL_ORDERS_DB("
                       "ORDER_ID TEXT PRIMARY KEY     NOT NULL, "
-                      "ORDER  TEXT  NOT NULL );";
+                      "ORDER_    TEXT    NOT NULL, "
+                      "CUSTOMER_ID   TEXT    NOT NULL, "
+                      "TIME_LEFT   TEXT    NOT NULL, "
+                      "OTHER_DETAILS  TEXT  NOT NULL );";
         string sql8 = "CREATE TABLE UNASSIGNED_DELIVERY_PERSON("
                       "ID TEXT PRIMARY KEY     NOT NULL );";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
@@ -654,15 +657,14 @@ public:
 
     static int get_Status(void *data, int argc, char **argv, char **azColName)
     {
-        int len = strlen(argv[0]);
         temporaryID = "";
-        for(int i=len-9;i<len-1;++i)temporaryID.push_back(argv[0][i]);
+        for(int i=0;i<8;++i)temporaryID.push_back(argv[3][i]);
         return 0;
     }
 
     string get_orderStatus(string id){
         temporaryID = "#";
-        string query = "SELECT ORDER FROM ORDERS WHERE ID = \'" + id + "\';";
+        string query = "SELECT ORDER FROM ALL_ORDERS_DB WHERE ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, query.c_str(), get_Status, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -674,16 +676,16 @@ public:
         return temporaryID;
     }
 
-    void insertOrder(string id, vector<pair<int,int>> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
-        string tempOrder = customerId+": ";
-        for(auto i: order){
-            tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
+    void insertOrder(string id, vector<pair<int,int>> curOrder, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
+        string product_ids = "",tempOrder="";
+        for(auto i: curOrder){
+            product_ids += "[" "Product ID : "+ to_string(i.first) + " | " + "Quantity Ordered : "+to_string(i.second) + "] ";
         }
         tempOrder += "[" + payementMode +"] ";
         if(payementUsing.length())tempOrder += "["+payementUsing+"] ";
-        tempOrder += "["+curTime+"] " + "Time Remaining: ["+ time_remaining+"]";
-        string temp = '\'' + id + "\',\'" + tempOrder +'\'';
-        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
+        tempOrder += "["+curTime+"]";
+        string temp = '\'' + id + "\',\'" + product_ids + "\',\'" + customerId + "\',\'" + time_remaining + "\',\'" + tempOrder + '\'';
+        string sql("INSERT INTO ALL_ORDERS_DB VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -817,11 +819,15 @@ public:
         cout << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
         addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
         string deliveryPersonID=find_unassigned_deliveryPerson();
+        vector<pair<int,int>>tempOrder;
+        for(auto y:Cart)tempOrder.push_back({y.first.product_id, y.second});
+        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"????????");
         if(deliveryPersonID=="#")cout<<"No delivery person is available" << "\n";
         else {
             assign_order(deliveryPersonID, orderID1);
             delete_unassigned_deliveryPerson(deliveryPersonID);
         }
+
     }
 
     void addToInventory(product productToAdd)
