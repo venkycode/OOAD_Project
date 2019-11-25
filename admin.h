@@ -96,13 +96,20 @@ public:
                             "ORDER_ID  TEXT  NOT NULL );"; 
         string sql6 = "CREATE TABLE WISHLIST("
                             "ID TEXT PRIMARY KEY     NOT NULL, "
-                            "ITEMS  TEXT  NOT NULL );"; 
+                            "ITEMS  TEXT  NOT NULL );";
+        string sql7 = "CREATE TABLE ORDERS("
+                            "ORDER_ID TEXT PRIMARY KEY     NOT NULL, "
+                            "ORDER  TEXT  NOT NULL );"; 
+        string sql8 = "CREATE TABLE UNASSIGNED_DELIVERY_PERSON("
+                      "ID TEXT PRIMARY KEY     NOT NULL );";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql4.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql5.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql6.c_str(), NULL, 0, &messaggeError);
+        exit = sqlite3_exec(DB, sql7.c_str(), NULL, 0, &messaggeError);
+        exit = sqlite3_exec(DB, sql7.c_str(), NULL, 0, &messaggeError);
         if (exit == SQLITE_OK)
         {
             cerr << "Error Create Table" << endl;
@@ -248,8 +255,8 @@ public:
         {
             delayBy(0);
             printHeader();
-           cout <<fgred<< "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" << endl;
-           cout<<endl;
+            cout <<fgred<< "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" << endl;
+            cout<<endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
@@ -607,7 +614,71 @@ public:
         }
     }
 
-        void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
+    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId){
+        string tempOrder = customerId+": ";
+        for(auto i: order){
+            tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
+        }
+        tempOrder += "[" + payementMode +"] ";
+        if(payementUsing.length())tempOrder += "["+payementUsing+"] ";
+        tempOrder += "["+curTime+"]";
+        string temp = '\'' + id + "\',\'" + tempOrder +'\'';
+        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert    " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+
+    static int findUnassigned(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[0];
+        return 0;
+    }
+
+    string find_unassigned_deliveryPerson(){
+        temporaryID = "#";
+        string sql("SELECT * FROM UNASSIGNED_DELIVERY_PERSON;"); 
+        exit = sqlite3_exec(DB, sql.c_str(), findUnassigned, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert   " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+        return temporaryID; // It is '#' if everyone is assigned.
+    }
+
+    void delete_unassigned_deliveryPerson(string id){
+        string sql = "DELETE FROM UNASSIGNED_DELIVERY_PERSON WHERE ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+
+    void insert_unassigned_deliveryPerson(string id){
+        string sql("INSERT INTO UNASSIGNED_DELIVERY_PERSON VALUES(\'" + id + "\');");
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert   " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+
+    void payment(vector <order> Cart, enum mode payment_mode, string contact, string id){
         auto current_clock = chrono::system_clock::now();
         time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
         string currentTime = ctime(&cur_time);
@@ -670,7 +741,8 @@ public:
         }
         int orderID1 =122;
         addTransaction(id,1,totalCost,orderID1, tempMode,currentTime,paymentUsing);
-        }
+    }
+
     void setSystemState(int cusCnt, int shpCnt , int delCnt,int prodCnt,int ordCnt )
     {
         remove("systemState");
