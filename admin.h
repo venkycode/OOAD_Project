@@ -21,7 +21,6 @@ profile temporaryProfile; // helps in editing profile
 string add;
 vector<int> tempOrderofCustomer;
 int temporaryOrderID; //used in assigning the order to the delivery person
-
 class admin
 {
 public:
@@ -695,6 +694,19 @@ public:
         else
             cout << "Record inserted Successfully!" << endl;
     }
+
+    void deleteOrder(string id){
+        string sql = "DELETE FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+
 
     static int findUnassigned(void *data, int argc, char **argv, char **azColName)
     {

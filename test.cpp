@@ -1,6 +1,6 @@
 //#include "Customer.h"
-//#include "deliveryPerson.h"
-#include "Customer.h"
+#include "deliveryPerson.h"
+//#include "Customer.h"
 
 /*
 int product_id;
@@ -14,7 +14,9 @@ int product_id;
 
 int main(){
     systemAdmin.loadDatabase();
-    customer c;
+    deliverPerson d;
+    d.checkIfOrderIsAssigned();
+    d.updateStatus();
     //cout<<d.userID<<endl;
     //return 0;
     /*s.addToInventory();
@@ -27,7 +29,7 @@ int main(){
     s.displayInventory();*/
     //deliverPerson d; 
     //d.assignOrder(5);
-    product p,q,r,s;
+    /*product p,q,r,s;
     char *t="aaaa", *u="aaav", *v="aaap", *w="aaao", *x="S0";
     p.product_id=0;
     strcpy(p.product_name,t);
@@ -65,7 +67,7 @@ int main(){
     systemAdmin.global_inven_map[q.product_name].insert(1);
     systemAdmin.global_inven_map[r.product_name].insert(2);
     systemAdmin.global_inven_map[s.product_name].insert(3);*/
-    systemAdmin.productId_to_product[0]=p;
+    /*systemAdmin.productId_to_product[0]=p;
     systemAdmin.productId_to_product[1]=q;
     systemAdmin.productId_to_product[2]=r;
     systemAdmin.productId_to_product[3]=s;

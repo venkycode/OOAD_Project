@@ -8,9 +8,11 @@ class deliverPerson : public User{
         assignedOrderId = systemAdmin.AssignedOrderId(Profile.id);
     }
     deliverPerson(){
-        signUp();
+        login();  
+        assignedOrderId = systemAdmin.AssignedOrderId(userID);       //////////////TEMPORARY CHANGE
+        /*signUp();
         systemAdmin.insert_unassigned_deliveryPerson(userID);
-        assignedOrderId = -1;
+        assignedOrderId = -1;*/
     }
 
     bool isAvailable(){
@@ -22,14 +24,18 @@ class deliverPerson : public User{
             cout<<"No order is assigned" << "\n";
             return;
         }
-        cout<<"You have been assigned an order";     //INCOMPLETE
+        cout<<"You have been assigned an order" << "\n";  
+        cout<<"Order ID : "<<assignedOrderId<<"\n";   //INCOMPLETE
         
     }
 
     void updateStatus(){
-        /*cout<<"Enter the expected time left" << "\n";
-        
-        if(timeRemaining.days == 0 && timeRemaining.hours == 0 && timeRemaining.minutes == 0){
+        cout<<"Enter your order ID" << "\n";
+        int id;cin>>id;
+        cout<<"Enter the expected time left" << "\n";
+        string tm;cin>>tm;
+        //systemAdmin.updateOrderStatus(id,tm);
+        /*if(timeRemaining.days == 0 && timeRemaining.hours == 0 && timeRemaining.minutes == 0){
             systemAdmin.finish_order(userID);
             assignedOrderId = -1;
             systemAdmin.insert_unassigned_deliveryPerson(userID);
