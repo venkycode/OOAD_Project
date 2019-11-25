@@ -39,9 +39,9 @@ Color::Modifier fggreen(Color::FG_GREEN);
 Color::Modifier bgblue(Color::BG_BLUE);
 Color::Modifier bgdef(Color::BG_DEFAULT);
 
-void delayBy(long int sec)
+void delayBy(double sec)
 {
-    long int factor = 100000000;
+    double factor = 100000000.0;
     long int timer = 0;
     while (timer < sec * factor)
     {
@@ -100,4 +100,15 @@ void printOption(int numTabs, int numSpace=0, string option="", int optionNumber
         cout << endl;
     }
     
+}
+void deleteUnwanted(int flag,int numberOfLines=1)
+{
+    if (flag==1)
+    {
+        for(int i=0;i<numberOfLines;i++)
+        {cout << cursorUp;
+        cout << deleteLine;
+        }
+
+    }
 }

@@ -430,7 +430,6 @@ public:
         }
     }
 
-<<<<<<< HEAD
     static int get_transaction(void *data, int argc, char **argv, char **azColName)
     {
         int len = strlen(argv[0]);
@@ -464,10 +463,6 @@ public:
         return tempOrderofCustomer;
     }
 
-||||||| merged common ancestors
-
-=======
->>>>>>> 0fc9761ff89b0441a6262d5372e71c670a255d59
     void showTransaction(string id)
     {
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
@@ -562,20 +557,10 @@ public:
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
     }
 
-<<<<<<< HEAD
-    void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';    
-        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
-||||||| merged common ancestors
-    void assign_order(string id, int orderID){
-        string temp = '\'' + id + "\',\'" + to_string(orderID)+'\'';        string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");;
-=======
     void assign_order(string id, int orderID)
     {
         string temp = '\'' + id + "\',\'" + to_string(orderID) + '\'';
         string sql("INSERT INTO ASSIGNED_ORDER VALUES(" + temp + ");");
-        ;
->>>>>>> 0fc9761ff89b0441a6262d5372e71c670a255d59
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -685,7 +670,6 @@ public:
             addToWishList(id, i);
         }
     }
-<<<<<<< HEAD
 
     static int get_Status(void *data, int argc, char **argv, char **azColName)
     {
@@ -709,7 +693,7 @@ public:
         return temporaryID;
     }
 
-    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
+    void insertOrder(string id, vector<pair<int,int>> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
         string tempOrder = customerId+": ";
         for(auto i: order){
             tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
@@ -719,34 +703,6 @@ public:
         tempOrder += "["+curTime+"] " + "Time Remaining: ["+ time_remaining+"]";
         string temp = '\'' + id + "\',\'" + tempOrder +'\'';
         string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
-||||||| merged common ancestors
-
-    void insertOrder(string id, vector<int,int> order, string payementUsing, string payementMode, string curTime, string customerId){
-        string tempOrder = customerId+": ";
-        for(auto i: order){
-            tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
-        }
-        tempOrder += "[" + payementMode +"] ";
-        if(payementUsing.length())tempOrder += "["+payementUsing+"] ";
-        tempOrder += "["+curTime+"]";
-        string temp = '\'' + id + "\',\'" + tempOrder +'\'';
-        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
-=======
-    void insertOrder(string id, vector<int, int> order, string payementUsing, string payementMode, string curTime, string customerId)
-    {
-        string tempOrder = customerId + ": ";
-        for (auto i : order)
-        {
-            tempOrder += "[" + to_string(i.first) + " | " + to_string(i.second) + "] ";
-        }
-        tempOrder += "[" + payementMode + "] ";
-        if (payementUsing.length())
-            tempOrder += "[" + payementUsing + "] ";
-        tempOrder += "[" + curTime + "]";
-        string temp = '\'' + id + "\',\'" + tempOrder + '\'';
-        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");
-        ;
->>>>>>> 0fc9761ff89b0441a6262d5372e71c670a255d59
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {

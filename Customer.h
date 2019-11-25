@@ -3,61 +3,88 @@
 
 //isblacklisted to be updated in admin.h
 
-class customer:public User{
+class customer : public User
+{
     public:
-    customer(profile Profile){
-        assignUserProfile(Profile);
-    }
-    customer(){
-        //signUp();
-        login(); ///             TEMPORARY CHANGE FOR DEBUGGING
-                  //cout<<userID<<endl;
-    }
-    vector<pair<product, int>> cart;
-    static bool sortByRating(product product1, product product2){
-        return (product1.rating > product2.rating) ;
-    }
-
-    static bool sortByIncreasingPrice(product product1, product product2){
-        return (product1.price < product2.price) ;
+    vector<pair<product,int>> cart;
+    customer(profile userProfile)
+    {
+        name = userProfile.name;
+        surname = userProfile.surname;
+        emailID = userProfile.email;
+        contact = userProfile.contact;
+        username = userProfile.username;
+        password = userProfile.password;
+        userID = userProfile.id;
+        address = userProfile.address;
     }
 
-    static bool sortByDecreasingPrice(product product1, product product2){
-        return (product1.price > product2.price) ;
+    static bool sortByRating(product product1, product product2)
+    {
+        return (product1.rating > product2.rating);
     }
 
-    void search(){
-        cout<<"Enter the product you want to look-up" << "\n" ;
+    static bool sortByIncreasingPrice(product product1, product product2)
+    {
+        return (product1.price < product2.price);
+    }
+
+    static bool sortByDecreasingPrice(product product1, product product2)
+    {
+        return (product1.price > product2.price);
+    }
+
+    void search()
+    {
+        cout << "Enter the product you want to look-up"
+             << "\n";
         string toBeSearched;
-        cin>> toBeSearched;
-        cout<<"Do you want a filter for your search results? Y/n" << "\n";
-        char response;cin>>response;
+        cin >> toBeSearched;
+        cout << "Do you want a filter for your search results? Y/n"
+             << "\n";
+        char response;
+        cin >> response;
         int input;
-        if(response=='y'||response=='Y'){
-            cout<<"Choose your filter of products" << "\n";
-            cout<<"Press 1 for decreasing order of rating" << "\n" ;
-            cout << "Press 2 for increasing order of price" << "\n";
-            cout<<"Press 3 for decreasing order of price" << "\n" ;
-            cin>>input;
+        if (response == 'y' || response == 'Y')
+        {
+            cout << "Choose your filter of products"
+                 << "\n";
+            cout << "Press 1 for decreasing order of rating"
+                 << "\n";
+            cout << "Press 2 for increasing order of price"
+                 << "\n";
+            cout << "Press 3 for decreasing order of price"
+                 << "\n";
+            cin >> input;
         }
         vector<product> matches;
-        bool isFullMatchPossible=0;
-        for(auto currentProduct: systemAdmin.global_inven_map){
-            if(toBeSearched==currentProduct.first) {
-                isFullMatchPossible=1;break;
+        bool isFullMatchPossible = 0;
+        for (auto currentProduct : systemAdmin.global_inven_map)
+        {
+            if (toBeSearched == currentProduct.first)
+            {
+                isFullMatchPossible = 1;
+                break;
             }
         }
-        for(auto currentProduct:systemAdmin.global_inven_map){
-           bool toAdd=0;
-           if(isFullMatchPossible){
-               if(toBeSearched==currentProduct.first) toAdd=1;
-           } 
-           else toAdd=isMatch(currentProduct.first,toBeSearched);
-           if(toAdd){
-               for(auto ids:currentProduct.second){
-                   if(systemAdmin.productId_to_product[ids].count) matches.push_back(systemAdmin.productId_to_product[ids]);
-               }
-           }
+        for (auto currentProduct : systemAdmin.global_inven_map)
+        {
+            bool toAdd = 0;
+            if (isFullMatchPossible)
+            {
+                if (toBeSearched == currentProduct.first)
+                    toAdd = 1;
+            }
+            else
+                toAdd = isMatch(currentProduct.first, toBeSearched);
+            if (toAdd)
+            {
+                for (auto ids : currentProduct.second)
+                {
+                    if (systemAdmin.productId_to_product[ids].count)
+                        matches.push_back(systemAdmin.productId_to_product[ids]);
+                }
+            }
         }
         if(response!='y'&& response!='Y');
         else if(input==1)sort(matches.begin(),matches.end(),sortByRating);
