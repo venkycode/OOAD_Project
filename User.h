@@ -95,6 +95,19 @@ public:
         assignUserProfile(userProfile);
     }
 
+    void sendOTP(string mailID){
+        string OTP = "";
+        srand(time(0));
+        int len = 6;
+        for(int i=0;i<len;++i)OTP.push_back((char)(rand()%10 + '0'));
+        sendPasswordToEmail(mailID, OTP, 1);
+        string tempOTP;
+        do{
+            cout << "Please verify your email:: Enter your OTP "<<endl;
+            cin>>tempOTP;
+        }while(tempOTP!=OTP);
+    }
+
     void signUp()
     {
         profile userProfile;
@@ -207,6 +220,7 @@ public:
         cout << "Enter your address"
              << "\n";
         getline(cin, userProfile.address);
+        sendOTP(userProfile.email);
         systemAdmin.signUp(userProfile);
     }
 

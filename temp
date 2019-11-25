@@ -11,7 +11,7 @@ s.starttls()
 s.login("lezendarysystem@gmail.com", "fuckusanskar") 
 
 # sending the mail 
-s.sendmail("lezendarysystem@gmail.com", i ,"\nYour new password is: "+ j) 
+s.sendmail("lezendarysystem@gmail.com", i , j) 
 
 # terminating the session 
 s.quit()
