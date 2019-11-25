@@ -1,14 +1,15 @@
 #include "User.h"
 
-class deliverPerson : User{
+class deliverPerson : public User{
     public:
     int assignedOrderId;// -1 if none is assigned
     deliverPerson(profile Profile){
-        login(Profile);
+        assignUserProfile(Profile);
         assignedOrderId = systemAdmin.AssignedOrderId(Profile.id);
     }
     deliverPerson(){
         signUp();
+        systemAdmin.insert_unassigned_deliveryPerson(userID);
         assignedOrderId = -1;
     }
 
@@ -21,6 +22,7 @@ class deliverPerson : User{
         if(timeRemaining.days == 0 && timeRemaining.hours == 0 && timeRemaining.minutes == 0){
             systemAdmin.finish_order(userID);
             assignedOrderId = -1;
+            systemAdmin.insert_unassigned_deliveryPerson(userID);
         }
     }
 

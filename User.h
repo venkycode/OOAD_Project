@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+//#include<termios.h>
 #include "admin.h"
 admin systemAdmin;
 
@@ -67,13 +67,14 @@ public:
         //cin>>password;
         char *tmpPass;
         tmpPass = getpass("");
-        int szar = sizeof(tmpPass) / sizeof(char);
+        //int szar = sizeof(tmpPass) / sizeof(char);
         //logStream<<""szar<<endl;
         password = tmpPass; //convertToString(tmpPass,szar);
         logStream << "password = " << password << endl;
         logStream.flush();
         cout << endl;
         profile userProfile = systemAdmin.authenticate(username, password);
+        
         if (userProfile.name == "#")
         {
             //printHeader();
@@ -81,6 +82,7 @@ public:
             cout << fggreen << "\tCreate New Account[" << fgred << "2" << fggreen << "]";
             cout << fggreen << "\tLogin[" << fgred << "3" << fggreen << "]" << endl;
             printInputField();
+
             int input;
             cin >> input;
             if (input == 1)
@@ -247,9 +249,6 @@ public:
              << "\n";
         getline(cin, userProfile.address);
         systemAdmin.signUp(userProfile);
-
-        assignUserProfile(userProfile);
-        //if(this->userType==(enum typeOfUser)ShopKeeper)systemAdmin.ShopKeeperid_to_name[this->userID]= this->name;
     }
 
     void updateProfile()
@@ -267,8 +266,8 @@ public:
         else if (!systemAdmin.isUsernameTaken(username))
             cout << printtabs(8) << "This username does not exist"
                  << "\n";
-        else
-            systemAdmin.forgotPassword(username);
+        else;
+            //systemAdmin.forgotPassword(username);
     }
 
 };
