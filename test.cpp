@@ -27,8 +27,6 @@ int main(){
     s.displayInventory();*/
     //deliverPerson d; 
     //d.assignOrder(5);
-    customer c;
-    c.displayYourOrders();
     /*product p,q,r,s;
     char *t="aaaa", *u="aaav", *v="aaap", *w="aaao", *x="S0";
     p.product_id=0;
