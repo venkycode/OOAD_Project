@@ -19,6 +19,14 @@ enum mode
     Paytm,
     GooglePay
 };
+
+enum productType
+{
+    electronics,
+    stationery,
+    groceries,
+    food
+};
  
 typedef struct timeStamp
 {
@@ -28,10 +36,11 @@ typedef struct timeStamp
 typedef struct product
 {
     int product_id;
+    //enum productType product_type;
     int product_type;
     char product_name[10];
     int deliveryCharge;
-    int rating=0;                   //rating of the product
+    int rating;                   //rating of the product
     char shopkeeper_id[10];
     int count,price;
 } product;
@@ -47,8 +56,8 @@ typedef struct profile{
  
 typedef struct order
 {
-    product Product;
-    int orderID;
+    vector<pair<int, int>> cart;
+    int OrderID;
     timeStamp remainingTime;
 } order;
  

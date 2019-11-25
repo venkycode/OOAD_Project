@@ -5,6 +5,15 @@
 
 class customer:public User{
     public:
+    customer(profile Profile){
+        assignUserProfile(Profile);
+    }
+    customer(){
+        //signUp();
+        login(); ///             TEMPORARY CHANGE FOR DEBUGGING
+                  //cout<<userID<<endl;
+    }
+    vector<pair<product, int>> cart;
     static bool sortByRating(product product1, product product2){
         return (product1.rating > product2.rating) ;
     }
@@ -56,6 +65,7 @@ class customer:public User{
         else sort(matches.begin(),matches.end(),sortByDecreasingPrice);
         for(auto currentProduct:matches){
             cout << "Product name : " << string(currentProduct.product_name) << "\n" ;
+            cout << "Product ID : " << currentProduct.product_id<< "\n";
             cout<< "Shopkeeper : " << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n" ;
             cout << "Rating : " << currentProduct.rating << "\n" ;
             cout << "Quantity : " << currentProduct.count << "\n" ;
@@ -63,5 +73,105 @@ class customer:public User{
             cout << "Delivery Charges : " << currentProduct.deliveryCharge << "\n" ; 
             cout << "\n" ;
         }
+    }
+
+    void addToCart(){
+        cout << "Enter the ID of product you wish to add to cart "<< "\n" ;
+        int productID;cin>>productID;
+        cout<<"Enter the quantity of purchase" << "\n" ;
+        int quantity;cin>>quantity;
+        cart.push_back({ systemAdmin.productId_to_product[productID] ,quantity});
+    }
+
+    void removeFromCart(){
+        cout<<"Enter the ID of product you want to remove from cart" << "\n" ;
+        int productID;cin>>productID;
+        for(int i = 0 ; i < cart.size() - 1 ; ++i){
+            if(cart[i].first.product_id==productID)swap(cart[i],cart.back());
+        }
+        cart.pop_back();
+    }
+
+    void displayCart(){
+        if(cart.empty()) {
+            cout << "Your cart is empty" << "\n" ;
+            return ;
+        }
+        for(auto y : cart){
+            cout << "Product name : " << y.first.product_name << "\n";
+            cout << "Product ID : " << y.first.product_id << "\n" ;
+            cout << "Price : " << y.first.price << "\n" ;
+            cout << "Delivery Charges : " << y.first.deliveryCharge << "\n" ;
+            cout << "Quantity you have added to cart : " << y.second << "\n" ;
+            cout << "\n" ;
+        }
+    }
+
+    void cashInTheCart(){
+        cout<<"Choose your payment mode" << "\n";
+        cout<<"Press 1 for cash on delivery, 2 for online banking, 3 for paytm, 4 for gpay" << "\n" ;
+        int response;cin>>response;
+        enum mode paymentMode;
+        if(response==1)paymentMode=cashOnDelivery;
+        else if(response==2)paymentMode=onlineBanking;
+        else if(response==3)paymentMode=Paytm;
+        else if(response==4)paymentMode=GooglePay;
+        else cout<<"Invalid banking option" << endl;
+        set<int> toBeRemoved;
+        for(int i = 0; i < cart.size(); ++i){
+            auto y=cart[i];
+            int availableQuantity=systemAdmin.productId_to_product[y.first.product_id].count;
+            if(y.second > availableQuantity){
+                cout << "Only " << availableQuantity << "are available" << "\n" ;
+                cout<<"Product Name : " << y.first.product_name << "\n";
+                cout << "Product ID : " << y.first.product_id << "\n";
+                cout << "Press 1 if you want to remove this from cart" << "\n" ;
+                cout << "Press 2 if you want to order the available quantity" << "\n" ;
+                int response;cin>>response;
+                if(response==1)toBeRemoved.insert(y.first.product_id);
+                else cart[i].second=availableQuantity;
+            }
+        }
+        for(int i = 0 ; i < cart.size() ; ++i){
+            auto y=cart[i];
+            if(toBeRemoved.find(y.first.product_id)==toBeRemoved.end())continue;
+            swap(cart[i],cart.back());
+            cart.pop_back();
+        }
+
+        systemAdmin.payment(cart, paymentMode,contact, userID);
+        cart.clear();
+    }
+
+    void addToWishlist(){
+        cout<<"Enter the name of product you want to add to your wishlist" << "\n";
+        string productName;cin>>productName;
+        if(systemAdmin.global_inven_map.find(productName)==systemAdmin.global_inven_map.end()){
+            cout<<"This product is not available" << "\n";
+            return;
+        }
+        systemAdmin.addToWishList(userID, productName);
+    }
+
+    void displayWishlist(){
+        set<string> tempWishlist = systemAdmin.returnWishlist(userID);
+        if(tempWishlist.empty()){
+            cout<<"Your wishlist is empty" << "\n";
+            return;
+        }
+        for(auto y:tempWishlist) cout<<y<<" ";
+        cout<<endl;
+    }
+
+    void removeFromWishlist(){
+        cout<<"Enter the name of product you want to remove from wishlist" << "\n";
+        string toRemove;cin>>toRemove;
+        set<string> tempWishlist = systemAdmin.returnWishlist(userID);
+        if(tempWishlist.find(toRemove)==tempWishlist.end()){
+            cout<<"This item does not belong to your wishlist" << "\n";
+            return;
+        }
+        tempWishlist.erase(tempWishlist.find(toRemove));
+        systemAdmin.changeWishList(userID, tempWishlist);
     }
 };
