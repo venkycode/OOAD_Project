@@ -20,6 +20,11 @@ public:
         userType=Customer;
     }
 
+    /////////////TEMPORARY CHANGE/////////////
+    customer(){
+        login();
+    }
+
     static bool sortByRating(product product1, product product2)
     {
         return (product1.rating > product2.rating);
@@ -266,5 +271,22 @@ public:
         }
         tempWishlist.erase(tempWishlist.find(toRemove));
         systemAdmin.changeWishList(userID, tempWishlist);
+    }
+
+    void displayYourOrders(){
+        vector<int> orders=systemAdmin.orderIdsofCustomer(userID);
+        for(auto order_id:orders){
+            order currentOrder=systemAdmin.extactOrderInfo(to_string(order_id));
+            cout<<"Order ID :"<<order_id<<"\n";
+            cout<<currentOrder.order_<<"\n";
+            if(currentOrder.remainingTime!="00:00:00")cout<<currentOrder.remainingTime<<"\n";
+            cout<<currentOrder.other_details<<"\n";
+        }
+    }
+
+    void checkStatus(){
+        cout<<"Enter the ID of order you want to check for status" << "\n";
+        int orderID;cin>>orderID;
+        cout<<"time left : "<<systemAdmin.get_orderStatus(to_string(orderID));
     }
 };

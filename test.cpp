@@ -1,6 +1,7 @@
 //#include "Customer.h"
 //#include "deliveryPerson.h"
 #include "ShopKeeper.h"
+//#include "Customer.h"
 
 /*
 int product_id;
@@ -14,7 +15,15 @@ int product_id;
 
 int main(){
     systemAdmin.loadDatabase();
-    shopKeeper s;
+    //deliverPerson d;
+    //d.checkIfOrderIsAssigned();
+    //d.getProductInfoFromId(2);
+    //d.updateStatus();
+    //cout<<d.userID<<endl;
+    //return 0;
+    //customer c;
+    //c.checkStatus();
+    /*shopKeeper s;
     s.addToInventory();
     s.addToInventory();
     s.displayInventory();
@@ -22,11 +31,10 @@ int main(){
     s.changePrice();
     s.displayInventory();
     s.removeFromInventory();
-    s.displayInventory();
+    s.displayInventory();*/
     //deliverPerson d; 
     //d.assignOrder(5);
-    /*customer c;
-    product p,q,r,s;
+    /*product p,q,r,s;
     char *t="aaaa", *u="aaav", *v="aaap", *w="aaao", *x="S0";
     p.product_id=0;
     strcpy(p.product_name,t);
@@ -60,23 +68,23 @@ int main(){
     s.price=34;
     strcpy(s.shopkeeper_id,x);
     s.product_type=0;
-    systemAdmin.global_inven_map[p.product_name].insert(0);
+    /*systemAdmin.global_inven_map[p.product_name].insert(0);
     systemAdmin.global_inven_map[q.product_name].insert(1);
     systemAdmin.global_inven_map[r.product_name].insert(2);
-    systemAdmin.global_inven_map[s.product_name].insert(3);
-    systemAdmin.productId_to_product[0]=p;
+    systemAdmin.global_inven_map[s.product_name].insert(3);*/
+    /*systemAdmin.productId_to_product[0]=p;
     systemAdmin.productId_to_product[1]=q;
     systemAdmin.productId_to_product[2]=r;
     systemAdmin.productId_to_product[3]=s;
     //c.search();
-    //c.addToCart();
-    //c.addToCart();
-    //c.addToCart();
+    c.addToCart();
+    c.addToCart();
+    c.addToCart();
     //c.displayCart();
     //c.removeFromCart();
     //c.displayCart();
-    //c.cashInTheCart();
-    c.addToWishlist();
+    c.cashInTheCart();
+    /*c.addToWishlist();
     c.addToWishlist();
     c.addToWishlist();
     c.displayWishlist();

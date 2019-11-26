@@ -6,7 +6,7 @@
 //#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
-#include "forgotPassword.h"
+//#include "forgotPassword.h"
 
 typedef struct systemState
 {
@@ -19,9 +19,9 @@ systemState state;
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
 string add;
+order temporaryOrder;      // helps in getting info about order
 vector<int> tempOrderofCustomer;
 int temporaryOrderID; //used in assigning the order to the delivery person
-
 class admin
 {
 public:
@@ -30,7 +30,6 @@ public:
     string data;
     char *messaggeError;
 
-    int shopKeeperCount, deliveryPersonCount, CustomerCount; // helps in assigning the ID to everyone
     product *global_inventory_array;
     map<string, set<int>> global_inven_map; //mapping from product name to product
     //this is comment static product* personal_inventory;
@@ -63,10 +62,43 @@ public:
         temporaryProfile.password = argv[7];
         return 0;
     }
+
+    static int get_info_Order(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryOrder.OrderID = argv[0];
+        temporaryOrder.order_ = argv[1];
+        temporaryOrder.customerID = argv[2];
+        temporaryOrder.remainingTime = argv[3];
+        temporaryOrder.other_details = argv[4];
+        return 0;
+    }
+
+    order extactOrderInfo(string orderID){
+        string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + orderID + "\';";
+        int exit = sqlite3_exec(DB, query.c_str(), get_info_Order, NULL, NULL);
+        if (exit != SQLITE_OK)
+            cerr << "Error SELECT" << endl;
+        else
+        {
+            cout << "Operation OK!" << endl;
+        }
+        return temporaryOrder;
+    }
+
+    void updateTime(string orderID, string remainingTime){
+        string query = "UPDATE ALL_ORDERS_DB set TIME_LEFT = \'" + remainingTime + "\' WHERE ORDER_ID = \'" + orderID + '\'';
+        int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);cout<<query<<endl;
+        if (exit != SQLITE_OK)
+            cerr << "Error SELECT" << endl;
+        else
+        {
+            cout << "Operation OK!" << endl;
+        }
+    }
+
     void createDataBase()
     {
         int exit = 0;
-        shopKeeperCount = deliveryPersonCount = CustomerCount = 0;
         exit = sqlite3_open("userDatabase.db", &DB);
         if (exit)
         {
@@ -95,12 +127,15 @@ public:
         string sql5 = "CREATE TABLE ASSIGNED_ORDER("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "ORDER_ID  TEXT  NOT NULL );";
-        string sql6 = "CREAFTE TABLE WISHLIST("
+        string sql6 = "CREATE TABLE WISHLIST("
                       "ID TEXT PRIMARY KEY     NOT NULL, "
                       "ITEMS  TEXT  NOT NULL );";
-        string sql7 = "CREATE TABLE ORDERS("
+        string sql7 = "CREATE TABLE ALL_ORDERS_DB("
                       "ORDER_ID TEXT PRIMARY KEY     NOT NULL, "
-                      "ORDER  TEXT  NOT NULL );";
+                      "ORDER_    TEXT    NOT NULL, "
+                      "CUSTOMER_ID   TEXT    NOT NULL, "
+                      "TIME_LEFT   TEXT    NOT NULL, "
+                      "OTHER_DETAILS  TEXT  NOT NULL );";
         string sql8 = "CREATE TABLE UNASSIGNED_DELIVERY_PERSON("
                       "ID TEXT PRIMARY KEY     NOT NULL );";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
@@ -131,6 +166,26 @@ public:
         temporaryID = "#";
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
+        if (rc != SQLITE_OK)
+            cout << "Error select"
+                 << "\n";
+        else
+            cout << "Operation OK"
+                 << "\n";
+        return temporaryID;
+    }
+
+    static int get_address(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[0];
+        return 0;
+    }
+
+    string addressFromId(string id)
+    {
+        temporaryID = "#";
+        string query = "SELECT ADDRESS FROM PERSON WHERE ID = \'" + id + "\';";
+        int rc = sqlite3_exec(DB, query.c_str(), get_address, NULL, NULL);
         if (rc != SQLITE_OK)
             cout << "Error select"
                  << "\n";
@@ -193,15 +248,15 @@ public:
         string id = "";
         if (type == Customer)
         {
-            id = 'C' + to_string(CustomerCount++);
+            id = 'C' + to_string(state.CustomerCount++);
         }
         else if (type == deliveryPerson)
         {
-            id = 'D' + to_string(deliveryPersonCount++);
+            id = 'D' + to_string(state.deliveryPersonCount++);
         }
         else
         {
-            id = 'S' + to_string(shopKeeperCount++);
+            id = 'S' + to_string(state.shopKeeperCount++);
         }
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string temp = '\'' + username + '\'' + ',' + '\'' + id + '\'';
@@ -443,6 +498,7 @@ public:
             if(argv[0][i] == ' ' && fl){
                 fl=0;
                 tempOrderofCustomer.push_back(stoi(temp));
+                temp = "";
             }
             if(fl){
                 temp+=argv[0][i];
@@ -519,31 +575,13 @@ public:
         return temporaryID != "#";
     }
 
-    void dumpData()
-    {
-        global_inventory_array = (product *)malloc(productId_to_product.size() * sizeof(product));
-        int index = 0;
-        for (auto i : productId_to_product)
-        {
-            global_inventory_array[index] = i.second;
-            index++;
-        }
-        remove("global_inventory_db");
-        global_inve_file.open("global_inventory_db", ios::out);
-        global_inve_file.write((char *)global_inventory_array, productId_to_product.size() * sizeof(product));
-        global_inve_file.close();
-        remove("systemState");
-        fstream outSysState;
-        outSysState.open("systemState", ios::out);
-        outSysState.write((char *)&state, sizeof(systemState));
-        outSysState.close();
-    }
+    
     void insertProduct(product productToInsert)
     {
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id] = productToInsert;
     }
-    void forgotPassword(string username)
+    /*void forgotPassword(string username)
     {
         string new_password = PasswordGenerator();
         string message = "Your new Password is : " + new_password;
@@ -555,7 +593,7 @@ public:
         sendPasswordToEmail(temporaryProfile.email, new_password);
         changeProfile(temporaryID, temporaryProfile.name, temporaryProfile.surname,
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
-    }
+    }*/
 
     void assign_order(string id, int orderID)
     {
@@ -673,15 +711,14 @@ public:
 
     static int get_Status(void *data, int argc, char **argv, char **azColName)
     {
-        int len = strlen(argv[0]);
         temporaryID = "";
-        for(int i=len-9;i<len-1;++i)temporaryID.push_back(argv[0][i]);
+        for(int i=0;i<8;++i)temporaryID.push_back(argv[3][i]);
         return 0;
     }
 
     string get_orderStatus(string id){
         temporaryID = "#";
-        string query = "SELECT ORDER FROM ORDERS WHERE ID = \'" + id + "\';";
+        string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, query.c_str(), get_Status, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -693,16 +730,16 @@ public:
         return temporaryID;
     }
 
-    void insertOrder(string id, vector<pair<int,int>> order, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
-        string tempOrder = customerId+": ";
-        for(auto i: order){
-            tempOrder += "["+ to_string(i.first) + " | " + to_string(i.second) + "] ";
+    void insertOrder(string id, vector<pair<int,int>> curOrder, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
+        string product_ids = "",tempOrder="";
+        for(auto i: curOrder){
+            product_ids += "[" "Product ID : "+ to_string(i.first) + " | " + "Quantity Ordered : "+to_string(i.second) + "] ";
         }
         tempOrder += "[" + payementMode +"] ";
         if(payementUsing.length())tempOrder += "["+payementUsing+"] ";
-        tempOrder += "["+curTime+"] " + "Time Remaining: ["+ time_remaining+"]";
-        string temp = '\'' + id + "\',\'" + tempOrder +'\'';
-        string sql("INSERT INTO ORDERS VALUES(" + temp + ");");;
+        tempOrder += "["+curTime+"]";
+        string temp = '\'' + id + "\',\'" + product_ids + "\',\'" + customerId + "\',\'" + time_remaining + "\',\'" + tempOrder + '\'';
+        string sql("INSERT INTO ALL_ORDERS_DB VALUES(" + temp + ");");;
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
@@ -712,6 +749,19 @@ public:
         else
             cout << "Record inserted Successfully!" << endl;
     }
+
+    void deleteOrder(string id){
+        string sql = "DELETE FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + id + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
+    }
+
 
     static int findUnassigned(void *data, int argc, char **argv, char **azColName)
     {
@@ -835,6 +885,16 @@ public:
         int orderID1 = state.OrderCount++;
         cout << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
         addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
+        string deliveryPersonID=find_unassigned_deliveryPerson();
+        vector<pair<int,int>>tempOrder;
+        for(auto y:Cart)tempOrder.push_back({y.first.product_id, y.second});
+        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"????????");
+        if(deliveryPersonID=="#")cout<<"No delivery person is available" << "\n";
+        else {
+            assign_order(deliveryPersonID, orderID1);
+            delete_unassigned_deliveryPerson(deliveryPersonID);
+        }
+
     }
 
     void addToInventory(product productToAdd)
@@ -854,7 +914,7 @@ public:
         productId_to_product[productID].price = changedPrice;
     }
 
-    void setSystemState(int cusCnt, int shpCnt, int delCnt, int prodCnt, int indOrdCnt, int compOrdCnt)
+    void setSystemState(int cusCnt, int shpCnt, int delCnt, int prodCnt, int OrdCnt)
     {
         remove("systemState");
         fstream file;
@@ -863,10 +923,29 @@ public:
         madeUpState.CustomerCount = cusCnt;
         madeUpState.shopKeeperCount = shpCnt;
         madeUpState.deliveryPersonCount = delCnt;
-        madeUpState.OrderCount = indOrdCnt;
-        madeUpState.OrderCount = compOrdCnt;
+        madeUpState.OrderCount = OrdCnt;
         madeUpState.productCount = prodCnt;
         file.write((char *)&madeUpState, sizeof(systemState));
         file.close();
+    }
+
+    ~admin()
+    {
+        global_inventory_array = (product *)malloc(productId_to_product.size() * sizeof(product));
+        int index = 0;
+        for (auto i : productId_to_product)
+        {
+            global_inventory_array[index] = i.second;
+            index++;
+        }
+        remove("global_inventory_db");
+        global_inve_file.open("global_inventory_db", ios::out);
+        global_inve_file.write((char *)global_inventory_array, productId_to_product.size() * sizeof(product));
+        global_inve_file.close();
+        remove("systemState");
+        fstream outSysState;
+        outSysState.open("systemState", ios::out);
+        outSysState.write((char *)&state, sizeof(systemState));
+        outSysState.close();
     }
 };
