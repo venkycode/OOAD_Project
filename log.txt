@@ -84,3 +84,12 @@ Operation OK!
 mainpage 0here1 0 S0
 here1 0
 >>> !!! END OF LOG !!! <<<<<
+password = password@1
+Operation OK!
+password = Password@1
+password = ed
+Operation OK!
+password = qqq@222Q
+Operation OK!
+password = fce
+Operation OK!

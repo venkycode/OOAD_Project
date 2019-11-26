@@ -377,8 +377,11 @@ public:
         return temporaryProfile;
     }
 
-    void deleteID(string id, string username)
+    bool deleteID(string id, string username)
     {
+        cout<<fgred<<printtabs(8)<<"Are you sure you want to delete your account?(Y/n)"<<endl;
+        string response;cin>>response;
+        if(response!="Y")return 0;
         string sql = "DELETE FROM PERSON WHERE ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
@@ -406,6 +409,7 @@ public:
         }
         else
             cout << "Record deleted Successfully from USER_MAP!" << endl;
+        return 1;
     }
 
     void changeProfile(string id, string name, string surname, string email, string address, string username, string password, string contact)
@@ -955,7 +959,7 @@ public:
         if(deliveryPersonID=="#"){
             add_unassginedOrder(to_string(orderID1));
         }
-        else {
+        else{
             assign_order(deliveryPersonID, orderID1);
             delete_unassigned_deliveryPerson(deliveryPersonID);
         }

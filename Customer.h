@@ -110,20 +110,26 @@ public:
         printHeader();
         cout<<printtabs(8);
         printLine(40);
-        for (auto currentProduct : matches)
-        {
-            cout<<fggreen<<printtabs(8)<<"PRODUCT NUMBER :"<<fgred<<productMatchCounter;
-            cout<<endl;
-            cout <<fggreen<<printtabs(8)<<"Product name : " <<fgblue<< string(currentProduct.product_name) << "\n";
-            cout << fggreen<<printtabs(8)<<"Product ID : " << fgblue<<currentProduct.product_id << "\n";
-            cout << fggreen<<printtabs(8)<<"Shopkeeper : " << fgblue<<systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
-            cout << fggreen<<printtabs(8)<<"Rating : " << currentProduct.rating << "\n";
-            cout << fggreen<<printtabs(8)<<"Quantity : " << currentProduct.count << "\n";
-            cout << fggreen<<printtabs(8)<<"Price : " << currentProduct.price << "\n";
-            cout << fggreen<<printtabs(8)<<"Delivery Charges : " << currentProduct.deliveryCharge << "\n";
-            cout << fggreen<<printtabs(8);
-            cout<<fgred;
-            printLine(40);
+        if(isFullMatchPossible){
+            for (auto currentProduct : matches)
+            {
+                cout<<fggreen<<printtabs(8)<<"PRODUCT NUMBER :"<<fgred<<productMatchCounter;
+                cout<<endl;
+                cout <<fggreen<<printtabs(8)<<"Product name : " <<fgblue<< string(currentProduct.product_name) << "\n";
+                cout << fggreen<<printtabs(8)<<"Product ID : " << fgblue<<currentProduct.product_id << "\n";
+                cout << fggreen<<printtabs(8)<<"Shopkeeper : " << fgblue<<systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
+                cout << fggreen<<printtabs(8)<<"Rating : " << currentProduct.rating << "\n";
+                cout << fggreen<<printtabs(8)<<"Quantity : " << currentProduct.count << "\n";
+                cout << fggreen<<printtabs(8)<<"Price : " << currentProduct.price << "\n";
+                cout << fggreen<<printtabs(8)<<"Delivery Charges : " << currentProduct.deliveryCharge << "\n";
+                cout << fggreen<<printtabs(8);
+                cout<<fgred;
+                printLine(40);
+            }
+        }
+        else{
+            cout << fggreen<<printtabs(8)<<"Did you mean ?"<<endl; 
+            for(auto currentProduct:matches)cout << printtabs(8)<< currentProduct.product_name << "\n";
         }
         if(matches.size())
         {
@@ -241,20 +247,28 @@ public:
             int availableQuantity = systemAdmin.productId_to_product[y.first.product_id].count;
             if (y.second > availableQuantity)
             {
-                cout << "Only " << availableQuantity << "are available"
-                     << "\n";
-                cout << "Product Name : " << y.first.product_name << "\n";
-                cout << "Product ID : " << y.first.product_id << "\n";
-                cout << "Press 1 if you want to remove this from cart"
-                     << "\n";
-                cout << "Press 2 if you want to order the available quantity"
-                     << "\n";
-                int response;
-                cin >> response;
-                if (response == 1)
+                if(availableQuantity) {
+                    cout << "Only " << availableQuantity << "are available" << "\n";
+                    cout << "Product Name : " << y.first.product_name << "\n";
+                    cout << "Product ID : " << y.first.product_id << "\n";
+                    cout << "Press 1 if you want to remove this from cart"
+                        << "\n";
+                    cout << "Press 2 if you want to order the available quantity"
+                        << "\n";
+                    int response;
+                    cin >> response;
+                    if (response == 1)
+                        toBeRemoved.insert(y.first.product_id);
+                    else
+                        cart[i].second = availableQuantity;
+                }
+                else{
+                    cout<<"None are available" << endl;
+                    cout << "Product Name : " << y.first.product_name << "\n";
+                    cout << "Product ID : " << y.first.product_id << "\n";
+                    cout<<"This product is removed from your cart"<<endl;
                     toBeRemoved.insert(y.first.product_id);
-                else
-                    cart[i].second = availableQuantity;
+                }
             }
         }
         for (int i = 0; i < cart.size(); ++i)
