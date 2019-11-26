@@ -25,21 +25,31 @@ class deliverPerson : public User{
             return;
         }
         cout<<"You have been assigned an order" << "\n";  
-        cout<<"Order ID : "<<assignedOrderId<<"\n";   //INCOMPLETE
-        
+        cout<<"Order ID : "<<assignedOrderId<<"\n";   
+        order currentOrder=systemAdmin.extactOrderInfo(to_string(assignedOrderId));
+        cout<<currentOrder.order_<<"\n";
+        cout<<"Customer address : "<<systemAdmin.addressFromId(currentOrder.customerID)<<"\n";
+        cout<<currentOrder.other_details<<"\n";
+    }
+
+    void getProductInfoFromId(int productID){
+        product currentProduct=systemAdmin.productId_to_product[productID];
+        cout<<"Product Name :"<<currentProduct.product_name<<"\n";
+        cout<<"Shop name :"<<systemAdmin.nameFromId(currentProduct.shopkeeper_id)<<"\n";
+        cout<<"Shop address :"<<systemAdmin.addressFromId(currentProduct.shopkeeper_id)<<"\n";
     }
 
     void updateStatus(){
         cout<<"Enter your order ID" << "\n";
         int id;cin>>id;
-        cout<<"Enter the expected time left" << "\n";
-        string tm;cin>>tm;
-        //systemAdmin.updateOrderStatus(id,tm);
-        /*if(timeRemaining.days == 0 && timeRemaining.hours == 0 && timeRemaining.minutes == 0){
+        cout<<"Enter the expected time left in dd:hh:mm format" << "\n";
+        string timeLeft;cin>>timeLeft;
+        systemAdmin.updateTime(to_string(id),timeLeft);
+        if(timeLeft=="00:00:00"){
             systemAdmin.finish_order(userID);
             assignedOrderId = -1;
             systemAdmin.insert_unassigned_deliveryPerson(userID);
-        }*/
+        }
     }
 
     void assignOrder(int orderId){

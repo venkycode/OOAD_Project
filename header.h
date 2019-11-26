@@ -56,9 +56,10 @@ typedef struct profile{
  
 typedef struct order
 {
-    vector<pair<int, int>> cart;
-    int OrderID, customerID;
-    timeStamp remainingTime;
+    string order_;
+    string OrderID ,customerID;
+    string remainingTime;
+    string other_details;
 } order;
  
  

@@ -19,6 +19,7 @@ systemState state;
 string temporaryID;       // also helps in adding transactions
 profile temporaryProfile; // helps in editing profile
 string add;
+order temporaryOrder;      // helps in getting info about order
 vector<int> tempOrderofCustomer;
 int temporaryOrderID; //used in assigning the order to the delivery person
 class admin
@@ -61,6 +62,40 @@ public:
         temporaryProfile.password = argv[7];
         return 0;
     }
+
+    static int get_info_Order(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryOrder.OrderID = argv[0];
+        temporaryOrder.order_ = argv[1];
+        temporaryOrder.customerID = argv[2];
+        temporaryOrder.remainingTime = argv[3];
+        temporaryOrder.other_details = argv[4];
+        return 0;
+    }
+
+    order extactOrderInfo(string orderID){
+        string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + orderID + "\';";
+        int exit = sqlite3_exec(DB, query.c_str(), get_info_Order, NULL, NULL);
+        if (exit != SQLITE_OK)
+            cerr << "Error SELECT" << endl;
+        else
+        {
+            cout << "Operation OK!" << endl;
+        }
+        return temporaryOrder;
+    }
+
+    void updateTime(string orderID, string remainingTime){
+        string query = "UPDATE ALL_ORDERS_DB set TIME_LEFT = \'" + remainingTime + "\' WHERE ORDER_ID = \'" + orderID + '\'';
+        int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);cout<<query<<endl;
+        if (exit != SQLITE_OK)
+            cerr << "Error SELECT" << endl;
+        else
+        {
+            cout << "Operation OK!" << endl;
+        }
+    }
+
     void createDataBase()
     {
         int exit = 0;
@@ -131,6 +166,26 @@ public:
         temporaryID = "#";
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
+        if (rc != SQLITE_OK)
+            cout << "Error select"
+                 << "\n";
+        else
+            cout << "Operation OK"
+                 << "\n";
+        return temporaryID;
+    }
+
+    static int get_address(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[0];
+        return 0;
+    }
+
+    string addressFromId(string id)
+    {
+        temporaryID = "#";
+        string query = "SELECT ADDRESS FROM PERSON WHERE ID = \'" + id + "\';";
+        int rc = sqlite3_exec(DB, query.c_str(), get_address, NULL, NULL);
         if (rc != SQLITE_OK)
             cout << "Error select"
                  << "\n";

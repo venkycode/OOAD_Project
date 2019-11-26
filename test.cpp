@@ -1,5 +1,6 @@
-#include "Customer.h"
+//#include "Customer.h"
 //#include "deliveryPerson.h"
+#include "ShopKeeper.h"
 //#include "Customer.h"
 
 /*
@@ -14,11 +15,16 @@ int product_id;
 
 int main(){
     systemAdmin.loadDatabase();
+    //deliverPerson d;
+    //d.checkIfOrderIsAssigned();
+    //d.getProductInfoFromId(2);
+    //d.updateStatus();
     //cout<<d.userID<<endl;
     //return 0;
-    customer c;
-    c.checkStatus();
-    /*s.addToInventory();
+    //customer c;
+    //c.checkStatus();
+    /*shopKeeper s;
+    s.addToInventory();
     s.addToInventory();
     s.displayInventory();
     s.changeCount();
