@@ -111,19 +111,47 @@ public:
             sort(matches.begin(), matches.end(), sortByDecreasingPrice);
         
         int productMatchCounter=1;
+        printHeader();
+        cout<<printtabs(8);
+        printLine(40);
         for (auto currentProduct : matches)
         {
-            cout<<fgblue<<printtabs(8)<<"PRODUCT NUMBER :"<<fgred<<productMatchCounter;
+            cout<<fggreen<<printtabs(8)<<"PRODUCT NUMBER :"<<fgred<<productMatchCounter;
             cout<<endl;
-            cout << "Product name : " << string(currentProduct.product_name) << "\n";
-            cout << "Product ID : " << currentProduct.product_id << "\n";
-            cout << "Shopkeeper : " << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
-            cout << "Rating : " << currentProduct.rating << "\n";
-            cout << "Quantity : " << currentProduct.count << "\n";
-            cout << "Price : " << currentProduct.price << "\n";
-            cout << "Delivery Charges : " << currentProduct.deliveryCharge << "\n";
-            cout << "\n";
+            cout <<fggreen<<printtabs(8)<<"Product name : " <<fgblue<< string(currentProduct.product_name) << "\n";
+            cout << fggreen<<printtabs(8)<<"Product ID : " << fgblue<<currentProduct.product_id << "\n";
+            cout << fggreen<<printtabs(8)<<"Shopkeeper : " << fgblue<<systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
+            cout << fggreen<<printtabs(8)<<"Rating : " << currentProduct.rating << "\n";
+            cout << fggreen<<printtabs(8)<<"Quantity : " << currentProduct.count << "\n";
+            cout << fggreen<<printtabs(8)<<"Price : " << currentProduct.price << "\n";
+            cout << fggreen<<printtabs(8)<<"Delivery Charges : " << currentProduct.deliveryCharge << "\n";
+            cout << fggreen<<printtabs(8);
+            cout<<fgred;
+            printLine(40);
         }
+        if(matches.size())
+        {
+            printOption(8,0,"Add to Cart",1);
+            printOption(8,0,"Add to Wishlist",2);
+            printInputField();
+            int optionselected;
+            cin>>optionselected;
+            if(optionselected==1)
+            addToCart();
+            else if(optionselected==2)
+            addToWishlist();
+        }
+        else
+        {
+            delayBy(1);
+            cout<<endl;
+            cout<<endl;
+            cout<<endl;
+            cout<<printtabs(8)<<fgred;
+            cout<<"NO PRODUCTS FOUND !!!"<<endl;
+            delayBy(2);
+        }
+        
     }
 
     void addToCart()

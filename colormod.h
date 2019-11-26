@@ -126,3 +126,12 @@ string hiddenPasswordInput()
     string returnPass=tmpPassword;
     return returnPass;
 }
+
+void printLine(int n)
+{
+    for(int i=0 ; i<n ;i++)
+    {
+        cout<<fgred <<"-";
+    }
+    cout<<endl;
+}

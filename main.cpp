@@ -54,6 +54,8 @@ void customerDashBoard(customer *customerObject)
     printOption(9, 0, "SEARCH PRODUCT", 1);
     printOption(9, 0, "EDIT PROFILE", 2);
     printOption(9, 0, "SHOW TOP PRODUCTS",3);
+    printOption(9, 0, "DELETE PROFILE",4);
+    printOption(9,0,"Show Transactions",5);
     printOption(9,3,"LOGOUT",4);
     printInputField();
     int choice;
@@ -61,12 +63,13 @@ void customerDashBoard(customer *customerObject)
     if(choice==1)
     {
         customerObject->search();
+        customerDashBoard(customerObject);
     }
 }
 
 void nextToMainPage(User *runTimeUser)
 {
-    logStream<<"here1 "<<runTimeUser->userType<<endl;
+    logStream<<"here1 "<<runTimeUser->userType<<" "<<runTimeUser->userID<< endl;
     if (runTimeUser->userID[0] == 'C')
     {
         customer *runTimeCustomer;
@@ -80,7 +83,7 @@ int main()
 {
 
     logStream << ">>> !!! START OF LOG !!! <<<<<\n";
-    systemAdmin.setSystemState(1, 1, 0, 0, 0);
+    //systemAdmin.setSystemState(1, 1, 0, 0, 0);
     systemAdmin.loadDatabase();
     cout << clearscreen;
     cout << cursorAdjust;

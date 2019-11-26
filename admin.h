@@ -167,10 +167,10 @@ public:
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
         if (rc != SQLITE_OK)
-            cout << "Error select"
+            logStream << __func__<<"Error select"
                  << "\n";
         else
-            cout << "Operation OK"
+            logStream<< __func__ << "Operation OK"
                  << "\n";
         return temporaryID;
     }

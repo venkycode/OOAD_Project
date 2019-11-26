@@ -116,11 +116,7 @@ public:
             else
             {
                 //getline(cin,username);
-<<<<<<< HEAD
-                userProfile =login();
-=======
                 userProfile= login();
->>>>>>> b3e2fc284bf489b95b1041caa47df0a1f71a3edf
             }
         }
         assignUserProfile(userProfile);
@@ -288,15 +284,6 @@ public:
         //      << "\n";
         getline(cin,password);
         inputPassword(userProfile);
-<<<<<<< HEAD
-        cout<<endl;
-        printOption(8,0,"Adress ");
-        PRINTBLUE;
-        // cout << "Enter your address"
-        //      << "\n";
-        // getline(cin, userProfile.address);
-        systemAdmin.signUp(userProfile);
-=======
         cout << "Enter your address"
              << "\n";
         getline(cin, userProfile.address);
@@ -304,7 +291,6 @@ public:
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;
         //sendOTP(userProfile.email);
->>>>>>> b3e2fc284bf489b95b1041caa47df0a1f71a3edf
     }
 
     void updateProfile()

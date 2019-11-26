@@ -23,7 +23,7 @@ int main(){
     //return 0;
     //customer c;
     //c.checkStatus();
-    /*shopKeeper s;
+    shopKeeper s;
     s.addToInventory();
     s.addToInventory();
     s.displayInventory();
@@ -31,7 +31,7 @@ int main(){
     s.changePrice();
     s.displayInventory();
     s.removeFromInventory();
-    s.displayInventory();*/
+    s.displayInventory();
     //deliverPerson d; 
     //d.assignOrder(5);
     /*product p,q,r,s;
