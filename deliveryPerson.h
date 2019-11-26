@@ -8,11 +8,11 @@ class deliverPerson : public User{
         assignedOrderId = systemAdmin.AssignedOrderId(Profile.id);
     }
     deliverPerson(){
-        login();  
-        assignedOrderId = systemAdmin.AssignedOrderId(userID);       //////////////TEMPORARY CHANGE
-        /*signUp();
+        //login();  
+        //assignedOrderId = systemAdmin.AssignedOrderId(userID);       //////////////TEMPORARY CHANGE
+        signUp();
         systemAdmin.insert_unassigned_deliveryPerson(userID);
-        assignedOrderId = -1;*/
+        assignedOrderId = -1;
     }
 
     bool isAvailable(){

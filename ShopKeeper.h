@@ -6,8 +6,8 @@ class shopKeeper:public User{
         assignUserProfile(Profile);
     }
     shopKeeper(){
-        //signUp();
-        login();        //TEMPORARY CHANGE
+        signUp();
+        //login();        //TEMPORARY CHANGE
     }
     void addToInventory(){
         product productToAdd;
@@ -36,6 +36,7 @@ class shopKeeper:public User{
             cout<<"Available quantity : " << currentProduct.count << "\n";
             cout << "Price :" << currentProduct.price << "\n";
         }
+        //cout<<systemAdmin.personal_inventory[userID].size()<<endl;
     }
 
     void changeCount(){

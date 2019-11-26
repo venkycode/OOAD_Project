@@ -38,6 +38,10 @@ public:
     map<string, set<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
     map<int, product> productId_to_product;
 
+    admin(){
+        loadDatabase();
+    }
+
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
         for (int i = 0; i < argc; i++)

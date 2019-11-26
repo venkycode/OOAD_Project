@@ -137,7 +137,7 @@ bool isCorrectCardNumber(string cardNumber)
         return 0;
     int pos = 4;
     bool fl = 1;
-    for (int i = 0; i < 20; ++i)
+    for (int i = 0; i < 19; ++i)
     {
         if (i == pos && cardNumber[pos] != '-')
             fl = 0;

@@ -20,10 +20,6 @@ public:
         userType=Customer;
     }
 
-    /////////////TEMPORARY CHANGE/////////////
-    customer(){
-        login();
-    }
 
     static bool sortByRating(product product1, product product2)
     {
@@ -305,9 +301,10 @@ public:
         vector<int> orders=systemAdmin.orderIdsofCustomer(userID);
         for(auto order_id:orders){
             order currentOrder=systemAdmin.extactOrderInfo(to_string(order_id));
+            if(currentOrder.remainingTime=="00:00:00")continue;
             cout<<"Order ID :"<<order_id<<"\n";
             cout<<currentOrder.order_<<"\n";
-            if(currentOrder.remainingTime!="00:00:00")cout<<currentOrder.remainingTime<<"\n";
+            cout<<currentOrder.remainingTime<<"\n";
             cout<<currentOrder.other_details<<"\n";
         }
     }
