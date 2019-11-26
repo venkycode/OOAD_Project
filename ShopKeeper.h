@@ -1,4 +1,4 @@
-#include "User.h"
+#include "Customer.h"
 
 class shopKeeper:public User{
     public:
@@ -31,6 +31,7 @@ class shopKeeper:public User{
     void displayInventory(){
         for(auto y : systemAdmin.personal_inventory[userID]){
             product currentProduct=systemAdmin.productId_to_product[y];
+            if(currentProduct.count==0)continue;
             cout<<"Product name : " << currentProduct.product_name << "\n";
             cout<<"Product ID : " << currentProduct.product_id << "\n";
             cout<<"Available quantity : " << currentProduct.count << "\n";

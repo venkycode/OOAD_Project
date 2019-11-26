@@ -2,7 +2,8 @@
 //#include "User.h"
 //#include "colormod.h"
 //#include <pthread.h>
-#include "Customer.h"
+#include "ShopKeeper.h"
+
 
 User *runTimeUserGlobal;
 
@@ -82,6 +83,32 @@ void customerDashBoard(customer *customerObject)
     }
 }
 
+void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
+{
+    printHeader();
+    delayBy(1);
+    printOption(9, 3, "Welcome ", 0);
+    delayBy(1);
+    cout << fgblue << shopkeeperObject->name ;
+    delayBy(1);
+    cout<< fggreen << " :)";
+    cout << endl;
+    cout << endl;
+    delayBy(3);
+    printOption(9, 6, "EDIT PROFILE", 1);
+    printOption(9, 1, "ADD PRODUCT TO INVENTORY", 2);
+    printOption(9, 0, "REMOVE PRODUCT FROM INVENTORY",3);
+    printOption(9, 1, "CHANGE PRICE OF PRODUCT",4);
+    printOption(9, 1, "CHANGE COUNT OF PRODUCT",5);
+    printOption(9, 3, "DISPLAY INVENTORY",6);
+    printOption(10,1,"LOGOUT",7);
+    printOption(9,5,"DELETE PROFILE",8);
+    printInputField();
+    //int choice;
+    //cin>>choice;
+    
+}
+
 void nextToMainPage(User *runTimeUser)
 {
     logStream<<"here1 "<<runTimeUser->userType<<" "<<runTimeUser->userID<< endl;
@@ -92,6 +119,12 @@ void nextToMainPage(User *runTimeUser)
         logStream<<"here1 "<<runTimeCustomer->userType<<endl; 
         customerDashBoard(runTimeCustomer);
     }
+    else if(runTimeUser->userID[0] == 'S'){
+        shopKeeper *runTimeShopKeeper;
+        runTimeShopKeeper = new shopKeeper(runTimeUser->finalProfile);
+        logStream<<"here1 "<<runTimeShopKeeper->userType<<endl; 
+        shopKeeperDashBoard(runTimeShopKeeper);
+    }
 }
 
 int main()
@@ -99,7 +132,7 @@ int main()
 
     logStream << ">>> !!! START OF LOG !!! <<<<<\n";
     //systemAdmin.setSystemState(1, 1, 0, 0, 0);
-    systemAdmin.loadDatabase();
+    //systemAdmin.loadDatabase();
     cout << clearscreen;
     cout << cursorAdjust;
     mainPage();
