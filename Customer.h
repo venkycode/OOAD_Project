@@ -163,7 +163,7 @@ public:
             cout<<"Product name :"<<currentProduct.product_name<<"\n";
             cout<<"Rating : "<<currentProduct.rating<<"\n";
             cout<<"Price : "<<currentProduct.price<<"\n";
-            cout<<"Shop name : "<<systemAdmin.nameFromId[currentProduct.shopkeeper_id]<<"\n";
+            cout<<"Shop name : "<<systemAdmin.nameFromId(currentProduct.shopkeeper_id)<<"\n";
             cout<<"\n";
             if(cnt==5)break;
         }
