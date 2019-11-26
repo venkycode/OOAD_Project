@@ -295,20 +295,28 @@ public:
             int availableQuantity = systemAdmin.productId_to_product[y.first.product_id].count;
             if (y.second > availableQuantity)
             {
-                cout << "Only " << availableQuantity << "are available"
-                     << "\n";
-                cout << "Product Name : " << y.first.product_name << "\n";
-                cout << "Product ID : " << y.first.product_id << "\n";
-                cout << "Press 1 if you want to remove this from cart"
-                     << "\n";
-                cout << "Press 2 if you want to order the available quantity"
-                     << "\n";
-                int response;
-                cin >> response;
-                if (response == 1)
+                if(availableQuantity) {
+                    cout << "Only " << availableQuantity << "are available" << "\n";
+                    cout << "Product Name : " << y.first.product_name << "\n";
+                    cout << "Product ID : " << y.first.product_id << "\n";
+                    cout << "Press 1 if you want to remove this from cart"
+                        << "\n";
+                    cout << "Press 2 if you want to order the available quantity"
+                        << "\n";
+                    int response;
+                    cin >> response;
+                    if (response == 1)
+                        toBeRemoved.insert(y.first.product_id);
+                    else
+                        cart[i].second = availableQuantity;
+                }
+                else{
+                    cout<<"None are available" << endl;
+                    cout << "Product Name : " << y.first.product_name << "\n";
+                    cout << "Product ID : " << y.first.product_id << "\n";
+                    cout<<"This product is removed from your cart"<<endl;
                     toBeRemoved.insert(y.first.product_id);
-                else
-                    cart[i].second = availableQuantity;
+                }
             }
         }
         for (int i = 0; i < cart.size(); ++i)

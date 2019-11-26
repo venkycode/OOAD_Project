@@ -88,10 +88,10 @@ void customerDashBoard(customer *customerObject)
     }
     else if(choice==4)
     {
-        systemAdmin.deleteID(customerObject->userID,customerObject->username);
-        printHeader();
+        if(systemAdmin.deleteID(customerObject->userID,customerObject->username))
+        {printHeader();
         cout<<endl<<endl<<endl;
-        cout<<printtabs(8)<<fgred<<"It was good having you"<<endl;
+        cout<<printtabs(8)<<fgred<<"It was good having you"<<endl;}
     }
 }
 
@@ -116,6 +116,39 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     printOption(10,1,"LOGOUT",7);
     printOption(9,5,"DELETE PROFILE",8);
     printInputField();
+    int choice;
+    cin>>choice;
+    bool backToDashboard=1;
+    switch (choice)
+    {
+    case 1:
+        shopkeeperObject->updateProfile();
+        break;
+    case 2 :
+        shopkeeperObject->addToInventory();
+        break;
+    case 3:
+        shopkeeperObject->removeFromInventory();
+        break;
+    case 4:
+        shopkeeperObject->changePrice();
+        break;
+    case 5:
+        shopkeeperObject->changeCount();
+        break;
+    case 6:
+        shopkeeperObject->displayInventory();
+        break;
+    case 7:
+        backToDashboard=0;
+        break;
+    case 8:
+        backToDashboard= (systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))^1;
+        break;
+
+    }
+    if(backToDashboard)shopKeeperDashBoard(shopkeeperObject);
+    else mainPage();
 }
 
 void nextToMainPage(User *runTimeUser)
