@@ -40,6 +40,12 @@ void mainPage()
         mainPage();
     }
     logStream<<"mainpage "<<runTimeUserGlobal->userType;
+    printHeader();
+    cout<<endl;
+    cout<<endl;
+    printOption(9,0,"Processing......");
+    cout<<endl<<endl<<endl;
+    delayBy(2);
     nextToMainPage(runTimeUserGlobal);
 }
 
@@ -64,6 +70,15 @@ void customerDashBoard(customer *customerObject)
     {
         customerObject->search();
         customerDashBoard(customerObject);
+    }
+    else if(choice==2)
+    {
+        customerObject->updateProfile();
+        customerDashBoard(customerObject);
+    }
+    else if(choice==3)
+    {
+        customerObject->updateProfile();
     }
 }
 
