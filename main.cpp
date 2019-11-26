@@ -84,7 +84,7 @@ int main()
 
     logStream << ">>> !!! START OF LOG !!! <<<<<\n";
     //systemAdmin.setSystemState(1, 1, 0, 0, 0);
-    systemAdmin.loadDatabase();
+    //systemAdmin.loadDatabase();
     cout << clearscreen;
     cout << cursorAdjust;
     mainPage();
