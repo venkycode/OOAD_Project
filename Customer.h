@@ -150,6 +150,25 @@ public:
         
     }
 
+    void displayTopRatedProducts(){
+        vector<pair<int,int>> ratings;
+        for(auto y:systemAdmin.productId_to_product) ratings.push_back({y.second.rating,y.first});
+        sort(ratings.begin(),ratings.end());
+        reverse(ratings.begin(),ratings.end());
+        int cnt=0;
+        for(auto y:ratings){
+            product currentProduct = systemAdmin.productId_to_product[y.second];
+            if(currentProduct.count==0)continue;
+            cnt++;
+            cout<<"Product name :"<<currentProduct.product_name<<"\n";
+            cout<<"Rating : "<<currentProduct.rating<<"\n";
+            cout<<"Price : "<<currentProduct.price<<"\n";
+            cout<<"Shop name : "<<systemAdmin.nameFromId[currentProduct.shopkeeper_id]<<"\n";
+            cout<<"\n";
+            if(cnt==5)break;
+        }
+    }
+
     void addToCart()
     {
         cout << "Enter the ID of product you wish to add to cart "

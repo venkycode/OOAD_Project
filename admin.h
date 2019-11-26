@@ -910,11 +910,19 @@ public:
 
     void changeProductCount(int productID, int changedCount)
     {
+        if(productId_to_product.find(productID)==productId_to_product.end()){
+            cout<<"This product does not belong to your inventory" << "\n";
+            return;
+        }
         productId_to_product[productID].count = changedCount;
     }
 
     void changeProductPrice(int productID, int changedPrice)
     {
+        if(productId_to_product.find(productID)==productId_to_product.end()){
+            cout<<"This product does not belong to your inventory" << "\n";
+            return;
+        }
         productId_to_product[productID].price = changedPrice;
     }
 

@@ -67,6 +67,31 @@ void customerDashBoard(customer *customerObject)
     }
 }
 
+void shopKeeperDashBoard(customer *shopkeeperObject)
+{
+    printHeader();
+    delayBy(1);
+    printOption(9, 3, "Welcome ", 0);
+    delayBy(1);
+    cout << fgblue << shopkeeperObject->name ;
+    delayBy(1);
+    cout<< fggreen << " :)";
+    cout << endl;
+    cout << endl;
+    printOption(9, 0, "EDIT PROFILE", 1);
+    printOption(9, 0, "ADD PRODUCT TO INVENTORY", 2);
+    printOption(9, 0, "REMOVE PRODUCT FROM INVENTORY",3);
+    printOption(9, 0, "CHANGE PRICE OF PRODUCT",4);
+    printOption(9, 0, "CHANGE COUNT OF PRODUCT",5);
+    printOption(9, 0, "DISPLAY INVENTORY",6);
+    printOption(9,0,"LOGOUT",7);
+    printOption(9,3,"DELETE PROFILE",8);
+    printInputField();
+    int choice;
+    cin>>choice;
+    
+}
+
 void nextToMainPage(User *runTimeUser)
 {
     logStream<<"here1 "<<runTimeUser->userType<<" "<<runTimeUser->userID<< endl;
