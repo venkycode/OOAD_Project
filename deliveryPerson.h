@@ -13,6 +13,7 @@ class deliverPerson : public User{
         signUp();
         systemAdmin.insert_unassigned_deliveryPerson(userID);
         assignedOrderId = -1;
+        systemAdmin.assignUnassignedOrders();
     }
 
     bool isAvailable(){

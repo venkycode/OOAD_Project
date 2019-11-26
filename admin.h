@@ -40,6 +40,7 @@ public:
 
     admin(){
         loadDatabase();
+        assignUnassignedOrders();
     }
 
     static int callback(void *data, int argc, char **argv, char **azColName)
@@ -142,6 +143,8 @@ public:
                       "OTHER_DETAILS  TEXT  NOT NULL );";
         string sql8 = "CREATE TABLE UNASSIGNED_DELIVERY_PERSON("
                       "ID TEXT PRIMARY KEY     NOT NULL );";
+        string sql9 = "CREATE TABLE UNASSIGNED_ORDERS("
+                      "ORDER_ID TEXT PRIMARY KEY     NOT NULL );";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql3.c_str(), NULL, 0, &messaggeError);
@@ -150,6 +153,7 @@ public:
         exit = sqlite3_exec(DB, sql6.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql7.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql8.c_str(), NULL, 0, &messaggeError);
+        exit = sqlite3_exec(DB, sql9.c_str(), NULL, 0, &messaggeError);
         if (exit == SQLITE_OK)
         {
             cerr << "Error Create Table" << endl;
@@ -177,6 +181,50 @@ public:
             logStream<< __func__ << "Operation OK"
                  << "\n";
         return temporaryID;
+    }
+
+    void add_unassginedOrder(string orderId){
+        string temp = '\'' + orderId + "\'";
+        string sql("INSERT INTO UNASSIGNED_ORDERS VALUES(" + temp + ");");
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error Insert    " << messaggeError << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record inserted Successfully!" << endl;
+    }
+
+    static int get_Order(void *data, int argc, char **argv, char **azColName)
+    {
+        temporaryID = argv[0];
+        return 0;
+    }
+
+    int get_unassignedOrder(){
+        temporaryID = "-1";
+        string sql("SELECT * FROM UNASSIGNED_ORDERS;");
+        int rc = sqlite3_exec(DB, sql.c_str(), get_Order, NULL, NULL);
+        if (rc != SQLITE_OK)
+            cout << "Error select"
+                 << "\n";
+        else
+            cout << "Operation OK"
+                 << "\n";
+        return stoi(temporaryID);
+    }
+
+    void delete_unassignedOrder(string orderId){
+        string sql = "DELETE FROM UNASSIGNED_ORDERS WHERE ORDER_ID = \'" + orderId + "\';";
+        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        if (exit != SQLITE_OK)
+        {
+            cerr << "Error DELETE" << endl;
+            sqlite3_free(messaggeError);
+        }
+        else
+            cout << "Record deleted Successfully from PERSON!" << endl;
     }
 
     static int get_address(void *data, int argc, char **argv, char **azColName)
@@ -814,6 +862,17 @@ public:
             cout << "Record inserted Successfully!" << endl;
     }
 
+    void assignUnassignedOrders(){
+        while(1){
+            string tempDeliveryPerson = find_unassigned_deliveryPerson();
+            int tempOrderId = get_unassignedOrder();
+            if(tempDeliveryPerson == "#" || tempOrderId == -1)break;
+            delete_unassigned_deliveryPerson(tempDeliveryPerson);
+            delete_unassignedOrder(to_string(tempOrderId));
+            assign_order(tempDeliveryPerson, tempOrderId);
+        }
+    }
+
     void payment(vector<pair<product, int>> Cart, enum mode payment_mode, string contact, string id)
     {
         auto current_clock = chrono::system_clock::now();
@@ -893,7 +952,9 @@ public:
         vector<pair<int,int>>tempOrder;
         for(auto y:Cart)tempOrder.push_back({y.first.product_id, y.second});
         insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"????????");
-        if(deliveryPersonID=="#")cout<<"No delivery person is available" << "\n";
+        if(deliveryPersonID=="#"){
+            add_unassginedOrder(to_string(orderID1));
+        }
         else {
             assign_order(deliveryPersonID, orderID1);
             delete_unassigned_deliveryPerson(deliveryPersonID);
