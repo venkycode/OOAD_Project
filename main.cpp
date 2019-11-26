@@ -48,6 +48,7 @@ void mainPage()
     cout<<endl<<endl<<endl;
     delayBy(2);
     nextToMainPage(runTimeUserGlobal);
+
 }
 
 void customerDashBoard(customer *customerObject)
@@ -55,7 +56,10 @@ void customerDashBoard(customer *customerObject)
     printHeader();
     delayBy(1);
     printOption(9, 3, "Welcome ", 0);
-    cout << fgblue << customerObject->name << fggreen << " :)";
+    delayBy(1);
+    cout << fgblue << customerObject->name << fggreen ;
+     delayBy(1);
+    cout<<" :)";
     cout << endl;
     cout << endl;
     printOption(9, 0, "SEARCH PRODUCT", 1);
@@ -63,7 +67,7 @@ void customerDashBoard(customer *customerObject)
     printOption(9, 0, "SHOW TOP PRODUCTS",3);
     printOption(9, 0, "DELETE PROFILE",4);
     printOption(9,0,"Show Transactions",5);
-    printOption(9,3,"LOGOUT",4);
+    printOption(9,3,"LOGOUT",6);
     printInputField();
     int choice;
     cin>>choice;
@@ -79,7 +83,15 @@ void customerDashBoard(customer *customerObject)
     }
     else if(choice==3)
     {
-        customerObject->updateProfile();
+        customerObject->displayTopRatedProducts();
+        customerDashboard(customerObject);
+    }
+    else if(choice==4)
+    {
+        systemAdmin.deleteID(customerObject->userID,customerObject->username);
+        printHeader();
+        cout<<endl<<endl<<endl;
+        cout<<printtabs(8)<<fgred<<"It was good having you"<<endl;
     }
 }
 
@@ -104,9 +116,6 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     printOption(10,1,"LOGOUT",7);
     printOption(9,5,"DELETE PROFILE",8);
     printInputField();
-    //int choice;
-    //cin>>choice;
-    
 }
 
 void nextToMainPage(User *runTimeUser)

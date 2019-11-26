@@ -111,7 +111,7 @@ public:
         printLine(40);
         for (auto currentProduct : matches)
         {
-            cout << fggreen << printtabs(8) << "PRODUCT NUMBER :" << fgred << productMatchCounter;
+            cout << fggreen << printtabs(8) << "PRODUCT NUMBER :" << fgred << productMatchCounter++;
             cout << endl;
             cout << fggreen << printtabs(8) << "Product name : " << fgblue << string(currentProduct.product_name) << "\n";
             cout << fggreen << printtabs(8) << "Product ID : " << fgblue << currentProduct.product_id << "\n";
@@ -156,22 +156,66 @@ public:
         }
     }
 
-    void displayTopRatedProducts(){
-        vector<pair<int,int>> ratings;
-        for(auto y:systemAdmin.productId_to_product) ratings.push_back({y.second.rating,y.first});
-        sort(ratings.begin(),ratings.end());
-        reverse(ratings.begin(),ratings.end());
-        int cnt=0;
-        for(auto y:ratings){
+    void displayTopRatedProducts()
+    {
+        vector<pair<int, int>> ratings;
+        for (auto y : systemAdmin.productId_to_product)
+            ratings.push_back({y.second.rating, y.first});
+        sort(ratings.begin(), ratings.end());
+        reverse(ratings.begin(), ratings.end());
+        int cnt = 0;
+        printHeader();
+        printLine(40);
+        for (auto y : ratings)
+        {
             product currentProduct = systemAdmin.productId_to_product[y.second];
-            if(currentProduct.count==0)continue;
+            if (currentProduct.count == 0)
+                continue;
             cnt++;
-            cout<<"Product name :"<<currentProduct.product_name<<"\n";
-            cout<<"Rating : "<<currentProduct.rating<<"\n";
-            cout<<"Price : "<<currentProduct.price<<"\n";
-            cout<<"Shop name : "<<systemAdmin.nameFromId(currentProduct.shopkeeper_id)<<"\n";
-            cout<<"\n";
-            if(cnt==5)break;
+            cout << fggreen << printtabs(8) << "PRODUCT NUMBER :" << fgred << cnt;
+            cout << endl;
+            cout << fggreen << printtabs(8) << "Product name : " << fgblue << string(currentProduct.product_name) << "\n";
+            cout << fggreen << printtabs(8) << "Product ID : " << fgblue << currentProduct.product_id << "\n";
+            cout << fggreen << printtabs(8) << "Shopkeeper : " << fgblue << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
+            cout << fggreen << printtabs(8) << "Rating : " << currentProduct.rating << "\n";
+            cout << fggreen << printtabs(8) << "Quantity : " << currentProduct.count << "\n";
+            cout << fggreen << printtabs(8) << "Price : " << currentProduct.price << "\n";
+            cout << fggreen << printtabs(8) << "Delivery Charges : " << currentProduct.deliveryCharge << "\n";
+            cout << fggreen << printtabs(8);
+            cout << fgred;
+            printLine(40);
+            if (cnt == 5)
+                break;
+        }
+        if (ratings.size())
+        {
+            int optionselected = -1;
+            while (optionselected != 3)
+            {
+
+                printOption(8, 0, "Add to Cart", 1);
+                printOption(8, 0, "Add to Wishlist", 2);
+                printOption(8, 0, "Go back to Dashboard", 3);
+                printInputField();
+
+                cin >> optionselected;
+                if (optionselected == 1)
+                    addToCart();
+                else if (optionselected == 2)
+                    addToWishlist();
+                else if (optionselected = 3)
+                    ;
+            }
+        }
+        else
+        {
+            delayBy(1);
+            cout << endl;
+            cout << endl;
+            cout << endl;
+            cout << printtabs(8) << fgred;
+            cout << "NO PRODUCTS FOUND !!!" << endl;
+            delayBy(2);
         }
     }
 
@@ -189,7 +233,7 @@ public:
         delayBy(1);
         deleteUnwanted(1, 9);
         delayBy(2);
-        cout << fggreen << printtabs(8) << to_string(quantity) << " " << systemAdmin.productId_to_product[productID].product_name << " added to the cart !"<<endl;
+        cout << fggreen << printtabs(8) << to_string(quantity) << " " << systemAdmin.productId_to_product[productID].product_name << " added to the cart !" << endl;
     }
 
     void removeFromCart()
@@ -282,21 +326,21 @@ public:
 
     void addToWishlist()
     {
-        cout << fggreen<<printtabs(8)<<"Name of product:"
-             << fgblue<<" >> ";
+        cout << fggreen << printtabs(8) << "Name of product:"
+             << fgblue << " >> ";
         string productName;
         cin >> productName;
         if (systemAdmin.global_inven_map.find(productName) == systemAdmin.global_inven_map.end())
         {
-            deleteUnwanted(1,8);
+            deleteUnwanted(1, 8);
             delayBy(1);
-            cout << printtabs(8)<<fgred<<"This product is not available!!!"
+            cout << printtabs(8) << fgred << "This product is not available!!!"
                  << endl;
             return;
         }
-        deleteUnwanted(1,8);
+        deleteUnwanted(1, 8);
         delayBy(1.5);
-        cout<<printtabs(8)<<fgred<<" "<<productName<<" added to wishlist!!"<<endl;
+        cout << printtabs(8) << fgred << " " << productName << " added to wishlist!!" << endl;
         systemAdmin.addToWishList(userID, productName);
     }
 
