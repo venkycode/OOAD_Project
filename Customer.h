@@ -17,9 +17,8 @@ public:
         password = userProfile.password;
         userID = userProfile.id;
         address = userProfile.address;
-        userType=Customer;
+        userType = Customer;
     }
-
 
     static bool sortByRating(product product1, product product2)
     {
@@ -39,7 +38,7 @@ public:
     void search()
     {
         printHeader();
-        cout<<endl;
+        cout << endl;
         cout << printtabs(8);
         cout << fggreen;
         cout << "Enter the product you want to look-up";
@@ -48,8 +47,8 @@ public:
         cout << fggreen;
         string toBeSearched;
         cin >> toBeSearched;
-        cout<<endl;
-        cout<<fggreen<<printtabs(8)<<"     ";
+        cout << endl;
+        cout << fggreen << printtabs(8) << "     ";
         cout << "Do you want a filter for your search results? Y/n"
              << endl;
         printInputField();
@@ -58,13 +57,13 @@ public:
         int input;
         if (response == 'y' || response == 'Y')
         {
-            cout<<fgblue<<printtabs(8)<<"    ";
+            cout << fgblue << printtabs(8) << "    ";
             cout << "Choose your filter of products"
                  << endl;
-            cout<<endl;
-            printOption(8,0,"Decreasing order of rating",1);
-            printOption(8,0,"Increasing order of Price ",2);
-            printOption(8,0,"Decrasing order of Price ",3);
+            cout << endl;
+            printOption(8, 0, "Decreasing order of rating", 1);
+            printOption(8, 0, "Increasing order of Price ", 2);
+            printOption(8, 0, "Decrasing order of Price ", 3);
             printInputField();
             cin >> input;
         }
@@ -105,55 +104,56 @@ public:
             sort(matches.begin(), matches.end(), sortByIncreasingPrice);
         else
             sort(matches.begin(), matches.end(), sortByDecreasingPrice);
-        
-        int productMatchCounter=1;
+
+        int productMatchCounter = 1;
         printHeader();
-        cout<<printtabs(8);
+        cout << printtabs(8);
         printLine(40);
-        if(isFullMatchPossible){
-            for (auto currentProduct : matches)
-            {
-                cout<<fggreen<<printtabs(8)<<"PRODUCT NUMBER :"<<fgred<<productMatchCounter;
-                cout<<endl;
-                cout <<fggreen<<printtabs(8)<<"Product name : " <<fgblue<< string(currentProduct.product_name) << "\n";
-                cout << fggreen<<printtabs(8)<<"Product ID : " << fgblue<<currentProduct.product_id << "\n";
-                cout << fggreen<<printtabs(8)<<"Shopkeeper : " << fgblue<<systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
-                cout << fggreen<<printtabs(8)<<"Rating : " << currentProduct.rating << "\n";
-                cout << fggreen<<printtabs(8)<<"Quantity : " << currentProduct.count << "\n";
-                cout << fggreen<<printtabs(8)<<"Price : " << currentProduct.price << "\n";
-                cout << fggreen<<printtabs(8)<<"Delivery Charges : " << currentProduct.deliveryCharge << "\n";
-                cout << fggreen<<printtabs(8);
-                cout<<fgred;
-                printLine(40);
-            }
-        }
-        else{
-            cout << fggreen<<printtabs(8)<<"Did you mean ?"<<endl; 
-            for(auto currentProduct:matches)cout << printtabs(8)<< currentProduct.product_name << "\n";
-        }
-        if(matches.size())
+        for (auto currentProduct : matches)
         {
-            printOption(8,0,"Add to Cart",1);
-            printOption(8,0,"Add to Wishlist",2);
-            printInputField();
-            int optionselected;
-            cin>>optionselected;
-            if(optionselected==1)
-            addToCart();
-            else if(optionselected==2)
-            addToWishlist();
+            cout << fggreen << printtabs(8) << "PRODUCT NUMBER :" << fgred << productMatchCounter;
+            cout << endl;
+            cout << fggreen << printtabs(8) << "Product name : " << fgblue << string(currentProduct.product_name) << "\n";
+            cout << fggreen << printtabs(8) << "Product ID : " << fgblue << currentProduct.product_id << "\n";
+            cout << fggreen << printtabs(8) << "Shopkeeper : " << fgblue << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
+            cout << fggreen << printtabs(8) << "Rating : " << currentProduct.rating << "\n";
+            cout << fggreen << printtabs(8) << "Quantity : " << currentProduct.count << "\n";
+            cout << fggreen << printtabs(8) << "Price : " << currentProduct.price << "\n";
+            cout << fggreen << printtabs(8) << "Delivery Charges : " << currentProduct.deliveryCharge << "\n";
+            cout << fggreen << printtabs(8);
+            cout << fgred;
+            printLine(40);
+        }
+        if (matches.size())
+        {
+            int optionselected = -1;
+            while (optionselected != 3)
+            {
+
+                printOption(8, 0, "Add to Cart", 1);
+                printOption(8, 0, "Add to Wishlist", 2);
+                printOption(8, 0, "Go back to Dashboard", 3);
+                printInputField();
+
+                cin >> optionselected;
+                if (optionselected == 1)
+                    addToCart();
+                else if (optionselected == 2)
+                    addToWishlist();
+                else if (optionselected = 3)
+                    ;
+            }
         }
         else
         {
             delayBy(1);
-            cout<<endl;
-            cout<<endl;
-            cout<<endl;
-            cout<<printtabs(8)<<fgred;
-            cout<<"NO PRODUCTS FOUND !!!"<<endl;
+            cout << endl;
+            cout << endl;
+            cout << endl;
+            cout << printtabs(8) << fgred;
+            cout << "NO PRODUCTS FOUND !!!" << endl;
             delayBy(2);
         }
-        
     }
 
     void displayTopRatedProducts(){
@@ -177,15 +177,19 @@ public:
 
     void addToCart()
     {
-        cout << "Enter the ID of product you wish to add to cart "
-             << "\n";
+        cout << printtabs(8) << fggreen << "Enter Product ID "
+             << fgblue << " >> ";
         int productID;
         cin >> productID;
-        cout << "Enter the quantity of purchase"
-             << "\n";
+        cout << printtabs(8) << fggreen << "Enter Quantity"
+             << fgblue << " >> ";
         int quantity;
         cin >> quantity;
         cart.push_back({systemAdmin.productId_to_product[productID], quantity});
+        delayBy(1);
+        deleteUnwanted(1, 9);
+        delayBy(2);
+        cout << fggreen << printtabs(8) << to_string(quantity) << " " << systemAdmin.productId_to_product[productID].product_name << " added to the cart !"<<endl;
     }
 
     void removeFromCart()
@@ -286,16 +290,21 @@ public:
 
     void addToWishlist()
     {
-        cout << "Enter the name of product you want to add to your wishlist"
-             << "\n";
+        cout << fggreen<<printtabs(8)<<"Name of product:"
+             << fgblue<<" >> ";
         string productName;
         cin >> productName;
         if (systemAdmin.global_inven_map.find(productName) == systemAdmin.global_inven_map.end())
         {
-            cout << "This product is not available"
-                 << "\n";
+            deleteUnwanted(1,8);
+            delayBy(1);
+            cout << printtabs(8)<<fgred<<"This product is not available!!!"
+                 << endl;
             return;
         }
+        deleteUnwanted(1,8);
+        delayBy(1.5);
+        cout<<printtabs(8)<<fgred<<" "<<productName<<" added to wishlist!!"<<endl;
         systemAdmin.addToWishList(userID, productName);
     }
 
@@ -330,21 +339,27 @@ public:
         systemAdmin.changeWishList(userID, tempWishlist);
     }
 
-    void displayYourOrders(){
-        vector<int> orders=systemAdmin.orderIdsofCustomer(userID);
-        for(auto order_id:orders){
-            order currentOrder=systemAdmin.extactOrderInfo(to_string(order_id));
-            if(currentOrder.remainingTime=="00:00:00")continue;
-            cout<<"Order ID :"<<order_id<<"\n";
-            cout<<currentOrder.order_<<"\n";
-            cout<<currentOrder.remainingTime<<"\n";
-            cout<<currentOrder.other_details<<"\n";
+    void displayYourOrders()
+    {
+        vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
+        for (auto order_id : orders)
+        {
+            order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
+            if (currentOrder.remainingTime == "00:00:00")
+                continue;
+            cout << "Order ID :" << order_id << "\n";
+            cout << currentOrder.order_ << "\n";
+            cout << currentOrder.remainingTime << "\n";
+            cout << currentOrder.other_details << "\n";
         }
     }
 
-    void checkStatus(){
-        cout<<"Enter the ID of order you want to check for status" << "\n";
-        int orderID;cin>>orderID;
-        cout<<"time left : "<<systemAdmin.get_orderStatus(to_string(orderID));
+    void checkStatus()
+    {
+        cout << "Enter the ID of order you want to check for status"
+             << "\n";
+        int orderID;
+        cin >> orderID;
+        cout << "time left : " << systemAdmin.get_orderStatus(to_string(orderID));
     }
 };

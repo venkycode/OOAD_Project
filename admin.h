@@ -6,7 +6,7 @@
 //#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
-//#include "forgotPassword.h"
+#include "forgotPassword.h"
 
 typedef struct systemState
 {
@@ -437,63 +437,70 @@ public:
 
     void editProfile(string id)
     {
+        printHeader();
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
         sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         char check;
-        cout << "Do you wish to change your name?(Y/n) :: ";
+        cout <<fggreen<<printtabs(8)<< "Do you wish to change your name?(Y/n) :: "<<fgblue;
         cin >> check;
         if (check == 'Y' || check == 'y')
         {
+            printInputField();
             string new_name;
             cin >> new_name;
             temporaryProfile.name = new_name;
         }
-        cout << "Do you wish to change your Surname?(Y/n) :: ";
+        cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
         cin >> check;
         if (check == 'Y' || check == 'y')
         {
+            printInputField();
             string new_surname;
             cin >> new_surname;
             temporaryProfile.surname = new_surname;
         }
-        cout << "Do you wish to change your Email ID?(Y/n) :: ";
+        cout << fggreen<<printtabs(8)<< "Do you wish to change your Email ID?(Y/n) :: "<<fgblue;
         cin >> check;
         if (check == 'Y' || check == 'y')
         {
+            printInputField();
             string new_email;
             cin >> new_email;
             while (!isEmailCorrect(new_email))
             {
-                cout << "Enter a valid Email address(Only IIT Jodhpur official email addresses are considered valid) ";
+                cout <<fggreen<<printtabs(8)<<  "Enter a valid Email address(Only IIT Jodhpur official email addresses are considered valid) ";
                 cin >> new_email;
             }
             temporaryProfile.email = new_email;
         }
-        cout << "Do you wish to change your address?(Y/n) :: ";
+        cout <<fggreen<<printtabs(8)<<  "Do you wish to change your address?(Y/n) :: "<<fgblue;
         cin >> check;
         if (check == 'Y' || check == 'y')
         {
+            printInputField();
             string new_address;
             cin >> new_address;
             temporaryProfile.address = new_address;
         }
-        cout << "Do you wish to change your Contact number?(Y/n) :: ";
+        cout <<fggreen<<printtabs(8)<< "Do you wish to change your Contact number?(Y/n) :: ";
         cin >> check;
         if (check == 'Y' || check == 'y')
         {
+            printInputField();
             string new_contact;
             cin >> new_contact;
             while (!isContactCorrect(new_contact))
             {
-                cout << "Enter a valid contact number";
+                cout <<fggreen<<printtabs(8)<<  "Enter a valid contact number";
                 cin >> new_contact;
             }
             temporaryProfile.contact = new_contact;
         }
-        cout << "Do you wish to change your Password?(Y/n) :: ";
+        cout <<fggreen<<printtabs(8)<< "Do you wish to change your Password?(Y/n) :: ";
         cin >> check;
         if (check == 'Y' || check == 'y')
         {
+            printInputField();
             string new_password, confirm_new_password;
             cin >> new_password;
             cout << "Confirm Password: ";
@@ -637,7 +644,7 @@ public:
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id] = productToInsert;
     }
-    /*void forgotPassword(string username)
+    void forgotPassword(string username)
     {
         string new_password = PasswordGenerator();
         string message = "Your new Password is : " + new_password;
@@ -649,7 +656,7 @@ public:
         sendPasswordToEmail(temporaryProfile.email, new_password);
         changeProfile(temporaryID, temporaryProfile.name, temporaryProfile.surname,
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
-    }*/
+    }
 
     void assign_order(string id, int orderID)
     {
@@ -704,11 +711,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from PERSON!" << endl;
+            logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
     void insertWishList(string id, string wishlist)
