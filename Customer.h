@@ -5,8 +5,8 @@
 
 class customer : public User
 {
-    public:
-    vector<pair<product,int>> cart;
+public:
+    vector<pair<product, int>> cart;
     customer(profile userProfile)
     {
         name = userProfile.name;
@@ -17,6 +17,7 @@ class customer : public User
         password = userProfile.password;
         userID = userProfile.id;
         address = userProfile.address;
+        userType=Customer;
     }
 
 
@@ -37,25 +38,34 @@ class customer : public User
 
     void search()
     {
-        cout << "Enter the product you want to look-up"
-             << "\n";
+        printHeader();
+        cout<<endl;
+        cout << printtabs(8);
+        cout << fggreen;
+        cout << "Enter the product you want to look-up";
+        PRINTBLUE;
+        cout << " ";
+        cout << fggreen;
         string toBeSearched;
         cin >> toBeSearched;
+        cout<<endl;
+        cout<<fggreen<<printtabs(8)<<"     ";
         cout << "Do you want a filter for your search results? Y/n"
-             << "\n";
+             << endl;
+        printInputField();
         char response;
         cin >> response;
         int input;
         if (response == 'y' || response == 'Y')
         {
+            cout<<fgblue<<printtabs(8)<<"    ";
             cout << "Choose your filter of products"
-                 << "\n";
-            cout << "Press 1 for decreasing order of rating"
-                 << "\n";
-            cout << "Press 2 for increasing order of price"
-                 << "\n";
-            cout << "Press 3 for decreasing order of price"
-                 << "\n";
+                 << endl;
+            cout<<endl;
+            printOption(8,0,"Decreasing order of rating",1);
+            printOption(8,0,"Increasing order of Price ",2);
+            printOption(8,0,"Decrasing order of Price ",3);
+            printInputField();
             cin >> input;
         }
         vector<product> matches;
@@ -87,116 +97,172 @@ class customer : public User
                 }
             }
         }
-        if(response!='y'&& response!='Y');
-        else if(input==1)sort(matches.begin(),matches.end(),sortByRating);
-        else if(input==2)sort(matches.begin(),matches.end(),sortByIncreasingPrice);
-        else sort(matches.begin(),matches.end(),sortByDecreasingPrice);
-        for(auto currentProduct:matches){
-            cout << "Product name : " << string(currentProduct.product_name) << "\n" ;
-            cout << "Product ID : " << currentProduct.product_id<< "\n";
-            cout<< "Shopkeeper : " << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n" ;
-            cout << "Rating : " << currentProduct.rating << "\n" ;
-            cout << "Quantity : " << currentProduct.count << "\n" ;
-            cout << "Price : " << currentProduct.price << "\n" ;
-            cout << "Delivery Charges : " << currentProduct.deliveryCharge << "\n" ; 
-            cout << "\n" ;
+        if (response != 'y' && response != 'Y')
+            ;
+        else if (input == 1)
+            sort(matches.begin(), matches.end(), sortByRating);
+        else if (input == 2)
+            sort(matches.begin(), matches.end(), sortByIncreasingPrice);
+        else
+            sort(matches.begin(), matches.end(), sortByDecreasingPrice);
+        
+        int productMatchCounter=1;
+        for (auto currentProduct : matches)
+        {
+            cout<<fgblue<<printtabs(8)<<"PRODUCT NUMBER :"<<fgred<<productMatchCounter;
+            cout<<endl;
+            cout << "Product name : " << string(currentProduct.product_name) << "\n";
+            cout << "Product ID : " << currentProduct.product_id << "\n";
+            cout << "Shopkeeper : " << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
+            cout << "Rating : " << currentProduct.rating << "\n";
+            cout << "Quantity : " << currentProduct.count << "\n";
+            cout << "Price : " << currentProduct.price << "\n";
+            cout << "Delivery Charges : " << currentProduct.deliveryCharge << "\n";
+            cout << "\n";
         }
     }
 
-    void addToCart(){
-        cout << "Enter the ID of product you wish to add to cart "<< "\n" ;
-        int productID;cin>>productID;
-        cout<<"Enter the quantity of purchase" << "\n" ;
-        int quantity;cin>>quantity;
-        cart.push_back({ systemAdmin.productId_to_product[productID] ,quantity});
+    void addToCart()
+    {
+        cout << "Enter the ID of product you wish to add to cart "
+             << "\n";
+        int productID;
+        cin >> productID;
+        cout << "Enter the quantity of purchase"
+             << "\n";
+        int quantity;
+        cin >> quantity;
+        cart.push_back({systemAdmin.productId_to_product[productID], quantity});
     }
 
-    void removeFromCart(){
-        cout<<"Enter the ID of product you want to remove from cart" << "\n" ;
-        int productID;cin>>productID;
-        for(int i = 0 ; i < cart.size() - 1 ; ++i){
-            if(cart[i].first.product_id==productID)swap(cart[i],cart.back());
+    void removeFromCart()
+    {
+        cout << "Enter the ID of product you want to remove from cart"
+             << "\n";
+        int productID;
+        cin >> productID;
+        for (int i = 0; i < cart.size() - 1; ++i)
+        {
+            if (cart[i].first.product_id == productID)
+                swap(cart[i], cart.back());
         }
         cart.pop_back();
     }
 
-    void displayCart(){
-        if(cart.empty()) {
-            cout << "Your cart is empty" << "\n" ;
-            return ;
+    void displayCart()
+    {
+        if (cart.empty())
+        {
+            cout << "Your cart is empty"
+                 << "\n";
+            return;
         }
-        for(auto y : cart){
+        for (auto y : cart)
+        {
             cout << "Product name : " << y.first.product_name << "\n";
-            cout << "Product ID : " << y.first.product_id << "\n" ;
-            cout << "Price : " << y.first.price << "\n" ;
-            cout << "Delivery Charges : " << y.first.deliveryCharge << "\n" ;
-            cout << "Quantity you have added to cart : " << y.second << "\n" ;
-            cout << "\n" ;
+            cout << "Product ID : " << y.first.product_id << "\n";
+            cout << "Price : " << y.first.price << "\n";
+            cout << "Delivery Charges : " << y.first.deliveryCharge << "\n";
+            cout << "Quantity you have added to cart : " << y.second << "\n";
+            cout << "\n";
         }
     }
 
-    void cashInTheCart(){
-        cout<<"Choose your payment mode" << "\n";
-        cout<<"Press 1 for cash on delivery, 2 for online banking, 3 for paytm, 4 for gpay" << "\n" ;
-        int response;cin>>response;
+    void cashInTheCart()
+    {
+        cout << "Choose your payment mode"
+             << "\n";
+        cout << "Press 1 for cash on delivery, 2 for online banking, 3 for paytm, 4 for gpay"
+             << "\n";
+        int response;
+        cin >> response;
         enum mode paymentMode;
-        if(response==1)paymentMode=cashOnDelivery;
-        else if(response==2)paymentMode=onlineBanking;
-        else if(response==3)paymentMode=Paytm;
-        else if(response==4)paymentMode=GooglePay;
-        else cout<<"Invalid banking option" << endl;
+        if (response == 1)
+            paymentMode = cashOnDelivery;
+        else if (response == 2)
+            paymentMode = onlineBanking;
+        else if (response == 3)
+            paymentMode = Paytm;
+        else if (response == 4)
+            paymentMode = GooglePay;
+        else
+            cout << "Invalid banking option" << endl;
         set<int> toBeRemoved;
-        for(int i = 0; i < cart.size(); ++i){
-            auto y=cart[i];
-            int availableQuantity=systemAdmin.productId_to_product[y.first.product_id].count;
-            if(y.second > availableQuantity){
-                cout << "Only " << availableQuantity << "are available" << "\n" ;
-                cout<<"Product Name : " << y.first.product_name << "\n";
+        for (int i = 0; i < cart.size(); ++i)
+        {
+            auto y = cart[i];
+            int availableQuantity = systemAdmin.productId_to_product[y.first.product_id].count;
+            if (y.second > availableQuantity)
+            {
+                cout << "Only " << availableQuantity << "are available"
+                     << "\n";
+                cout << "Product Name : " << y.first.product_name << "\n";
                 cout << "Product ID : " << y.first.product_id << "\n";
-                cout << "Press 1 if you want to remove this from cart" << "\n" ;
-                cout << "Press 2 if you want to order the available quantity" << "\n" ;
-                int response;cin>>response;
-                if(response==1)toBeRemoved.insert(y.first.product_id);
-                else cart[i].second=availableQuantity;
+                cout << "Press 1 if you want to remove this from cart"
+                     << "\n";
+                cout << "Press 2 if you want to order the available quantity"
+                     << "\n";
+                int response;
+                cin >> response;
+                if (response == 1)
+                    toBeRemoved.insert(y.first.product_id);
+                else
+                    cart[i].second = availableQuantity;
             }
         }
-        for(int i = 0 ; i < cart.size() ; ++i){
-            auto y=cart[i];
-            if(toBeRemoved.find(y.first.product_id)==toBeRemoved.end())continue;
-            swap(cart[i],cart.back());
+        for (int i = 0; i < cart.size(); ++i)
+        {
+            auto y = cart[i];
+            if (toBeRemoved.find(y.first.product_id) == toBeRemoved.end())
+                continue;
+            swap(cart[i], cart.back());
             cart.pop_back();
         }
-        cout<<userID<<endl;
-        systemAdmin.payment(cart, paymentMode,contact, userID);
+
+        systemAdmin.payment(cart, paymentMode, contact, userID);
         cart.clear();
     }
 
-    void addToWishlist(){
-        cout<<"Enter the name of product you want to add to your wishlist" << "\n";
-        string productName;cin>>productName;
-        if(systemAdmin.global_inven_map.find(productName)==systemAdmin.global_inven_map.end()){
-            cout<<"This product is not available" << "\n";
+    void addToWishlist()
+    {
+        cout << "Enter the name of product you want to add to your wishlist"
+             << "\n";
+        string productName;
+        cin >> productName;
+        if (systemAdmin.global_inven_map.find(productName) == systemAdmin.global_inven_map.end())
+        {
+            cout << "This product is not available"
+                 << "\n";
             return;
         }
         systemAdmin.addToWishList(userID, productName);
     }
 
-    void displayWishlist(){
+    void displayWishlist()
+    {
         set<string> tempWishlist = systemAdmin.returnWishlist(userID);
-        if(tempWishlist.empty()){
-            cout<<"Your wishlist is empty" << "\n";
+        if (tempWishlist.empty())
+        {
+            cout << "Your wishlist is empty"
+                 << "\n";
             return;
         }
-        for(auto y:tempWishlist) cout<<y<<" ";
-        cout<<endl;
+        for (auto y : tempWishlist)
+            cout << y << " ";
+        cout << endl;
     }
 
-    void removeFromWishlist(){
-        cout<<"Enter the name of product you want to remove from wishlist" << "\n";
-        string toRemove;cin>>toRemove;
+    void removeFromWishlist()
+    {
+        cout << "Enter the name of product you want to remove from wishlist"
+             << "\n";
+        string toRemove;
+        cin >> toRemove;
         set<string> tempWishlist = systemAdmin.returnWishlist(userID);
-        if(tempWishlist.find(toRemove)==tempWishlist.end()){
-            cout<<"This item does not belong to your wishlist" << "\n";
+        if (tempWishlist.find(toRemove) == tempWishlist.end())
+        {
+            cout << "This item does not belong to your wishlist"
+                 << "\n";
             return;
         }
         tempWishlist.erase(tempWishlist.find(toRemove));

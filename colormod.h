@@ -32,12 +32,15 @@ const string clearscreen = "\033[2J";
 const string cursorAdjust = "\033[1;1H";
 const string deleteLine="\033[2K";
 const string cursorUp="\033[1A";
+const string cursorDown="\033[1B";
 Color::Modifier bgred(Color::BG_RED);
 Color::Modifier fgred(Color::FG_RED);
 Color::Modifier fgblue(Color::FG_BLUE);
 Color::Modifier fggreen(Color::FG_GREEN);
 Color::Modifier bgblue(Color::BG_BLUE);
 Color::Modifier bgdef(Color::BG_DEFAULT);
+
+#define PRINTBLUE cout<<fgblue<<">> "
 
 void delayBy(double sec)
 {
@@ -111,4 +114,15 @@ void deleteUnwanted(int flag,int numberOfLines=1)
         }
 
     }
+}
+
+string hiddenPasswordInput()
+{
+    char* tmpPassword;
+    printOption(9,0,"Password");
+    cout<<fgblue<<">> ";
+    tmpPassword=getpass("");
+    //logStream<<tmpPassword;
+    string returnPass=tmpPassword;
+    return returnPass;
 }

@@ -28,31 +28,56 @@ public:
 
     void inputPassword(profile &userProfile)
     {
+        int globalTry=0;
         string temp;
         do
         {
-            getline(cin, userProfile.password);
+            //getline(cin, userProfile.password);
+            deleteUnwanted(globalTry,3) ;
+            userProfile.password= hiddenPasswordInput();
+            int triedYet=0;
             while (!isPasswordCorrect(userProfile.password))
             {
+                deleteUnwanted(!triedYet,1);
+                deleteUnwanted(triedYet,5);
+                cout<<fgred;
+                cout<<endl;
+                cout<<printtabs(8);
                 cout << "Your password does not satisfy our conditions"
-                     << "\n";
+                     << endl;
+                cout<<printtabs(8);
                 cout << "Your password should consist of at least one small letter, one capital letter, one number and one special character"
-                     << "\n";
+                     << endl;
+                cout<<printtabs(8);
                 cout << "Try again"
-                     << "\n";
-                getline(cin, userProfile.password);
+                     <<endl;
+                userProfile.password=hiddenPasswordInput();
+                delayBy(0.5);
+                triedYet=1;
             }
-            cout << "Confirm your password"
-                 << "\n";
-            getline(cin, temp);
+            // cout<<cursorUp;
+            // deleteUnwanted(triedYet,3);
+            // cout<<cursorDown;
+            printOption(8,4,"Confirm your password ");
+            cout<<endl;
+            temp=hiddenPasswordInput();
+            //PRINTBLUE;
+            //getline(cin, temp);
+            //cin>>temp;
             if (temp != userProfile.password)
             {
-                cout << "Both passwords do not match each other"
-                     << "\n";
-                cout << "Try again"
-                     << "\n";
+                cout<<fgred;
+                cout << printtabs(8)<<"Both passwords do not match each other"
+                     << endl;
+                cout << printtabs(8)<<"Try again"
+                     << endl;
+                delayBy(2);
+                deleteUnwanted(1,2);
             }
+            globalTry=1;
+            delayBy(1.5);
         } while (temp != userProfile.password);
+        cout<<endl;
     }
 
     profile login()
@@ -250,11 +275,11 @@ public:
             triedYet=1;
             //getline(cin, userProfile.username);
         }
+        cout<<endl;
         cout<<fgblue<<printtabs(8);
+        cout<<fgred;
         cout << "Your password should consist of at least one small letter\n"+printtabs(8)+", one capital letter, one number and one special character"
              << endl;
-        printOption(8,0,"Password ");
-        cout<<fgblue<<">> " ;
         // cout << "Enter password"
         //      << "\n";
         getline(cin,password);
