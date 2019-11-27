@@ -419,9 +419,9 @@ public:
         }
         printOption(9,0,"Back to Dashboard ");
         PRINTBLUE;
-        cout<<" ";
-        int x;
-        cin>>x;
+        cout<<"Press ENTER ";
+        string chx;
+        getline(cin,chx);//exits when pressed enter
     }
 
     void checkStatus()

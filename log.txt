@@ -117,3 +117,30 @@ mainpage 0here1 0 S1
 assignUserProfile shk
 here1 0
 >>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 2 1 6 1
+systemState(cus,shop,del,...) 2 2 1 6 1
+>>> !!! START OF LOG !!! <<<<<
+password = qqq@222Q
+Operation OK!
+assignUserProfile venk
+mainpage 0here1 0 C1
+here1 0
+nameFromIdOperation OK
+nameFromIdOperation OK
+nameFromIdOperation OK
+nameFromIdOperation OK
+nameFromIdOperation OK
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 2 1 6 1
+>>> !!! START OF LOG !!! <<<<<
+password = qqq@222Q
+Operation OK!
+assignUserProfile venk
+mainpage 0here1 0 C1
+here1 0
+nameFromIdOperation OK
+nameFromIdOperation OK
+nameFromIdOperation OK
+nameFromIdOperation OK
+nameFromIdOperation OK
+>>> !!! END OF LOG !!! <<<<<

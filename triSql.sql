@@ -1,2 +1,0 @@
--- SQLite
-DELETE * FROM 'PERSON' WHERE ID = 'C0';
