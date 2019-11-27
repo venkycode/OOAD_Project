@@ -295,14 +295,16 @@ public:
             int availableQuantity = systemAdmin.productId_to_product[y.first.product_id].count;
             if (y.second > availableQuantity)
             {
-                if(availableQuantity) {
-                    cout << "Only " << availableQuantity << "are available" << "\n";
+                if (availableQuantity)
+                {
+                    cout << "Only " << availableQuantity << "are available"
+                         << "\n";
                     cout << "Product Name : " << y.first.product_name << "\n";
                     cout << "Product ID : " << y.first.product_id << "\n";
                     cout << "Press 1 if you want to remove this from cart"
-                        << "\n";
+                         << "\n";
                     cout << "Press 2 if you want to order the available quantity"
-                        << "\n";
+                         << "\n";
                     int response;
                     cin >> response;
                     if (response == 1)
@@ -310,11 +312,12 @@ public:
                     else
                         cart[i].second = availableQuantity;
                 }
-                else{
-                    cout<<"None are available" << endl;
+                else
+                {
+                    cout << "None are available" << endl;
                     cout << "Product Name : " << y.first.product_name << "\n";
                     cout << "Product ID : " << y.first.product_id << "\n";
-                    cout<<"This product is removed from your cart"<<endl;
+                    cout << "This product is removed from your cart" << endl;
                     toBeRemoved.insert(y.first.product_id);
                 }
             }
@@ -383,9 +386,11 @@ public:
         systemAdmin.changeWishList(userID, tempWishlist);
     }
 
-    void displayYourOrders()
+    void displayUnfinishedOrders()
     {
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
+        int shown=0;
+        printLine(40);
         for (auto order_id : orders)
         {
             order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
@@ -396,6 +401,27 @@ public:
             cout << currentOrder.remainingTime << "\n";
             cout << currentOrder.other_details << "\n";
         }
+
+    }
+
+    void showAllTransaction()
+    {
+        vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
+        for (auto order_id : orders)
+        {
+            order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
+            // if (currentOrder.remainingTime == "00:00:00")
+            //     continue;
+            cout << "Order ID :" << order_id << "\n";
+            cout << currentOrder.order_ << "\n";
+            cout << currentOrder.remainingTime << "\n";
+            cout << currentOrder.other_details << "\n";
+        }
+        printOption(9,0,"Back to Dashboard ");
+        PRINTBLUE;
+        cout<<" ";
+        int x;
+        cin>>x;
     }
 
     void checkStatus()
