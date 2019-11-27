@@ -240,5 +240,5 @@ int main()
     cout << cursorAdjust;
     mainPage();
     logStream << ">>> !!! END OF LOG !!! <<<<<\n";
-    logStream.close();
+    logging.close();
 }

@@ -168,8 +168,8 @@ public:
         printHeader();
         cout<<endl;
         cout<<printtabs(8)<<"    "<<fgred<<">>>>Top Rated Products<<<"<<endl;
-        cout<<printtabs(9);
         cout<<endl;
+        cout<<printtabs(9);
         printLine(40);
         for (auto y : ratings)
         {

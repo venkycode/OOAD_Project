@@ -97,7 +97,7 @@ public:
         //logStream<<""szar<<endl;
         password = tmpPass; //convertToString(tmpPass,szar);
         logStream << "password = " << password << endl;
-        logStream.flush();
+        logging.flush();
         cout << endl;
         password = sha256(password);
         profile userProfile = systemAdmin.authenticate(username, password);
