@@ -98,6 +98,7 @@ public:
         logStream << "password = " << password << endl;
         logStream.flush();
         cout << endl;
+        password = sha256(password);
         profile userProfile = systemAdmin.authenticate(username, password);
         if (userProfile.name == "#")
         {
@@ -123,7 +124,7 @@ public:
         return userProfile;
     }
 
-    /*void sendOTP(string mailID){
+    void sendOTP(string mailID){
         string OTP = "";
         srand(time(0));
         int len = 6;
@@ -134,7 +135,7 @@ public:
             cout << "Please verify your email:: Enter your OTP "<<endl;
             cin>>tempOTP;
         }while(tempOTP!=OTP);
-    }*/
+    }
 
     void signUp()
     {
@@ -287,10 +288,10 @@ public:
         cout << "Enter your address"
              << "\n";
         getline(cin, userProfile.address);
+        sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;
-        //sendOTP(userProfile.email);
     }
 
     void updateProfile()

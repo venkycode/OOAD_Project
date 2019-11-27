@@ -7,6 +7,7 @@
 #include "checks.h"
 #include "PasswordGenerator.h"
 #include "forgotPassword.h"
+#include "sha256.h"
 
 typedef struct systemState
 {
@@ -310,6 +311,7 @@ public:
         {
             id = 'S' + to_string(state.shopKeeperCount++);
         }
+        password = sha256(password);
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string temp = '\'' + username + '\'' + ',' + '\'' + id + '\'';
         string temp2 = '\'' + id + "\',\'\'";
