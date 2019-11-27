@@ -1,0 +1,97 @@
+>>> !!! START OF LOG !!! <<<<<
+password = aaa@22A
+Operation OK!
+password = aaa@222A
+Operation OK!
+Record deleted Successfully!
+Record inserted Successfully!
+mainpage 0here1 0 C0
+here1 0
+>>> !!! END OF LOG !!! <<<<<
+>>> !!! START OF LOG !!! <<<<<
+password = eqw
+Operation OK!
+password = aaa@222A
+Operation OK!
+password = aaa@222A
+Operation OK!
+password = 8knRkcvHg3
+Operation OK!
+password = 8knRkcvHg3
+Operation OK!
+password = [2~
+Operation OK!
+password = aw
+password = 8knRkcHg3
+Operation OK!
+password = qw
+Operation OK!
+password = dwa
+Operation OK!
+password = 
+Operation OK!
+password = dawd
+Operation OK!
+password = wad
+Operation OK!
+password =  'aw
+Operation OK!
+password = ' df
+Operation OK!
+password = 
+Operation OK!
+>>> !!! START OF LOG !!! <<<<<
+password = qqq@222Q
+Operation OK!
+password = qqq@222Q
+Operation OK!
+password = www@222W
+Operation OK!
+password = 8knRkcvHg3
+Operation OK!
+mainpage 0here1 0 C0
+here1 0
+>>> !!! END OF LOG !!! <<<<<
+>>> !!! START OF LOG !!! <<<<<
+password = qqq@222Q
+Operation OK!
+mainpage 0here1 0 C1
+here1 0
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 0 1 2 1
+>>> !!! START OF LOG !!! <<<<<
+password = alskd;
+Operation OK!
+assignUserProfile shkassignUserProfile #mainpage 0here1 0 -1
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 1 1 2 1
+>>> !!! START OF LOG !!! <<<<<
+mainpage 0here1 0 
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 1 1 2 1
+>>> !!! START OF LOG !!! <<<<<
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 1 1 2 1
+systemState(cus,shop,del,...) 2 1 1 2 1
+>>> !!! START OF LOG !!! <<<<<
+password = qqq@222Q
+Operation OK!
+assignUserProfile venk
+mainpage 0here1 0 C1
+here1 0
+password = qqq@222Q
+Operation OK!
+assignUserProfile venk
+mainpage 0here1 0 C1
+here1 0
+assignUserProfile shk
+mainpage 2here1 2 S1
+assignUserProfile shk
+here1 2
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 2 1 2 1
+>>> !!! START OF LOG !!! <<<<<
+>>> !!! END OF LOG !!! <<<<<
+systemState(cus,shop,del,...) 2 2 1 2 1
+>>> !!! START OF LOG !!! <<<<<
+>>> !!! END OF LOG !!! <<<<<

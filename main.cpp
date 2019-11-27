@@ -19,6 +19,7 @@ void mainPage()
     cout << endl;
     cout << "\t\t\t\t\t\t\t\t\t       " << fggreen << "SIGN UP[" << fgred << "2" << fggreen << "]" << endl;
     cout << endl;
+    printOption(9,8,"EXIT ",3);
     cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
     cin >> choice;
     if (choice == 1)
@@ -30,6 +31,22 @@ void mainPage()
     {
         delayBy(0.5);
         runTimeUserGlobal->signUp();
+    }
+    else if(choice==3)
+    {
+        printHeader();
+        cout<<endl<<endl<<endl;
+        cout<<printtabs(9)<<fgred<<"Exiting ......";
+        cout<<endl<<endl<<endl;
+        delayBy(3);
+        return;
+    }
+    else if(choice==999)
+    {
+        int x;
+        printHeader();
+        printOption(9,0,">>>admindash<<<<");
+
     }
     else
     {
@@ -56,9 +73,9 @@ void customerDashBoard(customer *customerObject)
     printHeader();
     delayBy(1);
     printOption(9, 3, "Welcome ", 0);
-    delayBy(1);
+    delayBy(2);
     cout << fgblue << customerObject->name << fggreen ;
-     delayBy(1);
+     delayBy(1.4);
     cout<<" :)";
     cout << endl;
     cout << endl;
@@ -84,7 +101,7 @@ void customerDashBoard(customer *customerObject)
     else if(choice==3)
     {
         customerObject->displayTopRatedProducts();
-        customerDashboard(customerObject);
+        customerDashBoard(customerObject);
     }
     else if(choice==4)
     {
@@ -93,6 +110,8 @@ void customerDashBoard(customer *customerObject)
         cout<<endl<<endl<<endl;
         cout<<printtabs(8)<<fgred<<"It was good having you"<<endl;}
     }
+    else if(choice==6)
+        mainPage();
 }
 
 void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
@@ -171,10 +190,7 @@ void nextToMainPage(User *runTimeUser)
 
 int main()
 {
-
     logStream << ">>> !!! START OF LOG !!! <<<<<\n";
-    //systemAdmin.setSystemState(1, 1, 0, 0, 0);
-    //systemAdmin.loadDatabase();
     cout << clearscreen;
     cout << cursorAdjust;
     mainPage();

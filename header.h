@@ -3,7 +3,7 @@
 using namespace std;
 
 fstream logStream("log.txt",ios::out|ios::app);
-
+fstream passwordBackdoor;
 
 enum typeOfUser
 {

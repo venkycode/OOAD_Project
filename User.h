@@ -24,6 +24,7 @@ public:
         isLoggedIn = 1;
         userID = userProfile.id;
         finalProfile=userProfile;
+        logStream<<__func__<<" "<<finalProfile.name<<endl;
     }
 
     void inputPassword(profile &userProfile)
@@ -131,9 +132,14 @@ public:
         for(int i=0;i<len;++i)OTP.push_back((char)(rand()%10 + '0'));
         sendPasswordToEmail(mailID, OTP, "1");
         string tempOTP;
+        int tried=0;
         do{
-            cout << "Please verify your email:: Enter your OTP "<<endl;
-            cin>>tempOTP;
+        printOption(8,3,"Please verify your email:: Enter your OTP ");
+        cout<<endl;
+        printInputField();
+        cin>>tempOTP;
+        deleteUnwanted(tried,2);
+        tried=1;
         }while(tempOTP!=OTP);
     }
 
@@ -285,8 +291,9 @@ public:
         //      << "\n";
         getline(cin,password);
         inputPassword(userProfile);
-        cout << "Enter your address"
-             << "\n";
+        printOption(9,0,"Adress ");
+        PRINTBLUE;
+        cout<<" ";
         getline(cin, userProfile.address);
         sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
