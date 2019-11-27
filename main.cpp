@@ -83,12 +83,15 @@ void customerDashBoard(customer *customerObject)
     cout << endl;
     cout << endl;
     printOption(9, 0, "SEARCH PRODUCT", 1);
-    printOption(9, 0, "EDIT PROFILE", 2);
-    printOption(9, 0, "SHOW TOP PRODUCTS", 3);
+    printOption(9, 0, "SHOW TOP PRODUCTS", 2);
+    printOption(9, 0, "EDIT PROFILE", 3);
     printOption(9, 0, "DELETE PROFILE", 4);
-    printOption(9, 0, "Show Transactions", 5);
-    printOption(9, 0, "Show Unfinished Transactions", 6);
-    printOption(9, 3, "LOGOUT", 7);
+    printOption(9,0,"Show WishList ",5);
+    printOption(9,0,"Show Cart ",6);
+    printOption(9,0,"Check Order Status ",7);
+    printOption(9, 0, "Show Transactions ", 8);
+    printOption(9, 0, "Show Unfinished Transactions ", 9);
+    printOption(9, 3, "LOGOUT ", 10);
     printInputField();
     int choice;
     cin >> choice;
@@ -97,12 +100,12 @@ void customerDashBoard(customer *customerObject)
         customerObject->search();
         customerDashBoard(customerObject);
     }
-    else if (choice == 2)
+    else if (choice == 3)
     {
         customerObject->updateProfile();
         customerDashBoard(customerObject);
     }
-    else if (choice == 3)
+    else if (choice == 2)
     {
         customerObject->displayTopRatedProducts();
         customerDashBoard(customerObject);
@@ -120,17 +123,32 @@ void customerDashBoard(customer *customerObject)
         }
         else customerDashBoard(customerObject);
     }
-    else if (choice == 5)
+    else if(choice==5)
     {
-        customerObject->showAllTransaction();
+        customerObject->displayWishlist();
+        int x;
+        cin>>x;
         customerDashBoard(customerObject);
     }
     else if(choice==6)
     {
+        customerObject->displayCart();
+        int x;
+        cin>>x;
+        customerDashBoard(customerObject);
+        
+    }
+    else if (choice == 8)
+    {
+        customerObject->showAllTransaction();
+        customerDashBoard(customerObject);
+    }
+    else if(choice==9)
+    {
         customerObject->displayUnfinishedOrders();
         customerDashBoard(customerObject);
     }
-    else if (choice == 6)
+    else if (choice == 10)
         mainPage();
 }
 
@@ -189,6 +207,9 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     case 8:
         if(systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))mainPage();
         else shopKeeperDashBoard(shopkeeperObject);
+    default:
+        shopKeeperDashBoard(shopkeeperObject);
+
 
     }
 }

@@ -443,7 +443,7 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
-    void editProfile(string id)
+    profile editProfile(string id,profile& profileToEdit)
     {
         printHeader();
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
@@ -456,7 +456,7 @@ public:
             printInputField();
             string new_name;
             cin >> new_name;
-            temporaryProfile.name = new_name;
+            profileToEdit.name = new_name;
         }
         cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -465,7 +465,7 @@ public:
             printInputField();
             string new_surname;
             cin >> new_surname;
-            temporaryProfile.surname = new_surname;
+            profileToEdit.surname = new_surname;
         }
         cout << fggreen<<printtabs(8)<< "Do you wish to change your Email ID?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -479,7 +479,7 @@ public:
                 cout <<fggreen<<printtabs(8)<<  "Enter a valid Email address(Only IIT Jodhpur official email addresses are considered valid) ";
                 cin >> new_email;
             }
-            temporaryProfile.email = new_email;
+            profileToEdit.email = new_email;
         }
         cout <<fggreen<<printtabs(8)<<  "Do you wish to change your address?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -488,7 +488,7 @@ public:
             printInputField();
             string new_address;
             cin >> new_address;
-            temporaryProfile.address = new_address;
+            profileToEdit.address = new_address;
         }
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your Contact number?(Y/n) :: ";
         cin >> check;
@@ -502,7 +502,7 @@ public:
                 cout <<fggreen<<printtabs(8)<<  "Enter a valid contact number";
                 cin >> new_contact;
             }
-            temporaryProfile.contact = new_contact;
+            profileToEdit.contact = new_contact;
         }
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your Password?(Y/n) :: ";
         cin >> check;
@@ -520,9 +520,10 @@ public:
                 cout << "Confirm Password: ";
                 cin >> confirm_new_password;
             }
-            temporaryProfile.password = new_password;
+            profileToEdit.password = new_password;
         }
-        changeProfile(id, temporaryProfile.name, temporaryProfile.surname, temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
+        changeProfile(id, profileToEdit.name, profileToEdit.surname, profileToEdit.email, profileToEdit.address, profileToEdit.username, profileToEdit.password, profileToEdit.contact);
+        return profileToEdit;
     }
     static int update(void *data, int argc, char **argv, char **azColName)
     {

@@ -21,7 +21,7 @@ public:
         password = userProfile.password;
         contact = userProfile.contact;
         userType = userProfile.type;
-        isLoggedIn = 1;
+        //isLoggedIn = 1;
         userID = userProfile.id;
         finalProfile=userProfile;
         logStream<<__func__<<" "<<finalProfile.name<<endl;
@@ -303,7 +303,8 @@ public:
 
     void updateProfile()
     {
-        systemAdmin.editProfile(userID);
+        profile changedProfile=systemAdmin.editProfile(userID,finalProfile);
+        assignUserProfile(changedProfile);
     }
 
     void forgotPassword()
@@ -317,7 +318,7 @@ public:
             cout << printtabs(8) << "This username does not exist"
                  << "\n";
         else;
-            //systemAdmin.forgotPassword(username);
+            systemAdmin.forgotPassword(username);
     }
 
 };

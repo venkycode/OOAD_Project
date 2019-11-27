@@ -18,6 +18,7 @@ public:
         userID = userProfile.id;
         address = userProfile.address;
         userType = Customer;
+        finalProfile=userProfile;
     }
 
     static bool sortByRating(product product1, product product2)
@@ -165,6 +166,10 @@ public:
         reverse(ratings.begin(), ratings.end());
         int cnt = 0;
         printHeader();
+        cout<<endl;
+        cout<<printtabs(8)<<"    "<<fgred<<">>>>Top Rated Products<<<"<<endl;
+        cout<<printtabs(9);
+        cout<<endl;
         printLine(40);
         for (auto y : ratings)
         {
@@ -233,7 +238,7 @@ public:
         delayBy(1);
         deleteUnwanted(1, 9);
         delayBy(2);
-        cout << fggreen << printtabs(8) << to_string(quantity) << " " << systemAdmin.productId_to_product[productID].product_name << " added to the cart !" << endl;
+        cout << fgred << printtabs(8) << to_string(quantity) << " " << systemAdmin.productId_to_product[productID].product_name << " added to the cart !" << endl;
     }
 
     void removeFromCart()
@@ -401,7 +406,11 @@ public:
             cout << currentOrder.remainingTime << "\n";
             cout << currentOrder.other_details << "\n";
         }
-
+        printOption(9,0,"Back to Dashboard ");
+        PRINTBLUE;
+        cout<<"Press ENTER ";
+        string chx;
+        getline(cin,chx);//exits when pressed enter
     }
 
     void showAllTransaction()
