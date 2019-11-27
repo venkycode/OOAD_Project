@@ -24,6 +24,7 @@ public:
         isLoggedIn = 1;
         userID = userProfile.id;
         finalProfile=userProfile;
+        logStream<<__func__<<" "<<finalProfile.name<<endl;
     }
 
     void inputPassword(profile &userProfile)
@@ -98,6 +99,7 @@ public:
         logStream << "password = " << password << endl;
         logStream.flush();
         cout << endl;
+        password = sha256(password);
         profile userProfile = systemAdmin.authenticate(username, password);
         if (userProfile.name == "#")
         {
@@ -123,18 +125,23 @@ public:
         return userProfile;
     }
 
-    /*void sendOTP(string mailID){
+    void sendOTP(string mailID){
         string OTP = "";
         srand(time(0));
         int len = 6;
         for(int i=0;i<len;++i)OTP.push_back((char)(rand()%10 + '0'));
         sendPasswordToEmail(mailID, OTP, "1");
         string tempOTP;
+        int tried=0;
         do{
-            cout << "Please verify your email:: Enter your OTP "<<endl;
-            cin>>tempOTP;
+        printOption(8,3,"Please verify your email:: Enter your OTP ");
+        cout<<endl;
+        printInputField();
+        cin>>tempOTP;
+        deleteUnwanted(tried,2);
+        tried=1;
         }while(tempOTP!=OTP);
-    }*/
+    }
 
     void signUp()
     {
@@ -284,13 +291,14 @@ public:
         //      << "\n";
         getline(cin,password);
         inputPassword(userProfile);
-        cout << "Enter your address"
-             << "\n";
+        printOption(9,0,"Adress ");
+        PRINTBLUE;
+        cout<<" ";
         getline(cin, userProfile.address);
+        sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;
-        //sendOTP(userProfile.email);
     }
 
     void updateProfile()
