@@ -6,7 +6,7 @@
 //#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
-#include "forgotPassword.h"
+//#include "forgotPassword.h"
 
 typedef struct systemState
 {
@@ -379,9 +379,11 @@ public:
 
     bool deleteID(string id, string username)
     {
-        cout<<fgred<<printtabs(8)<<"Are you sure you want to delete your account?(Y/n)"<<endl;
+        printHeader();
+        cout<<fgred<<printtabs(9)<<"Are you sure you want to delete your account?(Y/n)"<<endl;
+        cout<<fgblue<<printtabs(9)<<">>";
         string response;cin>>response;
-        if(response!="Y")return 0;
+        if(response!="Y"&&response!="y")return 0;
         string sql = "DELETE FROM PERSON WHERE ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
@@ -644,7 +646,7 @@ public:
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id] = productToInsert;
     }
-    void forgotPassword(string username)
+    /*void forgotPassword(string username)
     {
         string new_password = PasswordGenerator();
         string message = "Your new Password is : " + new_password;
@@ -656,7 +658,7 @@ public:
         sendPasswordToEmail(temporaryProfile.email, new_password);
         changeProfile(temporaryID, temporaryProfile.name, temporaryProfile.surname,
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
-    }
+    }*/
 
     void assign_order(string id, int orderID)
     {
@@ -983,7 +985,7 @@ public:
     void changeProductCount(int productID, int changedCount)
     {
         if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<"This product does not belong to your inventory" << "\n";
+            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
             return;
         }
         productId_to_product[productID].count = changedCount;
@@ -992,7 +994,7 @@ public:
     void changeProductPrice(int productID, int changedPrice)
     {
         if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<"This product does not belong to your inventory" << "\n";
+            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
             return;
         }
         productId_to_product[productID].price = changedPrice;

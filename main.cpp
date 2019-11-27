@@ -88,13 +88,12 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     printHeader();
     delayBy(1);
     printOption(9, 3, "Welcome ", 0);
-    delayBy(1);
     cout << fgblue << shopkeeperObject->name ;
     delayBy(1);
     cout<< fggreen << " :)";
     cout << endl;
     cout << endl;
-    delayBy(3);
+    delayBy(1);
     printOption(9, 6, "EDIT PROFILE", 1);
     printOption(9, 1, "ADD PRODUCT TO INVENTORY", 2);
     printOption(9, 0, "REMOVE PRODUCT FROM INVENTORY",3);
@@ -106,37 +105,40 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     printInputField();
     int choice;
     cin>>choice;
-    bool backToDashboard=1;
     switch (choice)
     {
     case 1:
         shopkeeperObject->updateProfile();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 2 :
         shopkeeperObject->addToInventory();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 3:
         shopkeeperObject->removeFromInventory();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 4:
         shopkeeperObject->changePrice();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 5:
         shopkeeperObject->changeCount();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 6:
         shopkeeperObject->displayInventory();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 7:
-        backToDashboard=0;
+        mainPage();
         break;
     case 8:
-        backToDashboard= (systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))^1;
-        break;
+        if(systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))mainPage();
+        else shopKeeperDashBoard(shopkeeperObject);
 
     }
-    if(backToDashboard)shopKeeperDashBoard(shopkeeperObject);
-    else mainPage();
 }
 
 void nextToMainPage(User *runTimeUser)
