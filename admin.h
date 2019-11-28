@@ -509,7 +509,7 @@ public:
             printInputField();
             string new_password, confirm_new_password;
             cin >> new_password;
-            cout << "Confirm Password: ";
+            cout << printtabs(8) << "Confirm Password: ";
             cin >> confirm_new_password;
             while (!(isPasswordCorrect(new_password) && confirm_new_password == new_password))
             {

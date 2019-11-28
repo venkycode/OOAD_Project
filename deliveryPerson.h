@@ -18,6 +18,7 @@ class deliverPerson : public User{
     }
 
     void checkIfOrderIsAssigned(){
+        printHeader();
         if(assignedOrderId==-1){
             cout<<fgred<<printtabs(9)<<"No order is assigned" << "\n";
         }
@@ -36,8 +37,10 @@ class deliverPerson : public User{
     }
 
     void getProductInfoFromId(){
+        printHeader();
         int productID;
-        cout<< fggreen<<printtabs(9)<<"Enter product ID"<< endl;
+        cout<< fggreen<<printtabs(9)<<"Enter product ID"<< endl ;
+        printInputField();
         cin>>productID;
         if(systemAdmin.productId_to_product.find(productID)==systemAdmin.productId_to_product.end()){
             cout<< fgred<<printtabs(9)<<"Product not present in the inventory" <<endl;
@@ -55,8 +58,10 @@ class deliverPerson : public User{
     }
 
     void updateStatus(){
+        printHeader();
         if(assignedOrderId != -1){
-            cout<<fggreen<<printtabs(9)<<"Enter the expected time left in dd:hh:mm format" << "\n";
+            cout<<fggreen<<printtabs(9)<<"Enter the expected time left in dd:hh:mm format" << endl;
+            printInputField();
             string timeLeft;cin>>timeLeft;
             systemAdmin.updateTime(to_string(assignedOrderId),timeLeft);
             if(timeLeft=="00:00:00"){
@@ -66,6 +71,10 @@ class deliverPerson : public User{
             }
         }
         else cout<<fgred<<printtabs(9)<<"No order is assigned"<<endl;
+        cout<<fggreen<<printtabs(9)<< "Press enter to go back" << endl <<printtabs(9);
+        string choice;
+        getline(cin, choice);
+        getline(cin, choice);
     }
 
     void assignOrder(int orderId){
