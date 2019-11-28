@@ -2,8 +2,7 @@
 //#include "User.h"
 //#include "colormod.h"
 //#include <pthread.h>
-#include "ShopKeeper.h"
-
+#include "deliveryPerson.h"
 User *runTimeUserGlobal;
 
 void customerDashboard(customer *);
@@ -68,7 +67,7 @@ void mainPage()
          << endl
          << endl;
     delayBy(2);
-    nextToMainPage(runTimeUserGlobal);
+    nextToMainPage(runTimeUserGlobal, choice);
 }
 
 void customerDashBoard(customer *customerObject)
@@ -191,7 +190,40 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
         mainPage();
 }
 
-void nextToMainPage(User *runTimeUser)
+void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
+    printHeader();
+    delayBy(0.5);
+    printOption(9, 6, "ASSIGNED ORDER", 1);
+    printOption(9, 6, "GET PRODUCT INFO", 2);
+    printOption(9, 6, "UPDATE ORDER STATUS", 3);
+    printOption(10, 1, "LOGOUT", 4);
+    printOption(9, 5, "DELETE PROFILE", 5);
+    printInputField();
+    int choice;
+    cin >> choice;
+    switch (choice)
+    {
+        case 1:
+            deliverPersonObject ->checkIfOrderIsAssigned();
+            break;
+        case 2:
+            deliverPersonObject ->getProductInfoFromId();
+            break;
+        case 3:
+            deliverPersonObject ->updateStatus();
+            break;
+        case 4:
+            deliverPersonObject ->checkIfOrderIsAssigned;
+            break;
+        case 5:
+            deliverPersonObject ->checkIfOrderIsAssigned;
+            break;
+        default:
+            break;
+    }
+}
+
+void nextToMainPage(User *runTimeUser, int choice)
 {
     logStream << "here1 " << runTimeUser->userType << " " << runTimeUser->userID << endl;
     if (runTimeUser->userID[0] == 'C')
@@ -207,6 +239,12 @@ void nextToMainPage(User *runTimeUser)
         runTimeShopKeeper = new shopKeeper(runTimeUser->finalProfile);
         logStream << "here1 " << runTimeShopKeeper->userType << endl;
         shopKeeperDashBoard(runTimeShopKeeper);
+    }
+    else {
+        deliverPerson *runTimeDeliveryPerson;
+        runTimeDeliveryPerson = new deliverPerson(runTimeUser->finalProfile, choice);
+        logStream << "here1 " << runTimeDeliveryPerson->userType << endl;
+        deliveryPersonDashBoard(runTimeDeliveryPerson);
     }
 }
 

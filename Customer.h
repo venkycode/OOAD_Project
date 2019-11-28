@@ -18,6 +18,7 @@ public:
         userID = userProfile.id;
         address = userProfile.address;
         userType = Customer;
+        finalProfile=userProfile;
     }
 
     static bool sortByRating(product product1, product product2)

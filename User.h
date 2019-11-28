@@ -6,7 +6,6 @@ class User
 {
 public:
     string name, surname, emailID, contact, username, password, userID, address;
-    bool isLoggedIn;
     enum typeOfUser userType;
     profile finalProfile;
 
@@ -21,7 +20,6 @@ public:
         password = userProfile.password;
         contact = userProfile.contact;
         userType = userProfile.type;
-        isLoggedIn = 1;
         userID = userProfile.id;
         finalProfile=userProfile;
         logStream<<__func__<<" "<<finalProfile.name<<endl;
