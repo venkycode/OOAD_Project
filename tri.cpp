@@ -1,15 +1,20 @@
-#include "Customer.h"
+#include "ShopKeeper.h"
 using namespace std;
 
-User tmpUser;
+User *tmpUser;
 
 
 int main()
 {
-    tmpUser.emailID="ssss@iitj.ac.in";
-    tmpUser.isLoggedIn=0;
-    customer* cust=dynamic_cast<customer*>(&tmpUser);
-    cout<<cust.emailID;
-    tmpUser->updateProfile();
-    return 0;
+
+    logStream << ">>> !!! START OF LOG !!! <<<<<\n";
+    cout << clearscreen;
+    cout << cursorAdjust;
+    systemAdmin.deleteID("C2","");
+    systemAdmin.deleteID("C4","ganpa");
+    systemAdmin.deleteID("C0","qq");
+    systemAdmin.deleteID("D0","eee");
+    systemAdmin.deleteID("S0","q");
+    logStream << ">>> !!! END OF LOG !!! <<<<<\n";
+    logging.close();
 }

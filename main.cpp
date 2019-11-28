@@ -82,12 +82,15 @@ void customerDashBoard(customer *customerObject)
     cout << endl;
     cout << endl;
     printOption(9, 0, "SEARCH PRODUCT", 1);
-    printOption(9, 0, "EDIT PROFILE", 2);
-    printOption(9, 0, "SHOW TOP PRODUCTS", 3);
+    printOption(9, 0, "SHOW TOP PRODUCTS", 2);
+    printOption(9, 0, "EDIT PROFILE", 3);
     printOption(9, 0, "DELETE PROFILE", 4);
-    printOption(9, 0, "Show Transactions", 5);
-    printOption(9, 0, "Show Unfinished Transactions", 6);
-    printOption(9, 3, "LOGOUT", 7);
+    printOption(9,0,"Show WishList ",5);
+    printOption(9,0,"Show Cart ",6);
+    printOption(9,0,"Check Order Status ",7);
+    printOption(9, 0, "Show Transactions ", 8);
+    printOption(9, 0, "Show Unfinished Transactions ", 9);
+    printOption(9, 3, "LOGOUT ", 10);
     printInputField();
     int choice;
     cin >> choice;
@@ -96,12 +99,12 @@ void customerDashBoard(customer *customerObject)
         customerObject->search();
         customerDashBoard(customerObject);
     }
-    else if (choice == 2)
+    else if (choice == 3)
     {
         customerObject->updateProfile();
         customerDashBoard(customerObject);
     }
-    else if (choice == 3)
+    else if (choice == 2)
     {
         customerObject->displayTopRatedProducts();
         customerDashBoard(customerObject);
@@ -119,17 +122,32 @@ void customerDashBoard(customer *customerObject)
         }
         else customerDashBoard(customerObject);
     }
-    else if (choice == 5)
+    else if(choice==5)
     {
-        customerObject->showAllTransaction();
+        customerObject->displayWishlist();
+        int x;
+        cin>>x;
         customerDashBoard(customerObject);
     }
     else if(choice==6)
     {
+        customerObject->displayCart();
+        int x;
+        cin>>x;
+        customerDashBoard(customerObject);
+        
+    }
+    else if (choice == 8)
+    {
+        customerObject->showAllTransaction();
+        customerDashBoard(customerObject);
+    }
+    else if(choice==9)
+    {
         customerObject->displayUnfinishedOrders();
         customerDashBoard(customerObject);
     }
-    else if (choice == 6)
+    else if (choice == 10)
         mainPage();
 }
 
@@ -144,7 +162,7 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     cout << fggreen << " :)";
     cout << endl;
     cout << endl;
-    delayBy(3);
+    delayBy(1);
     printOption(9, 6, "EDIT PROFILE", 1);
     printOption(9, 1, "ADD PRODUCT TO INVENTORY", 2);
     printOption(9, 0, "REMOVE PRODUCT FROM INVENTORY", 3);
@@ -155,39 +173,44 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     printOption(9, 5, "DELETE PROFILE", 8);
     printInputField();
     int choice;
-    cin >> choice;
-    bool backToDashboard = 1;
+    cin>>choice;
     switch (choice)
     {
     case 1:
         shopkeeperObject->updateProfile();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 2:
         shopkeeperObject->addToInventory();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 3:
         shopkeeperObject->removeFromInventory();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 4:
         shopkeeperObject->changePrice();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 5:
         shopkeeperObject->changeCount();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 6:
         shopkeeperObject->displayInventory();
+        shopKeeperDashBoard(shopkeeperObject);
         break;
     case 7:
-        backToDashboard = 0;
+        mainPage();
         break;
     case 8:
-        backToDashboard = (systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username)) ^ 1;
-        break;
-    }
-    if (backToDashboard)
+        if(systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))mainPage();
+        else shopKeeperDashBoard(shopkeeperObject);
+    default:
         shopKeeperDashBoard(shopkeeperObject);
-    else
-        mainPage();
+
+
+    }
 }
 
 void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
@@ -255,5 +278,5 @@ int main()
     cout << cursorAdjust;
     mainPage();
     logStream << ">>> !!! END OF LOG !!! <<<<<\n";
-    logStream.close();
+    logging.close();
 }

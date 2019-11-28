@@ -95,7 +95,7 @@ public:
         //logStream<<""szar<<endl;
         password = tmpPass; //convertToString(tmpPass,szar);
         logStream << "password = " << password << endl;
-        logStream.flush();
+        logging.flush();
         cout << endl;
         password = sha256(password);
         profile userProfile = systemAdmin.authenticate(username, password);
@@ -293,7 +293,7 @@ public:
         PRINTBLUE;
         cout<<" ";
         getline(cin, userProfile.address);
-        sendOTP(userProfile.email);
+        //sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;
@@ -301,7 +301,8 @@ public:
 
     void updateProfile()
     {
-        systemAdmin.editProfile(userID);
+        profile changedProfile=systemAdmin.editProfile(userID,finalProfile);
+        assignUserProfile(changedProfile);
     }
 
     void forgotPassword()

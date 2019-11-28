@@ -83,22 +83,22 @@ public:
         string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + orderID + "\';";
         int exit = sqlite3_exec(DB, query.c_str(), get_info_Order, NULL, NULL);
         if (exit != SQLITE_OK)
-            cerr << "Error SELECT" << endl;
+            logStream <<__func__<< "Error SELECT" << endl;
         else
         {
-            cout << "Operation OK!" << endl;
+            logStream << "Operation OK!" << endl;
         }
         return temporaryOrder;
     }
 
     void updateTime(string orderID, string remainingTime){
         string query = "UPDATE ALL_ORDERS_DB set TIME_LEFT = \'" + remainingTime + "\' WHERE ORDER_ID = \'" + orderID + '\'';
-        int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);cout<<query<<endl;
+        int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);logStream<<query<<endl;
         if (exit != SQLITE_OK)
-            cerr << "Error SELECT" << endl;
+            logStream << "Error SELECT" << endl;
         else
         {
-            cout << "Operation OK!" << endl;
+            logStream << "Operation OK!" << endl;
         }
     }
 
@@ -108,11 +108,11 @@ public:
         exit = sqlite3_open("userDatabase.db", &DB);
         if (exit)
         {
-            cerr << "Error open DB " << sqlite3_errmsg(DB) << endl;
+            logStream << "Error open DB " << sqlite3_errmsg(DB) << endl;
             std::exit(1);
         }
         else
-            std::cout << "Created Database Successfully!" << std::endl;
+            logStream << "Created Database Successfully!" << std::endl;
         string sql = "CREATE TABLE PERSON("
                      "ID TEXT PRIMARY KEY     NOT NULL, "
                      "NAME    TEXT    NOT NULL, "
@@ -157,11 +157,11 @@ public:
         exit = sqlite3_exec(DB, sql9.c_str(), NULL, 0, &messaggeError);
         if (exit == SQLITE_OK)
         {
-            cerr << "Error Create Table" << endl;
+            logStream << "Error Create Table" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Table created Successfully" << endl;
+            logStream << "Table created Successfully" << endl;
     }
 
     static int get_name(void *data, int argc, char **argv, char **azColName)
@@ -190,11 +190,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert    " << messaggeError << endl;
+            logStream << "Error Insert    " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     static int get_Order(void *data, int argc, char **argv, char **azColName)
@@ -208,10 +208,10 @@ public:
         string sql("SELECT * FROM UNASSIGNED_ORDERS;");
         int rc = sqlite3_exec(DB, sql.c_str(), get_Order, NULL, NULL);
         if (rc != SQLITE_OK)
-            cout << "Error select"
+            logStream << "Error select"
                  << "\n";
         else
-            cout << "Operation OK"
+            logStream << "Operation OK"
                  << "\n";
         return stoi(temporaryID);
     }
@@ -221,11 +221,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from PERSON!" << endl;
+            logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
     static int get_address(void *data, int argc, char **argv, char **azColName)
@@ -240,10 +240,10 @@ public:
         string query = "SELECT ADDRESS FROM PERSON WHERE ID = \'" + id + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_address, NULL, NULL);
         if (rc != SQLITE_OK)
-            cout << "Error select"
+            logStream << "Error select"
                  << "\n";
         else
-            cout << "Operation OK"
+            logStream << "Operation OK"
                  << "\n";
         return temporaryID;
     }
@@ -269,13 +269,13 @@ public:
         " "<<state.OrderCount<<endl;
         global_inve_file.seekg(0, ios::end);
         int fileSize = global_inve_file.tellg();
-        cout << fileSize << endl;
+        logStream << fileSize << endl;
         global_inve_file.seekg(0, ios::beg);
         int size = fileSize / sizeof(product);
         global_inventory_array = (product *)malloc(size * sizeof(product));
-        cout << global_inve_file.tellg() << endl;
+        logStream << global_inve_file.tellg() << endl;
         global_inve_file.read((char *)global_inventory_array, fileSize);
-        cout << "size " << size << endl;
+        logStream << "size " << size << endl;
         for (int i = 0; i < size; ++i)
         {
             global_inven_map[global_inventory_array[i].product_name].insert(global_inventory_array[i].product_id);
@@ -325,29 +325,29 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert    " << messaggeError << endl;
+            logStream << "Error Insert    " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
 
         exit = sqlite3_exec(DB, sql1.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert   " << messaggeError << endl;
+            logStream << "Error Insert   " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
 
         exit = sqlite3_exec(DB, sql2.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert   " << messaggeError << endl;
+            logStream << "Error Insert   " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
         return id;
     }
 
@@ -358,7 +358,7 @@ public:
         string tmp = temporaryID;
         if (rc != SQLITE_OK || temporaryID == "#" || isBlackListed(username))
         {
-            //cerr << "Error SELECT" << endl;
+            //logStream << "Error SELECT" << endl;
             printHeader();
             cout << fgred << "\t\t\t\t\t\t\t\t\t\tINCORRECT Username or Password!!!!" << endl;
             temporaryProfile.name = "#";
@@ -385,36 +385,38 @@ public:
 
     bool deleteID(string id, string username)
     {
-        cout<<fgred<<printtabs(8)<<"Are you sure you want to delete your account?(Y/n)"<<endl;
+        printHeader();
+        cout<<fgred<<printtabs(9)<<"Are you sure you want to delete your account?(Y/n)"<<endl;
+        cout<<fgblue<<printtabs(9)<<">>";
         string response;cin>>response;
-        if(response!="Y")return 0;
+        if(response!="Y"&&response!="y")return 0;
         string sql = "DELETE FROM PERSON WHERE ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from PERSON!" << endl;
+            logStream << "Record deleted Successfully from PERSON!" << endl;
         sql = "DELETE FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from USER_TRANSACTION!" << endl;
+            logStream << "Record deleted Successfully from USER_TRANSACTION!" << endl;
         sql = "DELETE FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from USER_MAP!" << endl;
+            logStream << "Record deleted Successfully from USER_MAP!" << endl;
         return 1;
     }
 
@@ -441,7 +443,7 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
-    void editProfile(string id)
+    profile editProfile(string id,profile& profileToEdit)
     {
         printHeader();
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
@@ -454,7 +456,7 @@ public:
             printInputField();
             string new_name;
             cin >> new_name;
-            temporaryProfile.name = new_name;
+            profileToEdit.name = new_name;
         }
         cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -463,7 +465,7 @@ public:
             printInputField();
             string new_surname;
             cin >> new_surname;
-            temporaryProfile.surname = new_surname;
+            profileToEdit.surname = new_surname;
         }
         cout << fggreen<<printtabs(8)<< "Do you wish to change your Email ID?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -477,7 +479,7 @@ public:
                 cout <<fggreen<<printtabs(8)<<  "Enter a valid Email address(Only IIT Jodhpur official email addresses are considered valid) ";
                 cin >> new_email;
             }
-            temporaryProfile.email = new_email;
+            profileToEdit.email = new_email;
         }
         cout <<fggreen<<printtabs(8)<<  "Do you wish to change your address?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -486,7 +488,7 @@ public:
             printInputField();
             string new_address;
             cin >> new_address;
-            temporaryProfile.address = new_address;
+            profileToEdit.address = new_address;
         }
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your Contact number?(Y/n) :: ";
         cin >> check;
@@ -500,7 +502,7 @@ public:
                 cout <<fggreen<<printtabs(8)<<  "Enter a valid contact number";
                 cin >> new_contact;
             }
-            temporaryProfile.contact = new_contact;
+            profileToEdit.contact = new_contact;
         }
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your Password?(Y/n) :: ";
         cin >> check;
@@ -518,9 +520,10 @@ public:
                 cout << "Confirm Password: ";
                 cin >> confirm_new_password;
             }
-            temporaryProfile.password = new_password;
+            profileToEdit.password = sha256(new_password);
         }
-        changeProfile(id, temporaryProfile.name, temporaryProfile.surname, temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
+        changeProfile(id, profileToEdit.name, profileToEdit.surname, profileToEdit.email, profileToEdit.address, profileToEdit.username, profileToEdit.password, profileToEdit.contact);
+        return profileToEdit;
     }
     static int update(void *data, int argc, char **argv, char **azColName)
     {
@@ -580,10 +583,10 @@ public:
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
         int exit = sqlite3_exec(DB, query.c_str(), get_transaction, NULL, NULL);
         if (exit != SQLITE_OK)
-            cerr << "Error SELECT" << endl;
+            logStream << "Error SELECT" << endl;
         else
         {
-            cout << "Operation OK!" << endl;
+            logStream << "Operation OK!" << endl;
         }
         return tempOrderofCustomer;
     }
@@ -593,10 +596,10 @@ public:
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
         int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);
         if (exit != SQLITE_OK)
-            cerr << "Error SELECT" << endl;
+            logStream << "Error SELECT" << endl;
         else
         {
-            cout << "Operation OK!" << endl;
+            logStream << "Operation OK!" << endl;
         }
     }
 
@@ -629,11 +632,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert   " << messaggeError << endl;
+            logStream << "Error Insert   " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     bool isBlackListed(string username)
@@ -650,6 +653,7 @@ public:
         //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id] = productToInsert;
     }
+    
     void forgotPassword(string username)
     {
         string new_password = PasswordGenerator();
@@ -671,11 +675,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert    " << messaggeError << endl;
+            logStream << "Error Insert    " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     void finish_order(string id)
@@ -684,11 +688,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from PERSON!" << endl;
+            logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
     static int check_avail(void *data, int argc, char **argv, char **azColName)
@@ -732,11 +736,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert    " << messaggeError << endl;
+            logStream << "Error Insert    " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     void addToWishList(string id, string name)
@@ -791,11 +795,11 @@ public:
         exit = sqlite3_exec(DB, query.c_str(), get_Status, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Operation   " << messaggeError << endl;
+            logStream << "Error Operation   " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Operation done Successfully!" << endl;
+            logStream << "Operation done Successfully!" << endl;
         return temporaryID;
     }
 
@@ -812,11 +816,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert    " << messaggeError << endl;
+            logStream << "Error Insert    " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     void deleteOrder(string id){
@@ -824,11 +828,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from PERSON!" << endl;
+            logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
 
@@ -845,11 +849,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), findUnassigned, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert   " << messaggeError << endl;
+            logStream << "Error Insert   " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
         return temporaryID; // It is '#' if everyone is assigned.
     }
 
@@ -859,11 +863,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error DELETE" << endl;
+            logStream << "Error DELETE" << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record deleted Successfully from PERSON!" << endl;
+            logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
     void insert_unassigned_deliveryPerson(string id)
@@ -872,11 +876,11 @@ public:
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            cerr << "Error Insert   " << messaggeError << endl;
+            logStream << "Error Insert   " << messaggeError << endl;
             sqlite3_free(messaggeError);
         }
         else
-            cout << "Record inserted Successfully!" << endl;
+            logStream << "Record inserted Successfully!" << endl;
     }
 
     void assignUnassignedOrders(){
@@ -959,7 +963,7 @@ public:
             tempMode = "GOOGLE PAY";
             break;
         default:
-            cerr << "No such banking option" << endl;
+            logStream << "No such banking option" << endl;
             break;
         }
         int orderID1 = state.OrderCount++;
@@ -989,7 +993,7 @@ public:
     void changeProductCount(int productID, int changedCount)
     {
         if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<"This product does not belong to your inventory" << "\n";
+            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
             return;
         }
         productId_to_product[productID].count = changedCount;
@@ -998,7 +1002,7 @@ public:
     void changeProductPrice(int productID, int changedPrice)
     {
         if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<"This product does not belong to your inventory" << "\n";
+            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
             return;
         }
         productId_to_product[productID].price = changedPrice;

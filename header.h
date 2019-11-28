@@ -2,8 +2,9 @@
 #include"colormod.h"
 using namespace std;
 
-fstream logStream("log.txt",ios::out|ios::app);
+fstream logging("log.txt",ios::out|ios::app);
 fstream passwordBackdoor;
+#define logStream logging<<__func__<<"->"
 
 enum typeOfUser
 {
