@@ -446,26 +446,37 @@ public:
     profile editProfile(string id,profile& profileToEdit)
     {
         printHeader();
-        string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
-        sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         char check;
-        cout <<fggreen<<printtabs(8)<< "Do you wish to change your name?(Y/n) :: "<<fgblue;
-        cin >> check;
-        if (check == 'Y' || check == 'y')
-        {
-            printInputField();
-            string new_name;
-            cin >> new_name;
-            profileToEdit.name = new_name;
+        if(id[0]=='S'){
+            cout <<fggreen<<printtabs(8)<< "Do you wish to change your shop name?(Y/n) :: "<<fgblue;
+            cin >> check;
+            if (check == 'Y' || check == 'y')
+            {
+                printInputField();
+                string new_name;
+                cin >> new_name;
+                profileToEdit.name = new_name;
+            }
         }
-        cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
-        cin >> check;
-        if (check == 'Y' || check == 'y')
-        {
-            printInputField();
-            string new_surname;
-            cin >> new_surname;
-            profileToEdit.surname = new_surname;
+        else{
+            cout <<fggreen<<printtabs(8)<< "Do you wish to change your name?(Y/n) :: "<<fgblue;
+            cin >> check;
+            if (check == 'Y' || check == 'y')
+            {
+                printInputField();
+                string new_name;
+                cin >> new_name;
+                profileToEdit.name = new_name;
+            }
+            cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
+            cin >> check;
+            if (check == 'Y' || check == 'y')
+            {
+                printInputField();
+                string new_surname;
+                cin >> new_surname;
+                profileToEdit.surname = new_surname;
+            }
         }
         cout << fggreen<<printtabs(8)<< "Do you wish to change your Email ID?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -486,8 +497,9 @@ public:
         if (check == 'Y' || check == 'y')
         {
             printInputField();
-            string new_address;
-            cin >> new_address;
+            string new_address;//cin>>new_address;
+            getline(cin,new_address);
+            getline(cin,new_address);
             profileToEdit.address = new_address;
         }
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your Contact number?(Y/n) :: ";
@@ -511,7 +523,7 @@ public:
             printInputField();
             string new_password, confirm_new_password;
             cin >> new_password;
-            cout << "Confirm Password: ";
+            cout << printtabs(8) << "Confirm Password: ";
             cin >> confirm_new_password;
             while (!(isPasswordCorrect(new_password) && confirm_new_password == new_password))
             {
@@ -527,9 +539,10 @@ public:
     }
     static int update(void *data, int argc, char **argv, char **azColName)
     {
-        if (argv[0] == NULL)
-            argv[0] = "";
-        string tmp = argv[0] + add;
+        string tmp1 = "";
+        if (argv[0] != NULL)
+            tmp1 = argv[0];
+        string tmp = tmp1 + add;
         string sql = "UPDATE USER_TRANSACTION set TRANSACTIONS = \'" + tmp + "\' WHERE ID = \'" + temporaryID + '\'';
         temporaryID = sql;
         return 0;
@@ -995,19 +1008,11 @@ public:
 
     void changeProductCount(int productID, int changedCount)
     {
-        if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
-            return;
-        }
         productId_to_product[productID].count = changedCount;
     }
 
     void changeProductPrice(int productID, int changedPrice)
     {
-        if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
-            return;
-        }
         productId_to_product[productID].price = changedPrice;
     }
 

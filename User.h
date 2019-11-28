@@ -6,7 +6,6 @@ class User
 {
 public:
     string name, surname, emailID, contact, username, password, userID, address;
-    bool isLoggedIn;
     enum typeOfUser userType;
     profile finalProfile;
 
@@ -21,7 +20,6 @@ public:
         password = userProfile.password;
         contact = userProfile.contact;
         userType = userProfile.type;
-        //isLoggedIn = 1;
         userID = userProfile.id;
         finalProfile=userProfile;
         logStream<<__func__<<" "<<finalProfile.name<<endl;
@@ -164,7 +162,6 @@ public:
             userProfile.type = (enum typeOfUser)deliveryPerson;
         if (userProfile.type == (enum typeOfUser)ShopKeeper)
         {
-            //cout << "Enter your shop name" << "\n" ;
             printHeader();
             printOption(9, 0);
             cout << fgblue << ">> ShopKeeper Sign UP <<";
@@ -193,17 +190,10 @@ public:
             cout << fgblue << ">>";
             cin >> userProfile.surname;
             cout << endl;
-            // cout << "Enter your name"
-            //      << "\n";
-            // cin >> userProfile.name;
-            // cout << "Enter your surname"
-            //      << "\n";
-            // cin >> userProfile.surname;
         }
         int triedYet=0;
         do
         {
-            //cout<<endl;
             printOption(9, 2, "Contact Number ", 0);
             cout << fgblue << ">>";
             cin >> userProfile.contact;
@@ -212,29 +202,9 @@ public:
         } while (!isContactCorrect(userProfile.contact,&triedYet));
 
         cout << endl;
-        // cout << "Enter your contact number"
-        //      << "\n";
-        // cin >> userProfile.contact;
-        // while (!isContactCorrect(userProfile.contact))
-        // {
-        //     cout << "Your contact number is invalid. Try again"
-        //          << "\n";
-        //     cin >> userProfile.contact;
-        // }
-        // cout << "Enter your email-id"
-        //      << "\n";
-        // getline(cin, userProfile.email);
-        // getline(cin, userProfile.email);
-        // while (!isEmailCorrect(userProfile.email))
-        // {
-        //     cout << "Use iitj email id"
-        //          << "\n";
-        //     getline(cin, userProfile.email);
-        // }
         triedYet=0;
         do
         {
-            //cout<<endl;
             printOption(9, 2, "e-MAIL ID ", 0);
             cout << fgblue << ">>";
             cin >> userProfile.email;
@@ -247,11 +217,9 @@ public:
         printtabs(8)<<" and capital letters and numbers \n"
         <<printtabs(8)<<" and underscores"
              << endl;
-        // cout << "Enter your username"
-        //      << "\n";
+
         printOption(9,0,"Username");
         cout<<fgblue<<">>";
-        //getline(cin, userProfile.username);
         cin>>userProfile.username;
         triedYet=0;
         while (!isUsernameCorrect(userProfile.username) || systemAdmin.isUsernameTaken(userProfile.username))
@@ -280,15 +248,12 @@ public:
             cin>>userProfile.username;
             delayBy(0.4);
             triedYet=1;
-            //getline(cin, userProfile.username);
         }
         cout<<endl;
         cout<<fgblue<<printtabs(8);
         cout<<fgred;
         cout << "Your password should consist of at least one small letter\n"+printtabs(8)+", one capital letter, one number and one special character"
              << endl;
-        // cout << "Enter password"
-        //      << "\n";
         getline(cin,password);
         inputPassword(userProfile);
         printOption(9,0,"Adress ");
@@ -298,7 +263,6 @@ public:
         sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
         assignUserProfile(userProfile);
-        //cout<<userProfile.id<<" "<<userID<<endl;
     }
 
     void updateProfile()
@@ -317,8 +281,12 @@ public:
         else if (!systemAdmin.isUsernameTaken(username))
             cout << printtabs(8) << "This username does not exist"
                  << "\n";
-        else;
+        else{
             systemAdmin.forgotPassword(username);
+            cout << printtabs(8) << "New Password has benn sent to your registered email."
+                 << "\n";
+        }
+        delayBy(2.1);
     }
 
 };

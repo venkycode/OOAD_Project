@@ -2,12 +2,11 @@
 //#include "User.h"
 //#include "colormod.h"
 //#include <pthread.h>
-#include "ShopKeeper.h"
-
+#include "deliveryPerson.h"
 User *runTimeUserGlobal;
 
 void customerDashboard(customer *);
-void nextToMainPage(User *);
+void nextToMainPage(User *, int);
 void mainPage();
 void mainPage()
 {
@@ -42,7 +41,9 @@ void mainPage()
              << endl
              << endl;
         delayBy(3);
-        return;
+        logStream << ">>> !!! END OF LOG !!! <<<<<\n";
+        logging.close();
+        exit(0);
     }
     else if (choice == 999)
     {
@@ -68,7 +69,7 @@ void mainPage()
          << endl
          << endl;
     delayBy(2);
-    nextToMainPage(runTimeUserGlobal);
+    nextToMainPage(runTimeUserGlobal, choice);
 }
 
 void customerDashBoard(customer *customerObject)
@@ -211,12 +212,62 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
         else shopKeeperDashBoard(shopkeeperObject);
     default:
         shopKeeperDashBoard(shopkeeperObject);
-
-
     }
 }
 
-void nextToMainPage(User *runTimeUser)
+void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
+    printHeader();
+    delayBy(0.5);
+    printOption(9, 6, "ASSIGNED ORDER", 1);
+    printOption(9, 6, "GET PRODUCT INFO", 2);
+    printOption(9, 6, "UPDATE ORDER STATUS", 3);
+    printOption(9, 6, "EDIT PROFILE", 4);
+    printOption(10, 1, "LOGOUT", 5);
+    printOption(9, 5, "DELETE PROFILE", 6);
+    printInputField();
+    int choice;
+    cin >> choice;
+    switch (choice)
+    {
+        case 1:
+            deliverPersonObject ->checkIfOrderIsAssigned();
+            deliveryPersonDashBoard(deliverPersonObject);
+            break;
+        case 2:
+            deliverPersonObject ->getProductInfoFromId();
+            deliveryPersonDashBoard(deliverPersonObject);
+            break;
+        case 3:
+            deliverPersonObject ->updateStatus();
+            deliveryPersonDashBoard(deliverPersonObject);
+            break;
+        case 4:
+            deliverPersonObject ->updateProfile();
+            deliveryPersonDashBoard(deliverPersonObject);
+            break;
+        case 5:
+            mainPage();
+            break;
+        case 6:
+            if (systemAdmin.deleteID(deliverPersonObject->userID, deliverPersonObject->username))
+            {
+                printHeader();
+                cout << endl
+                    << endl
+                    << endl;
+                cout << printtabs(8) << fgred << "It was good having you" << endl;
+                delayBy(1.6);
+                mainPage();
+            }
+            else deliveryPersonDashBoard(deliverPersonObject);
+            break;
+        default:
+            deliveryPersonDashBoard(deliverPersonObject);
+            break;
+    }
+}
+
+void nextToMainPage(User *runTimeUser, int choice)
 {
     logStream << "here1 " << runTimeUser->userType << " " << runTimeUser->userID << endl;
     if (runTimeUser->userID[0] == 'C')
@@ -233,6 +284,13 @@ void nextToMainPage(User *runTimeUser)
         logStream << "here1 " << runTimeShopKeeper->userType << endl;
         shopKeeperDashBoard(runTimeShopKeeper);
     }
+    else if(runTimeUser->userID[0] == 'D'){
+        deliverPerson *runTimeDeliveryPerson;
+        runTimeDeliveryPerson = new deliverPerson(runTimeUser->finalProfile, choice);
+        logStream << "here1 " << runTimeDeliveryPerson->userType << endl;
+        deliveryPersonDashBoard(runTimeDeliveryPerson);
+    }
+    else mainPage();
 }
 
 int main()
