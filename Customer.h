@@ -452,14 +452,9 @@ public:
         set<string> tempWishlist = systemAdmin.returnWishlist(userID);
         if (tempWishlist.empty())
         {
-<<<<<<< HEAD
-            cout << printtabs(9)<<fgred<<"Your wishlist is empty"
-                 << "\n";
-=======
             cout << fgred<< printtabs(9)<<"Your wishlist is empty"
                  << endl;
             return;
->>>>>>> 37e1fb65f7b6f9cbd9f48770d186e0232df5e3d7
         }
         cout<<printtabs(8);
         for (auto y : tempWishlist)
