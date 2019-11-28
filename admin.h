@@ -897,6 +897,8 @@ public:
 
     void payment(vector<pair<product, int>> Cart, enum mode payment_mode, string contact, string id)
     {
+        printHeader();
+        cout<<endl;
         auto current_clock = chrono::system_clock::now();
         time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
         string currentTime = ctime(&cur_time);
@@ -908,7 +910,7 @@ public:
             productId_to_product[currentProduct.first.product_id].count -= currentProduct.second;
             totalCost += (currentProduct.first.price + currentProduct.first.deliveryCharge) * currentProduct.second;
         }
-        cout << "Total Cost =  " << totalCost << endl;
+        cout<<printtabs(8)<<fggreen << "Total Cost =  " << totalCost << endl;
         string cardNumber, expiry_Date, Cvv, paymentUsing = "";
         char choice;
         switch (payment_mode)
@@ -917,18 +919,18 @@ public:
             tempMode = "CASH ON DELIVERY";
             break;
         case onlineBanking:
-            cout << "Enter card number (****-****-****-****)" << endl;
+            cout<<printtabs(8)<<fggreen << "Enter card number (****-****-****-****)" << endl;
             do
             {
                 cin >> cardNumber;
             } while (!isCorrectCardNumber(cardNumber));
             paymentUsing = cardNumber;
-            cout << "Enter Expiry Date (mm/yy)" << endl;
+            cout <<printtabs(8)<<fggreen<< "Enter Expiry Date (mm/yy)" << endl;
             do
             {
                 cin >> expiry_Date;
             } while (!isCorrectDate(expiry_Date));
-            cout << "Enter Cvv (***)" << endl;
+            cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
             do
             {
                 cin >> Cvv;
@@ -936,7 +938,7 @@ public:
             tempMode = "ONLINE BANKING";
             break;
         case Paytm:
-            cout << "Do you wish to use your current number(Y/n): " << contact << endl;
+            cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
 
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
@@ -950,7 +952,7 @@ public:
             tempMode = "PAYTM";
             break;
         case GooglePay:
-            cout << "Do you wish to use your current number(Y/n): " << contact << endl;
+            cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
 
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
@@ -968,7 +970,7 @@ public:
             break;
         }
         int orderID1 = state.OrderCount++;
-        cout << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
+        cout<<printtabs(8)<<fggreen << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
         addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
         string deliveryPersonID=find_unassigned_deliveryPerson();
         vector<pair<int,int>>tempOrder;

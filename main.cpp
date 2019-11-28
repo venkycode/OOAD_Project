@@ -127,8 +127,6 @@ void customerDashBoard(customer *customerObject)
     else if(choice==5)
     {
         customerObject->displayWishlist();
-        int x;
-        cin>>x;
         customerDashBoard(customerObject);
     }
     else if(choice==6)
@@ -136,6 +134,11 @@ void customerDashBoard(customer *customerObject)
         customerObject->displayCart();
         customerDashBoard(customerObject);
         
+    }
+    else if(choice==7)
+    {
+        customerObject->checkStatus();
+        customerDashBoard(customerObject);
     }
     else if (choice == 8)
     {
