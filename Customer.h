@@ -18,7 +18,7 @@ public:
         userID = userProfile.id;
         address = userProfile.address;
         userType = Customer;
-        finalProfile=userProfile;
+        finalProfile = userProfile;
     }
 
     static bool sortByRating(product product1, product product2)
@@ -166,10 +166,10 @@ public:
         reverse(ratings.begin(), ratings.end());
         int cnt = 0;
         printHeader();
-        cout<<endl;
-        cout<<printtabs(8)<<"    "<<fgred<<">>>>Top Rated Products<<<"<<endl;
-        cout<<endl;
-        cout<<printtabs(9);
+        cout << endl;
+        cout << printtabs(8) << "    " << fgred << ">>>>Top Rated Products<<<" << endl;
+        cout << endl;
+        cout << printtabs(8);
         printLine(40);
         for (auto y : ratings)
         {
@@ -257,20 +257,71 @@ public:
 
     void displayCart()
     {
+        printHeader();
+        cout << endl;
         if (cart.empty())
         {
-            cout << "Your cart is empty"
+            cout << endl
+                 << endl
+                 << endl;
+            cout << printtabs(9) << fgred;
+            cout << "Your cart is empty!!!"
                  << "\n";
+            printOption(8,0,"Return To Dashboard(ENTER ANY NUMBER)");
+            cout<<endl;
+            int x;
+            printInputField();
+            cin>>x;
             return;
         }
-        for (auto y : cart)
+        else
         {
-            cout << "Product name : " << y.first.product_name << "\n";
-            cout << "Product ID : " << y.first.product_id << "\n";
-            cout << "Price : " << y.first.price << "\n";
-            cout << "Delivery Charges : " << y.first.deliveryCharge << "\n";
-            cout << "Quantity you have added to cart : " << y.second << "\n";
-            cout << "\n";
+            cout << endl;
+            cout << printtabs(8) << fgred;
+            printLine(40);
+            int cnt = 1;
+            for (auto y : cart)
+            {
+                auto currentProduct = y.first;
+                // cout << "Product name : " << y.first.product_name << "\n";
+                // cout << "Product ID : " << y.first.product_id << "\n";
+                // cout << "Price : " << y.first.price << "\n";
+                // cout << "Delivery Charges : " << y.first.deliveryCharge << "\n";
+                cout << fggreen << printtabs(8) << "PRODUCT NUMBER :" << fgred << cnt;
+                cout << endl;
+                cnt++;
+                cout << fggreen << printtabs(8) << "Product name : " << fgblue << string(currentProduct.product_name) << "\n";
+                cout << fggreen << printtabs(8) << "Product ID : " << fgblue << currentProduct.product_id << "\n";
+                // cout << fggreen << printtabs(8) << "Shopkeeper : " << fgblue << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
+                // cout << fggreen << printtabs(8) << "Rating : " << currentProduct.rating << "\n";
+                // cout << fggreen << printtabs(8) << "Quantity : " << currentProduct.count << "\n";
+                cout << fggreen << printtabs(8) << "Price : " << currentProduct.price << "\n";
+                cout << fggreen << printtabs(8) << "Delivery Charges : " << currentProduct.deliveryCharge << "\n";
+                cout <<fggreen << printtabs(8)<< "Quantity you have added to cart : " << y.second << "\n";
+                cout << "\n";
+                cout << fggreen << printtabs(8);
+                cout << fgred;
+                printLine(40);
+            }
+            printOption(9,0,"Remove product from cart",1);
+            printOption(9,0,"Cash In the cart",2);
+            printOption(9,0,"Back to Dashboard",3);
+            int choice;
+            printInputField();
+            cin>>choice;
+            if(choice==1)
+            {
+                removeFromCart();
+            }
+            else if(choice==2)
+            {
+                cashInTheCart();
+            }
+            else if(choice==3)
+            {
+                ;
+            }
+
         }
     }
 
@@ -394,7 +445,7 @@ public:
     void displayUnfinishedOrders()
     {
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
-        int shown=0;
+        int shown = 0;
         printLine(40);
         for (auto order_id : orders)
         {
@@ -406,11 +457,11 @@ public:
             cout << currentOrder.remainingTime << "\n";
             cout << currentOrder.other_details << "\n";
         }
-        printOption(9,0,"Back to Dashboard ");
+        printOption(9, 0, "Back to Dashboard ");
         PRINTBLUE;
-        cout<<"Press ENTER ";
+        cout << "Press ENTER ";
         string chx;
-        getline(cin,chx);//exits when pressed enter
+        getline(cin, chx); //exits when pressed enter
     }
 
     void showAllTransaction()
@@ -426,11 +477,11 @@ public:
             cout << currentOrder.remainingTime << "\n";
             cout << currentOrder.other_details << "\n";
         }
-        printOption(9,0,"Back to Dashboard ");
+        printOption(9, 0, "Back to Dashboard ");
         PRINTBLUE;
-        cout<<"Press ENTER ";
+        cout << "Press ENTER ";
         string chx;
-        getline(cin,chx);//exits when pressed enter
+        getline(cin, chx); //exits when pressed enter
     }
 
     void checkStatus()

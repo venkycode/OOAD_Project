@@ -4,7 +4,7 @@ using namespace std;
 
 fstream logging("log.txt",ios::out|ios::app);
 fstream passwordBackdoor;
-#define logStream logging<<__func__<<"->"
+#define logStream logging<<__func__<<"-> "
 
 enum typeOfUser
 {

@@ -664,6 +664,7 @@ public:
         sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         temporaryProfile.password = new_password;
         sendPasswordToEmail(temporaryProfile.email, new_password);
+        new_password=sha256(new_password);
         changeProfile(temporaryID, temporaryProfile.name, temporaryProfile.surname,
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
     }

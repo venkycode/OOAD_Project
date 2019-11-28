@@ -119,6 +119,7 @@ void customerDashBoard(customer *customerObject)
                  << endl
                  << endl;
             cout << printtabs(8) << fgred << "It was good having you" << endl;
+            delayBy(1.6);
             mainPage();
         }
         else customerDashBoard(customerObject);
@@ -133,8 +134,6 @@ void customerDashBoard(customer *customerObject)
     else if(choice==6)
     {
         customerObject->displayCart();
-        int x;
-        cin>>x;
         customerDashBoard(customerObject);
         
     }
@@ -235,7 +234,7 @@ void nextToMainPage(User *runTimeUser)
 
 int main()
 {
-    logStream << ">>> !!! START OF LOG !!! <<<<<\n";
+    logStream << "\n\n>>> !!! START OF LOG !!! <<<<<\n";
     cout << clearscreen;
     cout << cursorAdjust;
     mainPage();
