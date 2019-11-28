@@ -37,8 +37,7 @@ typedef struct timeStamp
 typedef struct product
 {
     int product_id;
-    //enum productType product_type;
-    int product_type;
+    enum productType product_type;
     char product_name[10];
     int deliveryCharge;
     int rating;                   //rating of the product

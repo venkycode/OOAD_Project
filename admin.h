@@ -447,23 +447,36 @@ public:
     {
         printHeader();
         char check;
-        cout <<fggreen<<printtabs(8)<< "Do you wish to change your name?(Y/n) :: "<<fgblue;
-        cin >> check;
-        if (check == 'Y' || check == 'y')
-        {
-            printInputField();
-            string new_name;
-            cin >> new_name;
-            profileToEdit.name = new_name;
+        if(id[0]=='S'){
+            cout <<fggreen<<printtabs(8)<< "Do you wish to change your shop name?(Y/n) :: "<<fgblue;
+            cin >> check;
+            if (check == 'Y' || check == 'y')
+            {
+                printInputField();
+                string new_name;
+                cin >> new_name;
+                profileToEdit.name = new_name;
+            }
         }
-        cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
-        cin >> check;
-        if (check == 'Y' || check == 'y')
-        {
-            printInputField();
-            string new_surname;
-            cin >> new_surname;
-            profileToEdit.surname = new_surname;
+        else{
+            cout <<fggreen<<printtabs(8)<< "Do you wish to change your name?(Y/n) :: "<<fgblue;
+            cin >> check;
+            if (check == 'Y' || check == 'y')
+            {
+                printInputField();
+                string new_name;
+                cin >> new_name;
+                profileToEdit.name = new_name;
+            }
+            cout << fggreen<<printtabs(8)<< "Do you wish to change your Surname?(Y/n) :: "<<fgblue;
+            cin >> check;
+            if (check == 'Y' || check == 'y')
+            {
+                printInputField();
+                string new_surname;
+                cin >> new_surname;
+                profileToEdit.surname = new_surname;
+            }
         }
         cout << fggreen<<printtabs(8)<< "Do you wish to change your Email ID?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -484,8 +497,9 @@ public:
         if (check == 'Y' || check == 'y')
         {
             printInputField();
-            string new_address;
-            cin >> new_address;
+            string new_address;//cin>>new_address;
+            getline(cin,new_address);
+            getline(cin,new_address);
             profileToEdit.address = new_address;
         }
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your Contact number?(Y/n) :: ";
@@ -991,19 +1005,11 @@ public:
 
     void changeProductCount(int productID, int changedCount)
     {
-        if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
-            return;
-        }
         productId_to_product[productID].count = changedCount;
     }
 
     void changeProductPrice(int productID, int changedPrice)
     {
-        if(productId_to_product.find(productID)==productId_to_product.end()){
-            cout<<fgred<<printtabs(9)<<"This product does not belong to your inventory" << "\n";
-            return;
-        }
         productId_to_product[productID].price = changedPrice;
     }
 
