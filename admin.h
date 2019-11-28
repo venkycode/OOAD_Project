@@ -446,8 +446,6 @@ public:
     profile editProfile(string id,profile& profileToEdit)
     {
         printHeader();
-        string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
-        sqlite3_exec(DB, query.c_str(), get_information, NULL, NULL);
         char check;
         cout <<fggreen<<printtabs(8)<< "Do you wish to change your name?(Y/n) :: "<<fgblue;
         cin >> check;
@@ -527,9 +525,10 @@ public:
     }
     static int update(void *data, int argc, char **argv, char **azColName)
     {
-        if (argv[0] == NULL)
-            argv[0] = "";
-        string tmp = argv[0] + add;
+        string tmp1 = "";
+        if (argv[0] != NULL)
+            tmp1 = argv[0];
+        string tmp = tmp1 + add;
         string sql = "UPDATE USER_TRANSACTION set TRANSACTIONS = \'" + tmp + "\' WHERE ID = \'" + temporaryID + '\'';
         temporaryID = sql;
         return 0;

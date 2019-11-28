@@ -19,30 +19,44 @@ class deliverPerson : public User{
 
     void checkIfOrderIsAssigned(){
         if(assignedOrderId==-1){
-            cout<<"No order is assigned" << "\n";
-            return;
+            cout<<fgred<<printtabs(9)<<"No order is assigned" << "\n";
         }
-        cout<<"You have been assigned an order" << "\n";  
-        cout<<"Order ID : "<<assignedOrderId<<"\n";   
-        order currentOrder=systemAdmin.extactOrderInfo(to_string(assignedOrderId));
-        cout<<currentOrder.order_<<"\n";
-        cout<<"Customer address : "<<systemAdmin.addressFromId(currentOrder.customerID)<<"\n";
-        cout<<currentOrder.other_details<<"\n";
+        else {
+            cout<<fggreen<<printtabs(9)<< "You have been assigned an order" << endl;  
+            cout<<fggreen<<printtabs(9)<<"Order ID : "<<assignedOrderId<<endl;   
+            order currentOrder=systemAdmin.extactOrderInfo(to_string(assignedOrderId));
+            cout<<fggreen<<printtabs(9)<<currentOrder.order_<<endl;
+            cout<<fggreen<<printtabs(9)<<"Customer address : "<<systemAdmin.addressFromId(currentOrder.customerID)<<"\n";
+            cout<<fggreen<<printtabs(9)<<currentOrder.other_details<<endl;
+        }
+        cout<<fggreen<<printtabs(9)<< "Press enter to go back" << endl <<printtabs(9);
+        string choice;
+        getline(cin, choice);
+        getline(cin, choice);
     }
 
     void getProductInfoFromId(){
         int productID;
-        cout<< "Enter product ID"<< endl;
+        cout<< fggreen<<printtabs(9)<<"Enter product ID"<< endl;
         cin>>productID;
-        product currentProduct=systemAdmin.productId_to_product[productID];
-        cout<<"Product Name :"<<currentProduct.product_name<<endl;
-        cout<<"Shop name :"<<systemAdmin.nameFromId(currentProduct.shopkeeper_id)<<endl;
-        cout<<"Shop address :"<<systemAdmin.addressFromId(currentProduct.shopkeeper_id)<<endl;
+        if(systemAdmin.productId_to_product.find(productID)==systemAdmin.productId_to_product.end()){
+            cout<< fgred<<printtabs(9)<<"Product not present in the inventory" <<endl;
+        }
+        else {
+            product currentProduct=systemAdmin.productId_to_product[productID];
+            cout<<fggreen<<printtabs(9)<<"Product Name :"<<currentProduct.product_name<<endl;
+            cout<<fggreen<<printtabs(9)<<"Shop name :"<<systemAdmin.nameFromId(currentProduct.shopkeeper_id)<<endl;
+            cout<<fggreen<<printtabs(9)<<"Shop address :"<<systemAdmin.addressFromId(currentProduct.shopkeeper_id)<<endl;
+        }
+        cout<<printtabs(9)<<fggreen<<"Do you want to search more products(Y/n): ";
+        char choice;
+        cin>>choice;
+        if(choice == 'Y' || choice == 'y')getProductInfoFromId();
     }
 
     void updateStatus(){
         if(assignedOrderId != -1){
-            cout<<"Enter the expected time left in dd:hh:mm format" << "\n";
+            cout<<fggreen<<printtabs(9)<<"Enter the expected time left in dd:hh:mm format" << "\n";
             string timeLeft;cin>>timeLeft;
             systemAdmin.updateTime(to_string(assignedOrderId),timeLeft);
             if(timeLeft=="00:00:00"){
@@ -51,7 +65,7 @@ class deliverPerson : public User{
                 systemAdmin.insert_unassigned_deliveryPerson(userID);
             }
         }
-        else cout<<"No order is assigned"<<endl;
+        else cout<<fgred<<printtabs(9)<<"No order is assigned"<<endl;
     }
 
     void assignOrder(int orderId){

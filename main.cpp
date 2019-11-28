@@ -6,7 +6,7 @@
 User *runTimeUserGlobal;
 
 void customerDashboard(customer *);
-void nextToMainPage(User *);
+void nextToMainPage(User *, int);
 void mainPage();
 void mainPage()
 {
@@ -41,7 +41,9 @@ void mainPage()
              << endl
              << endl;
         delayBy(3);
-        return;
+        logStream << ">>> !!! END OF LOG !!! <<<<<\n";
+        logging.close();
+        exit(0);
     }
     else if (choice == 999)
     {
@@ -208,8 +210,6 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
         else shopKeeperDashBoard(shopkeeperObject);
     default:
         shopKeeperDashBoard(shopkeeperObject);
-
-
     }
 }
 
@@ -228,18 +228,30 @@ void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
     {
         case 1:
             deliverPersonObject ->checkIfOrderIsAssigned();
+            deliveryPersonDashBoard(deliverPersonObject);
             break;
         case 2:
             deliverPersonObject ->getProductInfoFromId();
+            deliveryPersonDashBoard(deliverPersonObject);
             break;
         case 3:
             deliverPersonObject ->updateStatus();
+            deliveryPersonDashBoard(deliverPersonObject);
             break;
         case 4:
-            deliverPersonObject ->checkIfOrderIsAssigned;
+            mainPage();
             break;
         case 5:
-            deliverPersonObject ->checkIfOrderIsAssigned;
+            if (systemAdmin.deleteID(deliverPersonObject->userID, deliverPersonObject->username))
+            {
+                printHeader();
+                cout << endl
+                    << endl
+                    << endl;
+                cout << printtabs(8) << fgred << "It was good having you" << endl;
+                mainPage();
+            }
+            else deliveryPersonDashBoard(deliverPersonObject);
             break;
         default:
             break;
@@ -263,12 +275,13 @@ void nextToMainPage(User *runTimeUser, int choice)
         logStream << "here1 " << runTimeShopKeeper->userType << endl;
         shopKeeperDashBoard(runTimeShopKeeper);
     }
-    else {
+    else if(runTimeUser->userID[0] == 'D'){
         deliverPerson *runTimeDeliveryPerson;
         runTimeDeliveryPerson = new deliverPerson(runTimeUser->finalProfile, choice);
         logStream << "here1 " << runTimeDeliveryPerson->userType << endl;
         deliveryPersonDashBoard(runTimeDeliveryPerson);
     }
+    else mainPage();
 }
 
 int main()

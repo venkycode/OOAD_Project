@@ -293,7 +293,7 @@ public:
         PRINTBLUE;
         cout<<" ";
         getline(cin, userProfile.address);
-        //sendOTP(userProfile.email);
+        sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;
@@ -315,8 +315,12 @@ public:
         else if (!systemAdmin.isUsernameTaken(username))
             cout << printtabs(8) << "This username does not exist"
                  << "\n";
-        else;
+        else{
             systemAdmin.forgotPassword(username);
+            cout << printtabs(8) << "New Password has benn sent to your registered email."
+                 << "\n";
+        }
+        delayBy(2.1);
     }
 
 };
