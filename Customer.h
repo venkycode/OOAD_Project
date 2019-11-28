@@ -1,8 +1,6 @@
 #include "User.h"
 #include "stringMatching.h"
 
-//isblacklisted to be updated in admin.h
-
 class customer : public User
 {
 public:
@@ -226,10 +224,27 @@ public:
 
     void addToCart()
     {
+        if(cart.size()==20){
+            cout<<fgred<<printtabs(9)<<"Your cart is full"<<endl;
+            return;
+        }
         cout << printtabs(8) << fggreen << "Enter Product ID "
              << fgblue << " >> ";
         int productID;
         cin >> productID;
+        bool isProductAlreadyThere=0;
+        for(auto y:cart){
+            if(y.first.product_id==productID){
+                isProductAlreadyThere=1;
+                cout<<fgred<<printtabs(9)<<"This product is already there in your cart"<<endl;
+                return;
+            }
+        }
+        if(systemAdmin.productId_to_product.count(productID));
+        else{
+            cout<<fgred<<printtabs(9)<<"Invalid product ID"<<endl;
+            return;
+        }
         cout << printtabs(8) << fggreen << "Enter Quantity"
              << fgblue << " >> ";
         int quantity;
@@ -247,12 +262,20 @@ public:
              << "\n";
         int productID;
         cin >> productID;
+        bool isProductInCart=0;
         for (int i = 0; i < cart.size() - 1; ++i)
         {
-            if (cart[i].first.product_id == productID)
+            if (cart[i].first.product_id == productID){
                 swap(cart[i], cart.back());
+                isProductInCart=1;
+                break;
+            }
         }
-        cart.pop_back();
+        if(cart.back().first.product_id==productID)isProductInCart=1;
+        if(isProductInCart)cart.pop_back();
+        else{
+            cout<<fgred<<printtabs(9)<<"This product is not there in your cart"<<endl;
+        }
     }
 
     void displayCart()
@@ -365,8 +388,8 @@ public:
         set<string> tempWishlist = systemAdmin.returnWishlist(userID);
         if (tempWishlist.empty())
         {
-            cout << "Your wishlist is empty"
-                 << "\n";
+            cout << fgred<< printtabs(9)<<"Your wishlist is empty"
+                 << endl;
             return;
         }
         for (auto y : tempWishlist)
@@ -416,11 +439,13 @@ public:
     void showAllTransaction()
     {
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
+        if(orders.empty()){
+            cout<<fgred<<printtabs(9)<<"No past transactions to show"<<endl;
+            return;
+        }
         for (auto order_id : orders)
         {
             order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
-            // if (currentOrder.remainingTime == "00:00:00")
-            //     continue;
             cout << "Order ID :" << order_id << "\n";
             cout << currentOrder.order_ << "\n";
             cout << currentOrder.remainingTime << "\n";
@@ -439,6 +464,10 @@ public:
              << "\n";
         int orderID;
         cin >> orderID;
+        if(userID != systemAdmin.extactOrderInfo(to_string(orderID)).customerID){
+            cout<<fgred<<printtabs(9)<<"This is not your order"<<endl;
+            return;
+        }
         cout << "time left : " << systemAdmin.get_orderStatus(to_string(orderID));
     }
 };

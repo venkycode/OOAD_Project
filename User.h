@@ -295,7 +295,7 @@ public:
         PRINTBLUE;
         cout<<" ";
         getline(cin, userProfile.address);
-        sendOTP(userProfile.email);
+        //sendOTP(userProfile.email);
         userProfile.id =systemAdmin.signUp(userProfile);
         assignUserProfile(userProfile);
         //cout<<userProfile.id<<" "<<userID<<endl;

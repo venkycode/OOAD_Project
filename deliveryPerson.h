@@ -41,11 +41,9 @@ class deliverPerson : public User{
     }
 
     void updateStatus(){
-        cout<<"Enter your order ID" << "\n";
-        int id;cin>>id;
         cout<<"Enter the expected time left in dd:hh:mm format" << "\n";
         string timeLeft;cin>>timeLeft;
-        systemAdmin.updateTime(to_string(id),timeLeft);
+        systemAdmin.updateTime(to_string(assignedOrderId),timeLeft);
         if(timeLeft=="00:00:00"){
             systemAdmin.finish_order(userID);
             assignedOrderId = -1;
