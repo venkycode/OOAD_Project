@@ -219,8 +219,9 @@ void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
     printOption(9, 6, "ASSIGNED ORDER", 1);
     printOption(9, 6, "GET PRODUCT INFO", 2);
     printOption(9, 6, "UPDATE ORDER STATUS", 3);
-    printOption(10, 1, "LOGOUT", 4);
-    printOption(9, 5, "DELETE PROFILE", 5);
+    printOption(9, 6, "EDIT PROFILE", 4);
+    printOption(10, 1, "LOGOUT", 5);
+    printOption(9, 5, "DELETE PROFILE", 6);
     printInputField();
     int choice;
     cin >> choice;
@@ -239,9 +240,13 @@ void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
             deliveryPersonDashBoard(deliverPersonObject);
             break;
         case 4:
-            mainPage();
+            deliverPersonObject ->updateProfile();
+            deliveryPersonDashBoard(deliverPersonObject);
             break;
         case 5:
+            mainPage();
+            break;
+        case 6:
             if (systemAdmin.deleteID(deliverPersonObject->userID, deliverPersonObject->username))
             {
                 printHeader();
@@ -249,11 +254,13 @@ void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
                     << endl
                     << endl;
                 cout << printtabs(8) << fgred << "It was good having you" << endl;
+                delayBy(1.6);
                 mainPage();
             }
             else deliveryPersonDashBoard(deliverPersonObject);
             break;
         default:
+            deliveryPersonDashBoard(deliverPersonObject);
             break;
     }
 }
