@@ -133,7 +133,7 @@ bool isEmailCorrect(string email, int *tried = NULL)
 bool isCorrectCardNumber(string cardNumber)
 {
     int len = cardNumber.size();
-    if (len != 20)
+    if (len != 19)
         return 0;
     int pos = 4;
     bool fl = 1;
@@ -155,6 +155,7 @@ bool isCorrectDate(string date)
     if (len != 5 || date[2] != '/' || date[0] < '0' || date[0] > '1' || date[1] < '0' || date[1] > '9' || date[3] != '2' ||
         date[4] < '0' || date[4] > '9')
         return 0;
+    return 1;
 }
 
 bool isCorrectCvv(string Cvv)

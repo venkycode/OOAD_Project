@@ -3,12 +3,14 @@
 #include <ctime>
 #include <bits/stdc++.h>
 #include <unistd.h>
-//#include "header.h"
 #include "checks.h"
 #include "PasswordGenerator.h"
 #include "forgotPassword.h"
 #include "sha256.h"
 
+// System state is used to store current count of shopkeepers
+// delivery persons and Customers and also the current product count and also
+// the current order count which helps in providing new id's
 typedef struct systemState
 {
     int shopKeeperCount, deliveryPersonCount, CustomerCount;
@@ -17,33 +19,32 @@ typedef struct systemState
 } systemState;
 systemState state;
 
-string temporaryID;       // also helps in adding transactions
-profile temporaryProfile; // helps in editing profile
-string add;
-order temporaryOrder;      // helps in getting info about order
-vector<int> tempOrderofCustomer;
-int temporaryOrderID; //used in assigning the order to the delivery person
+string temporaryID;                  // also helps in adding transactions.
+profile temporaryProfile;           // helps in editing profile.
+string add;                        // helps in adding to the sql transactions.
+order temporaryOrder;             // helps in getting info about order
+vector<int> tempOrderofCustomer; // helps in retriecing the customer's order from sql.
+int temporaryOrderID;           // used in assigning the order to the delivery person
 class admin
 {
 public:
-    sqlite3 *DB;
-    int exit;
-    string data;
-    char *messaggeError;
+    sqlite3 *DB;            // sql database pointer.
+    int exit;              // exit helps in identifying the error when performing different sql operations.
+    string data;          // helps in passing certain operation while performing different sql operations.
+    char *messaggeError; // helps in identifying different sql errors.
 
-    product *global_inventory_array;
-    map<string, set<int>> global_inven_map; //mapping from product name to product
-    //this is comment static product* personal_inventory;
-    fstream global_inve_file;
-    //ifstream personal_inventory_file;
+    product *global_inventory_array;          // array to load the complete data from data file.    
+    map<string, set<int>> global_inven_map;   //mapping from product name to product
+    fstream global_inve_file;                 // pointer for the file which stores the inventory.
     map<string, set<int>> personal_inventory; // shopkeeper id mapped to vector of productsID owned by him
-    map<int, product> productId_to_product;
+    map<int, product> productId_to_product;   // map from product id to its contents.
     
     admin(){
-        loadDatabase();
-        assignUnassignedOrders();
+        loadDatabase();             // loads database into local memory as soon as admin is loaded.
+        assignUnassignedOrders();  //assigns uniassigned orders if possible to unassigned delivery personnel on start of code.
     }
 
+    // callback helps in displaying the contents of user transaction from sql.
     static int callback(void *data, int argc, char **argv, char **azColName)
     {
         for (int i = 0; i < argc; i++)
@@ -51,12 +52,14 @@ public:
         return 0;
     }
 
+    // get_ID helps in retrieving user ID from user_map sql.
     static int get_ID(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[0] ? argv[0] : "#";
         return 0;
     }
 
+    // get_information helps in extracting information from person sql to load locally.
     static int get_information(void *data, int argc, char **argv, char **azColName)
     {
         temporaryProfile.name = argv[1];
@@ -69,6 +72,7 @@ public:
         return 0;
     }
 
+    // helps in getting information from Order sql.
     static int get_info_Order(void *data, int argc, char **argv, char **azColName)
     {
         temporaryOrder.OrderID = argv[0];
@@ -79,7 +83,9 @@ public:
         return 0;
     }
 
+    // returns order details when called.
     order extactOrderInfo(string orderID){
+        temporaryOrder.customerID = "#";
         string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + orderID + "\';";
         int exit = sqlite3_exec(DB, query.c_str(), get_info_Order, NULL, NULL);
         if (exit != SQLITE_OK)
@@ -91,9 +97,11 @@ public:
         return temporaryOrder;
     }
 
+    // helps in updating time left for a product to arrive in sql.
     void updateTime(string orderID, string remainingTime){
         string query = "UPDATE ALL_ORDERS_DB set TIME_LEFT = \'" + remainingTime + "\' WHERE ORDER_ID = \'" + orderID + '\'';
-        int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);logStream<<query<<endl;
+        int exit = sqlite3_exec(DB, query.c_str(), callback, NULL, NULL);
+        logStream<<query<<endl;
         if (exit != SQLITE_OK)
             logStream << "Error SELECT" << endl;
         else
@@ -102,14 +110,15 @@ public:
         }
     }
 
+    // creats databse if it is not already present.
     void createDataBase()
     {
         int exit = 0;
-        exit = sqlite3_open("userDatabase.db", &DB);
+        exit = sqlite3_open("userDatabase.db", &DB); //creats sql database if not already present.
         if (exit)
         {
-            logStream << "Error open DB " << sqlite3_errmsg(DB) << endl;
-            std::exit(1);
+            logStream << "Error open DB " << sqlite3_errmsg(DB) << endl; // logstream logs error if there is an issue creating table.
+            std::exit(1); // exits the code if there is error.
         }
         else
             logStream << "Created Database Successfully!" << std::endl;
@@ -155,6 +164,7 @@ public:
         exit = sqlite3_exec(DB, sql7.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql8.c_str(), NULL, 0, &messaggeError);
         exit = sqlite3_exec(DB, sql9.c_str(), NULL, 0, &messaggeError);
+        // the above commands create tables if not alredy created.
         if (exit == SQLITE_OK)
         {
             logStream << "Error Create Table" << endl;
@@ -164,15 +174,17 @@ public:
             logStream << "Table created Successfully" << endl;
     }
 
+    // helps in getting name for user when given an ID.
     static int get_name(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[1];
         return 0;
     }
 
+    // retrieves the name of the user from the sql table using ID. 
     string nameFromId(string id)
     {
-        temporaryID = "#";
+        temporaryID = "#";  // '#' is returned if id is not present in the databse.
         string query = "SELECT * FROM PERSON WHERE ID = \'" + id + "\';";
         int rc = sqlite3_exec(DB, query.c_str(), get_name, NULL, NULL);
         if (rc != SQLITE_OK)
@@ -181,13 +193,17 @@ public:
         else
             logStream<< __func__ << "Operation OK"
                  << "\n";
-        return temporaryID;
+        return temporaryID; // temporaryID stores the name if found in the database.
     }
 
+    // adds unassigned order to an sql table so that it could be assigned to a delivery
+    // as soon as any are free.
     void add_unassginedOrder(string orderId){
         string temp = '\'' + orderId + "\'";
         string sql("INSERT INTO UNASSIGNED_ORDERS VALUES(" + temp + ");");
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        // adds the order to the database. If not possible logs an error in logStream.
+
         if (exit != SQLITE_OK)
         {
             logStream << "Error Insert    " << messaggeError << endl;
@@ -197,12 +213,14 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // helps in retrieving order of users using the USERID from sql.
     static int get_Order(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[0];
         return 0;
     }
 
+    // returns a single unassigned order if possible else returns -1.
     int get_unassignedOrder(){
         temporaryID = "-1";
         string sql("SELECT * FROM UNASSIGNED_ORDERS;");
@@ -213,12 +231,16 @@ public:
         else
             logStream << "Operation OK"
                  << "\n";
-        return stoi(temporaryID);
+        // -1 is returned if there are no unassigned orders.
+        return stoi(temporaryID); // temporaryID stores an unassigned orderID.
     }
 
+    // deletes unassigned orderid from its sql database if it is assigned to some delivery person.
     void delete_unassignedOrder(string orderId){
         string sql = "DELETE FROM UNASSIGNED_ORDERS WHERE ORDER_ID = \'" + orderId + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
+        // logs an error in logStream if it was not possible or the orderID was not present in the table.
+        // else logs that the operation was successful.
         if (exit != SQLITE_OK)
         {
             logStream << "Error DELETE" << endl;
@@ -228,12 +250,15 @@ public:
             logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
+    // helps in retriving the address of any user from its respective sql table.
     static int get_address(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[0];
         return 0;
     }
 
+    // returns the address of any user given its userID.
+    // returns '#' if the ID is not present in the database.
     string addressFromId(string id)
     {
         temporaryID = "#";
@@ -245,9 +270,15 @@ public:
         else
             logStream << "Operation OK"
                  << "\n";
-        return temporaryID;
+        return temporaryID; // temporaryID contains the address if the ID is found in the database.
     }
 
+    // loads both the databases i.e. the sql database and also the file handling database
+    // into the local memory or creates them if they were already not present in the database
+    // it also loads the log file and the password backdoor for read and write and also the 
+    // system state into the memory and transfers all the data from the file to local memory
+    // in order to process them excepting the data of sql which provides for fast search
+    // and also the data of the log file and password backdoor which were not required locally
     void loadDatabase()
     {
         createDataBase();
@@ -260,12 +291,16 @@ public:
             global_inve_file.close();
             global_inve_file.open("global_inventory_db", ios::in);
         }
+        // loads all the inventory locally to the global inventory array.
+
         ifstream sysfile;
         sysfile.open("systemState", ios::in);
         sysfile.read((char *)&state, sizeof(systemState));
         sysfile.close();
+        // loads the data of system state then closes the file.
+
         logStream<<"systemState(cus,shop,del,...) "<<state.CustomerCount<<" "<<
-        state.shopKeeperCount<<" "<<state.deliveryPersonCount<<" "<<state.productCount<<
+        state.shopKeeperCount<<" "<<state.deliveryPersonCount<<" "<<state.productCount<<\
         " "<<state.OrderCount<<endl;
         global_inve_file.seekg(0, ios::end);
         int fileSize = global_inve_file.tellg();
@@ -276,29 +311,20 @@ public:
         logStream << global_inve_file.tellg() << endl;
         global_inve_file.read((char *)global_inventory_array, fileSize);
         logStream << "size " << size << endl;
+        // logs every detail in the log file for the admin
+
         for (int i = 0; i < size; ++i)
         {
             global_inven_map[global_inventory_array[i].product_name].insert(global_inventory_array[i].product_id);
             personal_inventory[global_inventory_array[i].shopkeeper_id].insert(global_inventory_array[i].product_id);
             productId_to_product[global_inventory_array[i].product_id] = (global_inventory_array[i]);
         }
+        // loads all the data of the global inventory in different local entities.
+        // then closes all the files.
         global_inve_file.close();
-        /*personal_inventory_file.open("personal_inventory_db", ios::binary);
-        product *dummy = (product *)malloc(size);
-        personal_inventory_file.read((char *)dummy, size * sizeof(product));
-        int i = 0;
-        while (i < size)
-        {
-            product *tmp;
-            tmp = dummy + i;
-            if (personal_inventory.find(string(tmp->shopkeeper_id)) != personal_inventory.end())
-            {
-                product p = *tmp;
-                personal_inventory[string(tmp->shopkeeper_id)].push_back(p);
-            }
-        }*/
     }
 
+    // Inserts a new user in the sql database i.e. userMap and also person etc.
     string Insert(string name, string surname, string email, string address, string username, string password, string contact, enum typeOfUser type)
     {
         string id = "";
@@ -315,7 +341,10 @@ public:
             id = 'S' + to_string(state.shopKeeperCount++);
         }
         passwordBackdoor<<username<<" "<<password<<endl;
+        // puts the password in the password backdoor
         password = sha256(password);
+        // hashes the password so as to protect the password from theft
+
         string temp1 = '\'' + id + "\',\'" + name + "\',\'" + surname + "\',\'" + email + "\',\'" + address + "\',\'" + contact + "\',\'" + username + "\',\'" + password + '\'';
         string temp = '\'' + username + '\'' + ',' + '\'' + id + '\'';
         string temp2 = '\'' + id + "\',\'\'";
@@ -327,6 +356,7 @@ public:
         {
             logStream << "Error Insert    " << messaggeError << endl;
             sqlite3_free(messaggeError);
+            // logs error in the log file if the insertion was not possible.
         }
         else
             logStream << "Record inserted Successfully!" << endl;
@@ -348,9 +378,13 @@ public:
         }
         else
             logStream << "Record inserted Successfully!" << endl;
+        
+        // finally this function returns the user's unique id to the caller.
         return id;
     }
 
+    // checks if the username and password exist in the sql database
+    // and also returns the details of the user for local use if it did exist.
     profile authenticate(string username, string password)
     {
         string query = "SELECT ID FROM USER_MAP WHERE USERNAME = \'" + username + "\';";
@@ -358,9 +392,9 @@ public:
         string tmp = temporaryID;
         if (rc != SQLITE_OK || temporaryID == "#" || isBlackListed(username))
         {
-            //logStream << "Error SELECT" << endl;
             printHeader();
             cout << fgred << "\t\t\t\t\t\t\t\t\t\tINCORRECT Username or Password!!!!" << endl;
+            // displays if not present in the database.
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
@@ -376,20 +410,32 @@ public:
             delayBy(0);
             printHeader();
             cout << fgred << "\t\t\t\t\t\t\t\t     INCORRECT Username or Password" << endl;
+            // displays incorrect password if the username was present but the password
+            // did not match with the information.
             cout << endl;
             temporaryProfile.name = "#";
             return temporaryProfile;
         }
+        // temporaryProfile contains the details of the user as provided by
+        // the database if it existed in the database else it contains garbage 
+        // values while temporaryProfile.name = '#' to identify that it did not
+        // exist in the database.
         return temporaryProfile;
     }
 
+    // deletes ID from the database completely if the user wishes
     bool deleteID(string id, string username)
     {
+        // it destroys the complete data of the user from person and
+        // usermap and also its transactions from user_transactions
         printHeader();
         cout<<fgred<<printtabs(9)<<"Are you sure you want to delete your account?(Y/n)"<<endl;
         cout<<fgblue<<printtabs(9)<<">>";
-        string response;cin>>response;
-        if(response!="Y"&&response!="y")return 0;
+        string response;
+        cin>>response;
+        if(response!="Y"&&response!="y") return 0;
+        // RETURNS 0 if the user opts to not delete his id.
+
         string sql = "DELETE FROM PERSON WHERE ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
         if (exit != SQLITE_OK)
@@ -417,9 +463,12 @@ public:
         }
         else
             logStream << "Record deleted Successfully from USER_MAP!" << endl;
+
+        // returns 1 if the id was successfully deleted from the database.
         return 1;
     }
 
+    // changeProfile helps in editing the sql databases using the given information.
     void changeProfile(string id, string name, string surname, string email, string address, string username, string password, string contact)
     {
         string sql = "DELETE FROM PERSON WHERE ID = \'" + id + "\';";
@@ -443,8 +492,12 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // editProfile gives option to change the profile of User.
+    // it also returns the current profile
     profile editProfile(string id,profile& profileToEdit)
     {
+        // This function step wise gives option to the user to edit 
+        // different aspects of his profile.
         printHeader();
         char check;
         if(id[0]=='S'){
@@ -532,11 +585,18 @@ public:
                 cout << "Confirm Password: ";
                 cin >> confirm_new_password;
             }
+            // hashes the password and also stores the new password 
+            // in the passwordBackdoor.
+            passwordBackdoor << profileToEdit.username << ' ' << profileToEdit.password<<endl;
             profileToEdit.password = sha256(new_password);
         }
+        // calls changeProfile to edit information in the database.
         changeProfile(id, profileToEdit.name, profileToEdit.surname, profileToEdit.email, profileToEdit.address, profileToEdit.username, profileToEdit.password, profileToEdit.contact);
+        // returns the edited profile for local use.
         return profileToEdit;
     }
+
+    // helps in editing the remaining delivery time in the database 
     static int update(void *data, int argc, char **argv, char **azColName)
     {
         string tmp1 = "";
@@ -548,6 +608,7 @@ public:
         return 0;
     }
 
+    // adds Transaction in the database
     void addTransaction(string id, bool isPaid, int moneyTransferred, int orderID, string payment_mode, string timeOfOrder, string paymentUsing)
     {
         string temp = "Using ";
@@ -561,17 +622,21 @@ public:
         exit = sqlite3_exec(DB, temporaryID.c_str(), callback, NULL, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            fprintf(stderr, "SQL error: %s\n", messaggeError);
+            logStream << "SQL error: " << messaggeError <<endl;
             sqlite3_free(messaggeError);
+            // logs error in the log file if it was not possible to add the transaction
         }
         else
         {
-            fprintf(stdout, "Operation done successfully\n");
+            logStream<< "Operation done successfully\n";
         }
     }
 
+    // helps in retrieving the data of transaction from the database.
     static int get_transaction(void *data, int argc, char **argv, char **azColName)
     {
+        // the information is pushed in vector named tempOrderofCustomer
+        tempOrderofCustomer.clear();
         int len = strlen(argv[0]);
         bool fl = 1;
         string temp="";
@@ -592,6 +657,7 @@ public:
         return 0;
     }
 
+    // returns vector of the orderd product of any user.
     vector<int> orderIdsofCustomer(string id){
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
         int exit = sqlite3_exec(DB, query.c_str(), get_transaction, NULL, NULL);
@@ -604,6 +670,7 @@ public:
         return tempOrderofCustomer;
     }
 
+    // It displays all the transactions of any user given the userID.
     void showTransaction(string id)
     {
         string query = "SELECT TRANSACTIONS FROM USER_TRANSACTION WHERE ID = \'" + id + "\';";
@@ -616,12 +683,16 @@ public:
         }
     }
 
+    // finds the username from the sql database.
     static int check_username(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[0];
         return 0;
     }
 
+    // checks if the username had been already taken in the database.
+    // as we need a unique username for different personnel.
+    // returns 1 if the username had been taken else returns 0.
     bool isUsernameTaken(string username)
     {
         temporaryID = "#";
@@ -633,12 +704,15 @@ public:
             return 0;
     }
 
+    // Inserts new entity into the database.
     string signUp(profile addToDatabase)
     {
        return Insert(addToDatabase.name, addToDatabase.surname, addToDatabase.email,
                       addToDatabase.address, addToDatabase.username, addToDatabase.password, addToDatabase.contact, addToDatabase.type);
     }
 
+    // function for the admin of the application.
+    // helps in adding people as blacklisted if the abuse the system.
     void addToBlacklist(string username)
     {
         string sql("INSERT INTO BLACKLISTED VALUES(\'" + username + "\');");
@@ -652,6 +726,8 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // checks if the user is blacklisted or is good to go
+    // returns 1 if blacklisted else 0.
     bool isBlackListed(string username)
     {
         temporaryID = "#";
@@ -660,13 +736,15 @@ public:
         return temporaryID != "#";
     }
 
-    
+    // inserts new product in the inventory
     void insertProduct(product productToInsert)
     {
-        //global_inve_file.open("global_inve")
         productId_to_product[productToInsert.product_id] = productToInsert;
     }
     
+    // sends the new password email to the user's registered 
+    // email id if the username exists in the database.
+    // and also edits the profile in the database.
     void forgotPassword(string username)
     {
         string new_password = PasswordGenerator();
@@ -682,6 +760,8 @@ public:
                       temporaryProfile.email, temporaryProfile.address, temporaryProfile.username, temporaryProfile.password, temporaryProfile.contact);
     }
 
+    // assigns order to delivery person and also adds the information
+    // in the database.
     void assign_order(string id, int orderID)
     {
         string temp = '\'' + id + "\',\'" + to_string(orderID) + '\'';
@@ -696,6 +776,8 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // removes the assigned order from a delivery Person if the order has 
+    // reached its desired destination and also edits the sql database.
     void finish_order(string id)
     {
         string sql = "DELETE FROM ASSIGNED_ORDER WHERE ID = \'" + id + "\';";
@@ -709,12 +791,15 @@ public:
             logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
+    // checks if a delivery Person is available or not.
     static int check_avail(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[1];
         return 0;
     }
 
+    // returns the assigned order ID of the delivery person in question 
+    // if none were assigned it returns -1.
     int AssignedOrderId(string id)
     {
         temporaryID = "-1";
@@ -723,12 +808,14 @@ public:
         return stoi(temporaryID);
     }
 
+    // helps in getting the wishlist information from the sql database.
     static int get_wishList(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[1];
         return 0;
     }
 
+    // deleteWishlist deletes the wishlist of the user in qustion from the database.
     void deleteWishList(string id)
     {
         string sql = "DELETE FROM WISHLIST WHERE ID = \'" + id + "\';";
@@ -742,6 +829,7 @@ public:
             logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
+    // insert wishlist of some user with its information.
     void insertWishList(string id, string wishlist)
     {
         string temp = '\'' + id + "\',\'" + wishlist + '\'';
@@ -757,6 +845,7 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // appends to the wishlist of some user.
     void addToWishList(string id, string name)
     {
         temporaryID = "";
@@ -768,6 +857,7 @@ public:
         insertWishList(id, temporaryID);
     }
 
+    // return the wishlist of a user in the form of a set of strings
     set<string> returnWishlist(string id)
     {
         temporaryID = "";
@@ -787,6 +877,7 @@ public:
         return wishlist;
     }
 
+    // helps in editing the wishlist of a user
     void changeWishList(string id, set<string> new_wishlist)
     {
         deleteWishList(id);
@@ -796,6 +887,8 @@ public:
         }
     }
 
+    // helps in retrieving the time left for some order to reach its
+    // desired location from the sql database.
     static int get_Status(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = "";
@@ -803,6 +896,9 @@ public:
         return 0;
     }
 
+    // returns the time left in the form of a string in the 
+    // format (days:hours:minutes).
+    // it returns (??:??:??) if the delivery person has not yet updated the time remaining.
     string get_orderStatus(string id){
         temporaryID = "#";
         string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + id + "\';";
@@ -817,6 +913,7 @@ public:
         return temporaryID;
     }
 
+    // insert the details of the order in the sql database.
     void insertOrder(string id, vector<pair<int,int>> curOrder, string payementUsing, string payementMode, string curTime, string customerId, string time_remaining){
         string product_ids = "",tempOrder="";
         for(auto i: curOrder){
@@ -837,6 +934,8 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // deletes the Order from the desired sql database table
+    // when the order is completed
     void deleteOrder(string id){
         string sql = "DELETE FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + id + "\';";
         exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messaggeError);
@@ -849,13 +948,15 @@ public:
             logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
-
+    // it finds an unassigned delivery person so as to assign him some order.
     static int findUnassigned(void *data, int argc, char **argv, char **azColName)
     {
         temporaryID = argv[0];
         return 0;
     }
 
+    // returns the id of the unassigned delivery person from the database
+    // if not possible returns '#'
     string find_unassigned_deliveryPerson()
     {
         temporaryID = "#";
@@ -871,6 +972,8 @@ public:
         return temporaryID; // It is '#' if everyone is assigned.
     }
 
+    // deletes delivery person from the database table of unassigned delivery person
+    // if he has been alloted an order.
     void delete_unassigned_deliveryPerson(string id)
     {
         string sql = "DELETE FROM UNASSIGNED_DELIVERY_PERSON WHERE ID = \'" + id + "\';";
@@ -908,7 +1011,7 @@ public:
         }
     }
 
-    void payment(vector<pair<product, int>> Cart, enum mode payment_mode, string contact, string id)
+    void payment(vector<pair<product, int>> &Cart, enum mode payment_mode, string contact, string id)
     {
         printHeader();
         cout<<endl;
@@ -926,69 +1029,77 @@ public:
         cout<<printtabs(8)<<fggreen << "Total Cost =  " << totalCost << endl;
         string cardNumber, expiry_Date, Cvv, paymentUsing = "";
         char choice;
+        string tmp;
         switch (payment_mode)
         {
         case cashOnDelivery:
             tempMode = "CASH ON DELIVERY";
             break;
         case onlineBanking:
-            cout<<printtabs(8)<<fggreen << "Enter card number (****-****-****-****)" << endl;
             do
             {
+                cout<<printtabs(8)<<fggreen << "Enter valid card number (****-****-****-****)" << endl;
+                printInputField();
                 cin >> cardNumber;
             } while (!isCorrectCardNumber(cardNumber));
             paymentUsing = cardNumber;
-            cout <<printtabs(8)<<fggreen<< "Enter Expiry Date (mm/yy)" << endl;
             do
             {
+                cout <<printtabs(8)<<fggreen<< "Enter valid Expiry Date (mm/yy)" << endl;
+                printInputField();
                 cin >> expiry_Date;
             } while (!isCorrectDate(expiry_Date));
-            cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
             do
             {
+                cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
+                printInputField();
                 cin >> Cvv;
-            } while (isCorrectCvv(Cvv));
+            } while (!isCorrectCvv(Cvv));
             tempMode = "ONLINE BANKING";
             break;
         case Paytm:
             cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
-
+            printInputField();
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
             {
                 do
                 {
+                    cout << printtabs(9) << fggreen <<"Enter valid contact number" <<endl;
+                    printInputField();
                     cin >> contact;
-                } while (isContactCorrect(contact));
+                } while (!isContactCorrect(contact));
             }
             paymentUsing = contact;
             tempMode = "PAYTM";
             break;
         case GooglePay:
             cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
-
+            printInputField();
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
             {
                 do
                 {
+                    cout << printtabs(9) << fggreen <<"Enter valid contact number" <<endl;
+                    printInputField();
                     cin >> contact;
-                } while (isContactCorrect(contact));
+                } while (!isContactCorrect(contact));
             }
             paymentUsing = contact;
             tempMode = "GOOGLE PAY";
             break;
         default:
-            logStream << "No such banking option" << endl;
-            break;
+            return ;
         }
         int orderID1 = state.OrderCount++;
-        cout<<printtabs(8)<<fggreen << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
+        cout<<printtabs(8)<<fggreen <<"Order details: "<<endl<<printtabs(9)<<"Order Id: " << orderID1 \
+         << endl <<printtabs(9)<<"Payment Mode: " <<tempMode << endl << printtabs(9)<<"Payment Using: "<<paymentUsing << endl;
         addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
         string deliveryPersonID=find_unassigned_deliveryPerson();
         vector<pair<int,int>>tempOrder;
         for(auto y:Cart)tempOrder.push_back({y.first.product_id, y.second});
-        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"????????");
+        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"??:??:??");
         if(deliveryPersonID=="#"){
             add_unassginedOrder(to_string(orderID1));
         }
@@ -996,7 +1107,10 @@ public:
             assign_order(deliveryPersonID, orderID1);
             delete_unassigned_deliveryPerson(deliveryPersonID);
         }
-
+        cout<<printtabs(9) <<fgblue<< "Your order has been placed. Press ENTER to go back.";
+        getline(cin,tmp);
+        getline(cin,tmp);
+        Cart.clear();
     }
 
     void addToInventory(product productToAdd)
