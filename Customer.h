@@ -5,6 +5,7 @@ class customer : public User
 {
 public:
     vector<pair<product, int>> cart;
+    // A class constructor
     customer(profile userProfile)
     {
         name = userProfile.name;
@@ -19,21 +20,25 @@ public:
         finalProfile = userProfile;
     }
 
+    // A comparator to sort products in the decreasing order of their rating
     static bool sortByRating(product product1, product product2)
     {
         return (product1.rating > product2.rating);
     }
 
+    // A comparator to sort products in the increasing order of their price
     static bool sortByIncreasingPrice(product product1, product product2)
     {
         return (product1.price < product2.price);
     }
 
+    // A comparator to sort products in the decreasing order of their price
     static bool sortByDecreasingPrice(product product1, product product2)
     {
         return (product1.price > product2.price);
     }
 
+    // A function for a customer to search the product of his/her interest
     void search()
     {
         printHeader();
@@ -66,8 +71,9 @@ public:
             printInputField();
             cin >> input;
         }
-        vector<product> matches;
+        vector<product> matches; // A vector of matching(possibly approximate, if full match is not found) products
         bool isFullMatchPossible = 0;
+        // Checks if any product name fully matches with the one searched
         for (auto currentProduct : systemAdmin.global_inven_map)
         {
             if (toBeSearched == currentProduct.first)
@@ -85,7 +91,8 @@ public:
                     toAdd = 1;
             }
             else
-                toAdd = isMatch(currentProduct.first, toBeSearched);
+                toAdd = isMatch(currentProduct.first, toBeSearched); /* Checks an approximate match using an innovative algorithm
+                                                                    which makes use of Levenshtein Distance */
             if (toAdd)
             {
                 for (auto ids : currentProduct.second)
@@ -95,8 +102,7 @@ public:
                 }
             }
         }
-        if (response != 'y' && response != 'Y')
-            ;
+        if (response != 'y' && response != 'Y');
         else if (input == 1)
             sort(matches.begin(), matches.end(), sortByRating);
         else if (input == 2)
@@ -155,9 +161,10 @@ public:
         }
     }
 
+    // A function which displays top-rated products(highest selling) products in market
     void displayTopRatedProducts()
     {
-        vector<pair<int, int>> ratings;
+        vector<pair<int, int>> ratings; // Stores pairs of product ID and rating
         for (auto y : systemAdmin.productId_to_product)
             ratings.push_back({y.second.rating, y.first});
         sort(ratings.begin(), ratings.end());
@@ -222,6 +229,7 @@ public:
         }
     }
 
+    // A function for customer to add items to his/her cart
     void addToCart()
     {
         if(cart.size()==20){
@@ -256,6 +264,7 @@ public:
         cout << fgred << printtabs(8) << to_string(quantity) << " " << systemAdmin.productId_to_product[productID].product_name << " added to the cart !" << endl;
     }
 
+    // A function for customer to remove items from his/her cart
     void removeFromCart()
     {
         printHeader();
@@ -269,7 +278,7 @@ public:
         for (int i = 0; i < cart.size() - 1; ++i)
         {
             if (cart[i].first.product_id == productID){
-                swap(cart[i], cart.back());
+                swap(cart[i], cart.back()); // swaps the product to be removed with the last product, just to pop_back()
                 isProductInCart=1;
                 break;
             }
@@ -281,6 +290,7 @@ public:
         }
     }
 
+    // A function which displays customer's cart
     void displayCart()
     {
         printHeader();
@@ -293,10 +303,11 @@ public:
             cout << printtabs(9) << fgred;
             cout << "Your cart is empty!!!"
                  << "\n";
-            printOption(8,0,"Press ENTER to return To Dashboard");
-            string tmp;
-            getline(cin,tmp);
-            getline(cin,tmp);
+            printOption(8,0,"Return To Dashboard(ENTER ANY NUMBER)");
+            cout<<endl;
+            int x;
+            printInputField();
+            cin>>x;
             return;
         }
         else
@@ -343,6 +354,7 @@ public:
         }
     }
 
+    // A function for customer to cash in his/her cart
     void cashInTheCart()
     {
         printHeader();
@@ -356,7 +368,6 @@ public:
         printOption(8,4,"PayTm ",3);
         printOption(8,4,"GPay",4);
         int response;
-        printInputField();
         cin >> response;
         enum mode paymentMode;
         if (response == 1)
@@ -367,23 +378,18 @@ public:
             paymentMode = Paytm;
         else if (response == 4)
             paymentMode = GooglePay;
-        else{
-            cout <<printtabs(8)<<fgred<< "No such banking option. Press ENTER to go back";
-            string tmp;
-            getline(cin,tmp);
-            getline(cin,tmp);
-            return ;
-        }
+        else
+            cout <<printtabs(8)<<fgred<< "Invalid banking option" << endl;
         set<int> toBeRemoved;
         for (int i = 0; i < cart.size(); ++i)
         {
             auto y = cart[i];
             int availableQuantity = systemAdmin.productId_to_product[y.first.product_id].count;
-            if (y.second > availableQuantity)
+            if (y.second > availableQuantity) // if ordered quantity is more than available quantity
             {
                 if (availableQuantity)
                 {
-                    cout<<printtabs(8)<<fggreen << "Only " << availableQuantity << " are available"
+                    cout<<printtabs(8)<<fggreen << "Only " << availableQuantity << "are available"
                          << "\n";
                     cout<<printtabs(8)<<fggreen << "Product Name : " << y.first.product_name << "\n";
                     cout<<printtabs(8)<<fggreen << "Product ID : " << y.first.product_id << "\n";
@@ -392,7 +398,6 @@ public:
                     cout<<printtabs(8)<<fggreen << "Press 2 if you want to order the available quantity"
                          << "\n";
                     int response;
-                    printInputField();
                     cin >> response;
                     if (response == 1)
                         toBeRemoved.insert(y.first.product_id);
@@ -409,6 +414,7 @@ public:
                 }
             }
         }
+
         for (int i = 0; i < cart.size(); ++i)
         {
             auto y = cart[i];
@@ -418,9 +424,12 @@ public:
             cart.pop_back();
         }
 
-        systemAdmin.payment(cart, paymentMode, contact, userID);
+        systemAdmin.payment(cart, paymentMode, contact, userID); // payment procedure
+        cart.clear();
     }
 
+    /*A function to add items to customer's wishlist
+      Wishlists of all cusomers are stored in a sql database*/
     void addToWishlist()
     {
         cout << fggreen << printtabs(8) << "Name of product:"
@@ -441,6 +450,7 @@ public:
         systemAdmin.addToWishList(userID, productName);
     }
 
+    // A function to display customer's wishlist
     void displayWishlist()
     {
         printHeader();
@@ -458,12 +468,14 @@ public:
         for (auto y : tempWishlist)
             cout << y << " ";
         cout << endl;
-        printOption(8,0,"Press ENTER to go back to dashboard");   
-        string tmp;
-        getline(cin,tmp);
-        getline(cin,tmp);
+        printOption(8,0,"Enter any number to go back to dashboard");
+        cout<<endl;     
+        printInputField();
+        int x;
+        cin>>x;
     }
 
+    // A function to remove items from customer's wishlist
     void removeFromWishlist()
     {
         cout << "Enter the name of product you want to remove from wishlist"
@@ -481,59 +493,53 @@ public:
         systemAdmin.changeWishList(userID, tempWishlist);
     }
 
+    // displays customer's orders which are not yet delivered
     void displayUnfinishedOrders()
     {
-        tempOrderofCustomer.clear();
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
         int shown = 0;
         printLine(40);
-        bool ch = 1;
         for (auto order_id : orders)
         {
             order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
             if (currentOrder.remainingTime == "00:00:00")
                 continue;
-            ch = 0;
             cout << "Order ID :" << order_id << "\n";
             cout << currentOrder.order_ << "\n";
             cout << currentOrder.remainingTime << "\n";
             cout << currentOrder.other_details << "\n";
         }
-        if(ch)cout<<printtabs(9)<<fgred<<"No current orders."<<endl;
         printOption(9, 0, "Back to Dashboard ");
         PRINTBLUE;
-        cout << "Press ENTER to go back ";
+        cout << "Press char and ENTER  ";
         string chx;
-        getline(cin,chx);
-        getline(cin,chx);//exits when pressed enter
+        cin>>chx; //exits when pressed enter
     }
 
+    // displays all the past transactions
     void showAllTransaction()
     {
-        tempOrderofCustomer.clear();
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
         if(orders.empty()){
             cout<<fgred<<printtabs(9)<<"No past transactions to show"<<endl;
+            return;
         }
-        else {
-            for (auto order_id : orders)
-            {
-                order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
-                cout << "Order ID :" << order_id << "\n";
-                cout << currentOrder.order_ << "\n";
-                cout << currentOrder.remainingTime << "\n";
-                cout << currentOrder.other_details << "\n";
-            }
+        for (auto order_id : orders)
+        {
+            order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
+            cout << "Order ID :" << order_id << "\n";
+            cout << currentOrder.order_ << "\n";
+            cout << currentOrder.remainingTime << "\n";
+            cout << currentOrder.other_details << "\n";
         }
         printOption(9, 0, "Back to Dashboard ");
         PRINTBLUE;
-        cout << "Press ENTER to go back";
+        cout << "Press char and ENTER ";
         string chx;
-        getline(cin,chx);
-        getline(cin,chx);
-         //exits when pressed enter
+        cin>>chx; //exits when pressed enter
     }
 
+    // A function for customer to check the status(expected time left) of his/her order
     void checkStatus()
     {
         printHeader();
@@ -544,11 +550,8 @@ public:
         cin >> orderID;
         if(userID != systemAdmin.extactOrderInfo(to_string(orderID)).customerID){
             cout<<fgred<<printtabs(9)<<"This is not your order"<<endl;
+            return;
         }
-        else cout <<printtabs(9)<< "time left(days:hours:minutes) : " << systemAdmin.get_orderStatus(to_string(orderID));
-        string tmp;
-        cout << endl<< printtabs(9) << "Press Enter to go back";
-        getline(cin, tmp);
-        getline(cin, tmp);
+        cout << "time left : " << systemAdmin.get_orderStatus(to_string(orderID));
     }
 };

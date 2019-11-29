@@ -990,6 +990,7 @@ public:
             logStream << "Record deleted Successfully from PERSON!" << endl;
     }
 
+    // Adds new entry to the sql database of unassigned delivery persons
     void insert_unassigned_deliveryPerson(string id)
     {
         string sql("INSERT INTO UNASSIGNED_DELIVERY_PERSON VALUES(\'" + id + "\');");
@@ -1003,24 +1004,28 @@ public:
             logStream << "Record inserted Successfully!" << endl;
     }
 
+    // Assigns orders in waiting, if any to the available delivery persons, if any
     void assignUnassignedOrders(){
         while(1){
-            string tempDeliveryPerson = find_unassigned_deliveryPerson();
+            string tempDeliveryPerson = find_unassigned_deliveryPerson(); // finds available delivery person, if any
             int tempOrderId = get_unassignedOrder();
             if(tempDeliveryPerson == "#" || tempOrderId == -1)break;
-            delete_unassigned_deliveryPerson(tempDeliveryPerson);
-            delete_unassignedOrder(to_string(tempOrderId));
+            delete_unassigned_deliveryPerson(tempDeliveryPerson); /* deletes that delivery person from database
+                                                                     of available delivery persons */
+            delete_unassignedOrder(to_string(tempOrderId)); /* deletes the corresponding order from the sql database 
+                                                                of orders in waiting */
             assign_order(tempDeliveryPerson, tempOrderId);
         }
     }
 
-    void payment(vector<pair<product, int>> &Cart, enum mode payment_mode, string contact, string id)
+    // A function which takes care of entire payment procedure
+    void payment(vector<pair<product, int>> Cart, enum mode payment_mode, string contact, string id)
     {
         printHeader();
         cout<<endl;
         auto current_clock = chrono::system_clock::now();
         time_t cur_time = std::chrono::system_clock::to_time_t(current_clock);
-        string currentTime = ctime(&cur_time);
+        string currentTime = ctime(&cur_time); // Gives the real time of transaction
         string tempMode = "";
         int totalCost = 0;
         for (auto currentProduct : Cart)
@@ -1032,90 +1037,82 @@ public:
         cout<<printtabs(8)<<fggreen << "Total Cost =  " << totalCost << endl;
         string cardNumber, expiry_Date, Cvv, paymentUsing = "";
         char choice;
-        string tmp;
         switch (payment_mode)
         {
         case cashOnDelivery:
             tempMode = "CASH ON DELIVERY";
             break;
         case onlineBanking:
+            cout<<printtabs(8)<<fggreen << "Enter card number (****-****-****-****)" << endl;
             do
             {
-                cout<<printtabs(8)<<fggreen << "Enter valid card number (****-****-****-****)" << endl;
-                printInputField();
                 cin >> cardNumber;
             } while (!isCorrectCardNumber(cardNumber));
             paymentUsing = cardNumber;
+            cout <<printtabs(8)<<fggreen<< "Enter Expiry Date (mm/yy)" << endl;
             do
             {
-                cout <<printtabs(8)<<fggreen<< "Enter valid Expiry Date (mm/yy)" << endl;
-                printInputField();
                 cin >> expiry_Date;
             } while (!isCorrectDate(expiry_Date));
+            cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
             do
             {
-                cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
-                printInputField();
                 cin >> Cvv;
-            } while (!isCorrectCvv(Cvv));
+            } while (isCorrectCvv(Cvv));
             tempMode = "ONLINE BANKING";
             break;
         case Paytm:
             cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
-            printInputField();
+
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
             {
                 do
                 {
-                    cout << printtabs(9) << fggreen <<"Enter valid contact number" <<endl;
-                    printInputField();
                     cin >> contact;
-                } while (!isContactCorrect(contact));
+                } while (isContactCorrect(contact));
             }
             paymentUsing = contact;
             tempMode = "PAYTM";
             break;
         case GooglePay:
             cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
-            printInputField();
+
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
             {
                 do
                 {
-                    cout << printtabs(9) << fggreen <<"Enter valid contact number" <<endl;
-                    printInputField();
                     cin >> contact;
-                } while (!isContactCorrect(contact));
+                } while (isContactCorrect(contact));
             }
             paymentUsing = contact;
             tempMode = "GOOGLE PAY";
             break;
         default:
-            return ;
+            logStream << "No such banking option" << endl;
+            break;
         }
-        int orderID1 = state.OrderCount++;
-        cout<<printtabs(8)<<fggreen <<"Order details: "<<endl<<printtabs(9)<<"Order Id: " << orderID1 \
-         << endl <<printtabs(9)<<"Payment Mode: " <<tempMode << endl << printtabs(9)<<"Payment Using: "<<paymentUsing << endl;
-        addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
-        string deliveryPersonID=find_unassigned_deliveryPerson();
+        int orderID1 = state.OrderCount++; // Assigns ID to the order
+        cout<<printtabs(8)<<fggreen << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
+        addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing); //Adds to the user transaction database
+        string deliveryPersonID=find_unassigned_deliveryPerson(); // finds available delivery person, if any
         vector<pair<int,int>>tempOrder;
         for(auto y:Cart)tempOrder.push_back({y.first.product_id, y.second});
-        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"??:??:??");
-        if(deliveryPersonID=="#"){
-            add_unassginedOrder(to_string(orderID1));
+        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"????????");
+               // inserts order to the sql database of all orders
+        if(deliveryPersonID=="#"){ // i.e. no delivery person is available
+            add_unassginedOrder(to_string(orderID1)); // adds the order to the database of unassigned orders
         }
         else{
-            assign_order(deliveryPersonID, orderID1);
-            delete_unassigned_deliveryPerson(deliveryPersonID);
+            assign_order(deliveryPersonID, orderID1); // Assigns order to the given delivery person
+            delete_unassigned_deliveryPerson(deliveryPersonID); /* deletes the corresponding delivery person from the database
+                                                                    of available delivery persons */
         }
-        cout<<printtabs(9) <<fgblue<< "Your order has been placed. Press ENTER to go back.";
-        getline(cin,tmp);
-        getline(cin,tmp);
-        Cart.clear();
+
     }
 
+    // Adds the product to shopkeeper's personal inventory
     void addToInventory(product productToAdd)
     {
         personal_inventory[productToAdd.shopkeeper_id].insert(productToAdd.product_id);
@@ -1123,16 +1120,19 @@ public:
         global_inven_map[productToAdd.product_name].insert(productToAdd.product_id);
     }
 
+    // Changes the quantity of products in shopkeeper's personal inventory
     void changeProductCount(int productID, int changedCount)
     {
         productId_to_product[productID].count = changedCount;
     }
 
+    // Changes the price of products in shopkeeper's personal inventory
     void changeProductPrice(int productID, int changedPrice)
     {
         productId_to_product[productID].price = changedPrice;
     }
 
+    // debugging function
     void setSystemState(int cusCnt, int shpCnt, int delCnt, int prodCnt, int OrdCnt)
     {
         remove("systemState");
@@ -1147,6 +1147,8 @@ public:
         file.write((char *)&madeUpState, sizeof(systemState));
         file.close();
     }
+
+    // A class destructor which dumps new data into corresponding files
     ~admin()
     {
         global_inventory_array = (product *)malloc(productId_to_product.size() * sizeof(product));

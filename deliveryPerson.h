@@ -3,20 +3,25 @@
 class deliverPerson : public User{
     public:
     int assignedOrderId;// -1 if none is assigned
+
+    // A class constructor
     deliverPerson(profile Profile, int choice){
         assignUserProfile(Profile);
-        if(choice == 2){
-            systemAdmin.insert_unassigned_deliveryPerson(userID);
+        if(choice == 2){ // Sign up case
+            systemAdmin.insert_unassigned_deliveryPerson(userID); /* Adds the delivery person to the database of 
+                                                                    available delivery persons */
             assignedOrderId = -1;
-            systemAdmin.assignUnassignedOrders();
+            systemAdmin.assignUnassignedOrders();  // Assigns orders in waiting, if any to the delivery person
         }
         else assignedOrderId = systemAdmin.AssignedOrderId(Profile.id);
     }
 
+    // Checks if the delivery person is available
     bool isAvailable(){
         return assignedOrderId == -1;
     }
 
+    // A function for delivery person to check if any order is assigned to him/her
     void checkIfOrderIsAssigned(){
         printHeader();
         if(assignedOrderId==-1){
@@ -36,6 +41,7 @@ class deliverPerson : public User{
         getline(cin, choice);
     }
 
+    // A function for delivery person to get the required information about product from its product ID
     void getProductInfoFromId(){
         printHeader();
         int productID;
@@ -57,6 +63,7 @@ class deliverPerson : public User{
         if(choice == 'Y' || choice == 'y')getProductInfoFromId();
     }
 
+    // A function for delivery person to update the status(expected time left) of the order he/she is delivering
     void updateStatus(){
         printHeader();
         if(assignedOrderId != -1){
@@ -64,10 +71,11 @@ class deliverPerson : public User{
             printInputField();
             string timeLeft;cin>>timeLeft;
             systemAdmin.updateTime(to_string(assignedOrderId),timeLeft);
-            if(timeLeft=="00:00:00"){
+            if(timeLeft=="00:00:00"){ // i.e. the order is delivered
                 systemAdmin.finish_order(userID);
                 assignedOrderId = -1;
-                systemAdmin.insert_unassigned_deliveryPerson(userID);
+                systemAdmin.insert_unassigned_deliveryPerson(userID);  /* Adds the delivery person to the database of 
+                                                                    available delivery persons */
             }
         }
         else cout<<fgred<<printtabs(9)<<"No order is assigned"<<endl;

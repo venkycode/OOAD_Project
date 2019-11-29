@@ -2,12 +2,16 @@
 
 class shopKeeper:public User{
     public:
-    shopKeeper(profile Profile){
-        assignUserProfile(Profile);
-    }
+    // A non-parametrized class constructor
     shopKeeper(){
         signUp();
     }
+    // A parametrized class constructor
+    shopKeeper(profile Profile){
+        assignUserProfile(Profile);
+    }
+
+    // A function for shopkeeper to add new products to his/her inventory
     void addToInventory(){
         printHeader();
         product productToAdd;
@@ -61,25 +65,29 @@ class shopKeeper:public User{
         string st;getline(cin,st);getline(cin,st);
     }
 
+    // A function for shopkeeper to display his/her inventory
     void displayInventory(){
         printHeader();
-        bool isEmpty = 1;
+        bool isEmpty=1;
         for(auto y : systemAdmin.personal_inventory[userID]){
             product currentProduct=systemAdmin.productId_to_product[y];
             if(currentProduct.count==0)continue;
-            isEmpty = 0;
+            isEmpty=0;
             cout<<fggreen<<printtabs(9)<<"Product name : "<<fgred << currentProduct.product_name << "\n";
             cout<<fggreen<<printtabs(9)<<"Product ID : "<<fgred << currentProduct.product_id << "\n";
             cout<<fggreen<<printtabs(9)<<"Available quantity : "<<fgred << currentProduct.count << "\n";
             cout<<fggreen<<printtabs(9) << "Price :"<<fgred << currentProduct.price << "\n";
             cout<<"\n";
         }
-        if(isEmpty)cout<<fgred<<printtabs(9)<<"Your inventory is empty"<<endl;
+        if(isEmpty){
+            cout<<fgred<<printtabs(9)<<"Your inventory is empty"<<endl;
+        }
         cout<<fggreen<<printtabs(9)<<"Press enter to go back to dashboard"<<endl;
         cout<<printtabs(9)<<fgblue<<">>";
         string st;getline(cin,st);getline(cin,st);
     }
 
+    // A function for shopkeeper to change the price of his products 
     void changeCount(){
         printHeader();
         cout<<fggreen<<printtabs(9)<<"Enter the ID of product whose count needs to be updated" << "\n";
@@ -99,6 +107,7 @@ class shopKeeper:public User{
         string st;getline(cin,st);getline(cin,st);
     }
 
+    // A function for shopkeeper to update the quantity of his/her products
     void changePrice(){
         printHeader();
         cout<<fggreen<<printtabs(9)<<"Enter the ID of product whose price needs to be updated" << "\n";
@@ -118,6 +127,7 @@ class shopKeeper:public User{
         string st;getline(cin,st);getline(cin,st);
     }
 
+     // A function to remove a product from inventory
     void removeFromInventory(){
         printHeader();
         cout<<fggreen<<printtabs(9)<<"Enter the ID of product you want to remove" << "\n";

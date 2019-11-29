@@ -1,4 +1,3 @@
-//#include<termios.h>
 #include "admin.h"
 admin systemAdmin;
 
@@ -9,7 +8,7 @@ public:
     enum typeOfUser userType;
     profile finalProfile;
 
-
+    // Assigns all the attributes to the user profile
     void assignUserProfile(profile &userProfile)
     {
         name = userProfile.name;
@@ -25,13 +24,13 @@ public:
         logStream<<__func__<<" "<<finalProfile.name<<endl;
     }
 
+    // A function to input password from user
     void inputPassword(profile &userProfile)
     {
         int globalTry=0;
         string temp;
         do
         {
-            //getline(cin, userProfile.password);
             deleteUnwanted(globalTry,3) ;
             userProfile.password= hiddenPasswordInput();
             int triedYet=0;
@@ -54,15 +53,9 @@ public:
                 delayBy(0.5);
                 triedYet=1;
             }
-            // cout<<cursorUp;
-            // deleteUnwanted(triedYet,3);
-            // cout<<cursorDown;
             printOption(8,4,"Confirm your password ");
             cout<<endl;
             temp=hiddenPasswordInput();
-            //PRINTBLUE;
-            //getline(cin, temp);
-            //cin>>temp;
             if (temp != userProfile.password)
             {
                 cout<<fgred;
@@ -79,21 +72,18 @@ public:
         cout<<endl;
     }
 
+    // A function to login
     profile login()
     {
         printHeader();
         cout << endl;
         cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << "Username" << fgblue << ">>" << fgred;
-        //getline(cin,username);
         cin >> username;
         cout << endl;
         cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << "Password" << fgblue << ">>" << fgred;
-        //cin>>password;
         char *tmpPass;
-        tmpPass = getpass("");
-        //int szar = sizeof(tmpPass) / sizeof(char);
-        //logStream<<""szar<<endl;
-        password = tmpPass; //convertToString(tmpPass,szar);
+        tmpPass = getpass("");  // Makes password invisible for security
+        password = tmpPass; 
         logStream << "password = " << password << endl;
         logging.flush();
         cout << endl;
@@ -101,7 +91,6 @@ public:
         profile userProfile = systemAdmin.authenticate(username, password);
         if (userProfile.name == "#")
         {
-            //printHeader();
             cout << fggreen << "\t\t\t\t\t\tForgot Password[" << fgred << "1" << fggreen << "]";
             cout << fggreen << "\tCreate New Account[" << fgred << "2" << fggreen << "]";
             cout << fggreen << "\tLogin[" << fgred << "3" << fggreen << "]" << endl;
@@ -113,16 +102,13 @@ public:
                 forgotPassword();
             else if (input == 2)
                 signUp();
-            else
-            {
-                //getline(cin,username);
-                userProfile= login();
-            }
+            else userProfile= login();
         }
         assignUserProfile(userProfile);
         return userProfile;
     }
 
+    // A function to send OTP on user's registered email ID at the time of sign-up to confirm email-ID
     void sendOTP(string mailID){
         string OTP = "";
         srand(time(0));
@@ -141,6 +127,7 @@ public:
         }while(tempOTP!=OTP);
     }
 
+    // A function to sign up
     void signUp()
     {
         profile userProfile;
@@ -265,12 +252,16 @@ public:
         assignUserProfile(userProfile);
     }
 
+    // A function to edit user's profile
     void updateProfile()
     {
         profile changedProfile=systemAdmin.editProfile(userID,finalProfile);
         assignUserProfile(changedProfile);
     }
 
+    /* A function to send a new randomly generated (using sha) password on user's registered email ID 
+      in case he/she forgets password */
+    
     void forgotPassword()
     {
         cout << printtabs(8) << fggreen << "Enter Username " << fgblue << ">>";
