@@ -635,7 +635,10 @@ public:
     // helps in retrieving the data of transaction from the database.
     static int get_transaction(void *data, int argc, char **argv, char **azColName)
     {
+<<<<<<< HEAD
         // the information is pushed in vector named tempOrderofCustomer
+=======
+>>>>>>> b350fc421272236fade728c909a48ed58e93d612
         tempOrderofCustomer.clear();
         int len = strlen(argv[0]);
         bool fl = 1;

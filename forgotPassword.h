@@ -3,7 +3,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void sendPasswordToEmail(string email, string new_password, string check = "0")
+void sendPasswordToEmail(string email, string new_password, string check = "0") // sends  a new_password string to users email adress
 {
     Py_Initialize();
     char filename[]="temp";

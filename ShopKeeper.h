@@ -63,20 +63,18 @@ class shopKeeper:public User{
 
     void displayInventory(){
         printHeader();
-        if(systemAdmin.personal_inventory[userID].size()==0){
-            cout<<fgred<<printtabs(9)<<"Your inventory is empty"<<endl;
+        bool isEmpty = 1;
+        for(auto y : systemAdmin.personal_inventory[userID]){
+            product currentProduct=systemAdmin.productId_to_product[y];
+            if(currentProduct.count==0)continue;
+            isEmpty = 0;
+            cout<<fggreen<<printtabs(9)<<"Product name : "<<fgred << currentProduct.product_name << "\n";
+            cout<<fggreen<<printtabs(9)<<"Product ID : "<<fgred << currentProduct.product_id << "\n";
+            cout<<fggreen<<printtabs(9)<<"Available quantity : "<<fgred << currentProduct.count << "\n";
+            cout<<fggreen<<printtabs(9) << "Price :"<<fgred << currentProduct.price << "\n";
+            cout<<"\n";
         }
-        else{
-            for(auto y : systemAdmin.personal_inventory[userID]){
-                product currentProduct=systemAdmin.productId_to_product[y];
-                if(currentProduct.count==0)continue;
-                cout<<fggreen<<printtabs(9)<<"Product name : "<<fgred << currentProduct.product_name << "\n";
-                cout<<fggreen<<printtabs(9)<<"Product ID : "<<fgred << currentProduct.product_id << "\n";
-                cout<<fggreen<<printtabs(9)<<"Available quantity : "<<fgred << currentProduct.count << "\n";
-                cout<<fggreen<<printtabs(9) << "Price :"<<fgred << currentProduct.price << "\n";
-                cout<<"\n";
-            }
-        }
+        if(isEmpty)cout<<fgred<<printtabs(9)<<"Your inventory is empty"<<endl;
         cout<<fggreen<<printtabs(9)<<"Press enter to go back to dashboard"<<endl;
         cout<<printtabs(9)<<fgblue<<">>";
         string st;getline(cin,st);getline(cin,st);
