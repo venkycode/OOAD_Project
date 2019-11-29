@@ -28,21 +28,23 @@ public:
 };
 }; // namespace Color
 using namespace std;
-const string clearscreen = "\033[2J";
-const string cursorAdjust = "\033[1;1H";
-const string deleteLine="\033[2K";
-const string cursorUp="\033[1A";
-const string cursorDown="\033[1B";
-Color::Modifier bgred(Color::BG_RED);
-Color::Modifier fgred(Color::FG_RED);
-Color::Modifier fgblue(Color::FG_BLUE);
-Color::Modifier fggreen(Color::FG_GREEN);
-Color::Modifier bgblue(Color::BG_BLUE);
-Color::Modifier bgdef(Color::BG_DEFAULT);
 
-#define PRINTBLUE cout<<fgblue<<">> "
+const string clearscreen = "\033[2J";  // Clears screen  
+const string cursorAdjust = "\033[1;1H"; // adjusts cursor to left start of the line
+const string deleteLine = "\033[2K"; // deletes the line where the the cursor is currently
+const string cursorUp = "\033[1A";   // moves the cursor one line upwords
+const string cursorDown = "\033[1B"; // moves thw cursor one line downwords
 
-void delayBy(double sec)
+Color::Modifier bgred(Color::BG_RED); //background red
+Color::Modifier fgred(Color::FG_RED); //foreground red
+Color::Modifier fgblue(Color::FG_BLUE); // fore ground blue
+Color::Modifier fggreen(Color::FG_GREEN); // fore ground green
+Color::Modifier bgblue(Color::BG_BLUE); // background blue
+Color::Modifier bgdef(Color::BG_DEFAULT); // default background
+
+#define PRINTBLUE cout << fgblue << ">> " // prints ">>" in blue colour
+
+void delayBy(double sec) // waits for "sec" seconds
 {
     double factor = 100000000.0;
     long int timer = 0;
@@ -53,14 +55,16 @@ void delayBy(double sec)
     }
 }
 
-void printHeader()
+void printHeader() // clears the screen-> prints header -> puts curson to start of the second line downwards
 {
     cout << clearscreen;
     cout << cursorAdjust;
     cout << "\t\t\t\t\t\t\t\t\t" << bgblue << fgred << "ONLINE DELIVERY SYSTEM " << bgdef << endl;
     cout << endl;
 }
-void printInputField()
+
+
+void printInputField() // prints "8 tabs + " >> " in blue"
 {
     cout << "\t\t\t\t\t\t\t\t\t     " << fggreen << ">>   " << fgblue;
 }
@@ -75,7 +79,7 @@ string convertToString(char *a, int size)
     return s;
 }
 
-string printtabs(int num)
+string printtabs(int num) // prints "num" tabs
 {
     string s = "";
     for (int i = 1; i <= num; i++)
@@ -85,7 +89,12 @@ string printtabs(int num)
     return s;
 }
 
-void printOption(int numTabs, int numSpace=0, string option="", int optionNumber=0)
+/*
+
+prints "numTabs tabs + numSpace spaces + option string + "[option number]" " 
+
+*/
+void printOption(int numTabs, int numSpace = 0, string option = "", int optionNumber = 0)
 {
     cout << printtabs(numTabs);
     for (int i = 0; i < numSpace; i++)
@@ -102,36 +111,37 @@ void printOption(int numTabs, int numSpace=0, string option="", int optionNumber
         cout << endl;
         cout << endl;
     }
-    
 }
-void deleteUnwanted(int flag,int numberOfLines=1)
-{
-    if (flag==1)
-    {
-        for(int i=0;i<numberOfLines;i++)
-        {cout << cursorUp;
-        cout << deleteLine;
-        }
 
+
+void deleteUnwanted(int flag, int numberOfLines = 1) // deletes numberOfLines above it if flag is one
+{
+    if (flag == 1)
+    {
+        for (int i = 0; i < numberOfLines; i++)
+        {
+            cout << cursorUp;
+            cout << deleteLine;
+        }
     }
 }
 
-string hiddenPasswordInput()
+string hiddenPasswordInput() // prints "8 tabs + "Password" + " >>" "  and takes password input in hidden form 
 {
-    char* tmpPassword;
-    printOption(9,0,"Password");
-    cout<<fgblue<<">> ";
-    tmpPassword=getpass("");
+    char *tmpPassword;
+    printOption(9, 0, "Password");
+    cout << fgblue << ">> ";
+    tmpPassword = getpass("");
     //logStream<<tmpPassword;
-    string returnPass=tmpPassword;
+    string returnPass = tmpPassword;
     return returnPass;
 }
 
-void printLine(int n)
+void printLine(int n) // prints n number of "_" in red color
 {
-    for(int i=0 ; i<n ;i++)
+    for (int i = 0; i < n; i++)
     {
-        cout<<fgred <<"-";
+        cout << fgred << "-";
     }
-    cout<<endl;
+    cout << endl;
 }

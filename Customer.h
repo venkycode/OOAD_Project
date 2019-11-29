@@ -293,11 +293,10 @@ public:
             cout << printtabs(9) << fgred;
             cout << "Your cart is empty!!!"
                  << "\n";
-            printOption(8,0,"Return To Dashboard(ENTER ANY NUMBER)");
-            cout<<endl;
-            int x;
-            printInputField();
-            cin>>x;
+            printOption(8,0,"Press ENTER to return To Dashboard");
+            string tmp;
+            getline(cin,tmp);
+            getline(cin,tmp);
             return;
         }
         else
@@ -309,18 +308,11 @@ public:
             for (auto y : cart)
             {
                 auto currentProduct = y.first;
-                // cout << "Product name : " << y.first.product_name << "\n";
-                // cout << "Product ID : " << y.first.product_id << "\n";
-                // cout << "Price : " << y.first.price << "\n";
-                // cout << "Delivery Charges : " << y.first.deliveryCharge << "\n";
                 cout << fggreen << printtabs(8) << "PRODUCT NUMBER :" << fgred << cnt;
                 cout << endl;
                 cnt++;
                 cout << fggreen << printtabs(8) << "Product name : " << fgblue << string(currentProduct.product_name) << "\n";
                 cout << fggreen << printtabs(8) << "Product ID : " << fgblue << currentProduct.product_id << "\n";
-                // cout << fggreen << printtabs(8) << "Shopkeeper : " << fgblue << systemAdmin.nameFromId(currentProduct.shopkeeper_id) << "\n";
-                // cout << fggreen << printtabs(8) << "Rating : " << currentProduct.rating << "\n";
-                // cout << fggreen << printtabs(8) << "Quantity : " << currentProduct.count << "\n";
                 cout << fggreen << printtabs(8) << "Price : " << currentProduct.price << "\n";
                 cout << fggreen << printtabs(8) << "Delivery Charges : " << currentProduct.deliveryCharge << "\n";
                 cout <<fggreen << printtabs(8)<< "Quantity you have added to cart : " << y.second << "\n";
@@ -364,6 +356,7 @@ public:
         printOption(8,4,"PayTm ",3);
         printOption(8,4,"GPay",4);
         int response;
+        printInputField();
         cin >> response;
         enum mode paymentMode;
         if (response == 1)
@@ -374,8 +367,13 @@ public:
             paymentMode = Paytm;
         else if (response == 4)
             paymentMode = GooglePay;
-        else
-            cout <<printtabs(8)<<fgred<< "Invalid banking option" << endl;
+        else{
+            cout <<printtabs(8)<<fgred<< "No such banking option. Press ENTER to go back";
+            string tmp;
+            getline(cin,tmp);
+            getline(cin,tmp);
+            return ;
+        }
         set<int> toBeRemoved;
         for (int i = 0; i < cart.size(); ++i)
         {
@@ -385,7 +383,7 @@ public:
             {
                 if (availableQuantity)
                 {
-                    cout<<printtabs(8)<<fggreen << "Only " << availableQuantity << "are available"
+                    cout<<printtabs(8)<<fggreen << "Only " << availableQuantity << " are available"
                          << "\n";
                     cout<<printtabs(8)<<fggreen << "Product Name : " << y.first.product_name << "\n";
                     cout<<printtabs(8)<<fggreen << "Product ID : " << y.first.product_id << "\n";
@@ -394,6 +392,7 @@ public:
                     cout<<printtabs(8)<<fggreen << "Press 2 if you want to order the available quantity"
                          << "\n";
                     int response;
+                    printInputField();
                     cin >> response;
                     if (response == 1)
                         toBeRemoved.insert(y.first.product_id);
@@ -420,7 +419,6 @@ public:
         }
 
         systemAdmin.payment(cart, paymentMode, contact, userID);
-        cart.clear();
     }
 
     void addToWishlist()
@@ -460,11 +458,10 @@ public:
         for (auto y : tempWishlist)
             cout << y << " ";
         cout << endl;
-        printOption(8,0,"Enter any number to go back to dashboard");
-        cout<<endl;     
-        printInputField();
-        int x;
-        cin>>x;
+        printOption(8,0,"Press ENTER to go back to dashboard");   
+        string tmp;
+        getline(cin,tmp);
+        getline(cin,tmp);
     }
 
     void removeFromWishlist()
@@ -486,46 +483,55 @@ public:
 
     void displayUnfinishedOrders()
     {
+        tempOrderofCustomer.clear();
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
         int shown = 0;
         printLine(40);
+        bool ch = 1;
         for (auto order_id : orders)
         {
             order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
             if (currentOrder.remainingTime == "00:00:00")
                 continue;
+            ch = 0;
             cout << "Order ID :" << order_id << "\n";
             cout << currentOrder.order_ << "\n";
             cout << currentOrder.remainingTime << "\n";
             cout << currentOrder.other_details << "\n";
         }
+        if(ch)cout<<printtabs(9)<<fgred<<"No current orders."<<endl;
         printOption(9, 0, "Back to Dashboard ");
         PRINTBLUE;
-        cout << "Press char and ENTER  ";
+        cout << "Press ENTER to go back ";
         string chx;
-        cin>>chx; //exits when pressed enter
+        getline(cin,chx);
+        getline(cin,chx);//exits when pressed enter
     }
 
     void showAllTransaction()
     {
+        tempOrderofCustomer.clear();
         vector<int> orders = systemAdmin.orderIdsofCustomer(userID);
         if(orders.empty()){
             cout<<fgred<<printtabs(9)<<"No past transactions to show"<<endl;
-            return;
         }
-        for (auto order_id : orders)
-        {
-            order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
-            cout << "Order ID :" << order_id << "\n";
-            cout << currentOrder.order_ << "\n";
-            cout << currentOrder.remainingTime << "\n";
-            cout << currentOrder.other_details << "\n";
+        else {
+            for (auto order_id : orders)
+            {
+                order currentOrder = systemAdmin.extactOrderInfo(to_string(order_id));
+                cout << "Order ID :" << order_id << "\n";
+                cout << currentOrder.order_ << "\n";
+                cout << currentOrder.remainingTime << "\n";
+                cout << currentOrder.other_details << "\n";
+            }
         }
         printOption(9, 0, "Back to Dashboard ");
         PRINTBLUE;
-        cout << "Press char and ENTER ";
+        cout << "Press ENTER to go back";
         string chx;
-        cin>>chx; //exits when pressed enter
+        getline(cin,chx);
+        getline(cin,chx);
+         //exits when pressed enter
     }
 
     void checkStatus()
@@ -538,8 +544,11 @@ public:
         cin >> orderID;
         if(userID != systemAdmin.extactOrderInfo(to_string(orderID)).customerID){
             cout<<fgred<<printtabs(9)<<"This is not your order"<<endl;
-            return;
         }
-        cout << "time left : " << systemAdmin.get_orderStatus(to_string(orderID));
+        else cout <<printtabs(9)<< "time left(days:hours:minutes) : " << systemAdmin.get_orderStatus(to_string(orderID));
+        string tmp;
+        cout << endl<< printtabs(9) << "Press Enter to go back";
+        getline(cin, tmp);
+        getline(cin, tmp);
     }
 };

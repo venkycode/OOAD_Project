@@ -1,6 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
-
+/*
+array of alphanumerics to 
+get random char from
+based on its index 
+*/
 static const char alphanum[] =
     "0123456789"
     "!@#$%^&*"
@@ -9,12 +13,12 @@ static const char alphanum[] =
 
 int stringLength = sizeof(alphanum) - 1;
 
-char genRandom()
+char genRandom() // returns a random alphanumeric character 
 {
     return alphanum[rand() % stringLength];
 }
 
-string PasswordGenerator()
+string PasswordGenerator()// generates a random password with random length ranging from 8 to 13 
 {
     srand(time(0));
     string password = "";

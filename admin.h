@@ -80,6 +80,7 @@ public:
     }
 
     order extactOrderInfo(string orderID){
+        temporaryOrder.customerID = "#";
         string query = "SELECT * FROM ALL_ORDERS_DB WHERE ORDER_ID = \'" + orderID + "\';";
         int exit = sqlite3_exec(DB, query.c_str(), get_info_Order, NULL, NULL);
         if (exit != SQLITE_OK)
@@ -561,17 +562,18 @@ public:
         exit = sqlite3_exec(DB, temporaryID.c_str(), callback, NULL, &messaggeError);
         if (exit != SQLITE_OK)
         {
-            fprintf(stderr, "SQL error: %s\n", messaggeError);
+            logStream << "SQL error: " << messaggeError <<endl;
             sqlite3_free(messaggeError);
         }
         else
         {
-            fprintf(stdout, "Operation done successfully\n");
+            logStream<< "Operation done successfully\n";
         }
     }
 
     static int get_transaction(void *data, int argc, char **argv, char **azColName)
     {
+        tempOrderofCustomer.clear();
         int len = strlen(argv[0]);
         bool fl = 1;
         string temp="";
@@ -908,7 +910,7 @@ public:
         }
     }
 
-    void payment(vector<pair<product, int>> Cart, enum mode payment_mode, string contact, string id)
+    void payment(vector<pair<product, int>> &Cart, enum mode payment_mode, string contact, string id)
     {
         printHeader();
         cout<<endl;
@@ -926,69 +928,77 @@ public:
         cout<<printtabs(8)<<fggreen << "Total Cost =  " << totalCost << endl;
         string cardNumber, expiry_Date, Cvv, paymentUsing = "";
         char choice;
+        string tmp;
         switch (payment_mode)
         {
         case cashOnDelivery:
             tempMode = "CASH ON DELIVERY";
             break;
         case onlineBanking:
-            cout<<printtabs(8)<<fggreen << "Enter card number (****-****-****-****)" << endl;
             do
             {
+                cout<<printtabs(8)<<fggreen << "Enter valid card number (****-****-****-****)" << endl;
+                printInputField();
                 cin >> cardNumber;
             } while (!isCorrectCardNumber(cardNumber));
             paymentUsing = cardNumber;
-            cout <<printtabs(8)<<fggreen<< "Enter Expiry Date (mm/yy)" << endl;
             do
             {
+                cout <<printtabs(8)<<fggreen<< "Enter valid Expiry Date (mm/yy)" << endl;
+                printInputField();
                 cin >> expiry_Date;
             } while (!isCorrectDate(expiry_Date));
-            cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
             do
             {
+                cout<<printtabs(8)<<fggreen << "Enter Cvv (***)" << endl;
+                printInputField();
                 cin >> Cvv;
-            } while (isCorrectCvv(Cvv));
+            } while (!isCorrectCvv(Cvv));
             tempMode = "ONLINE BANKING";
             break;
         case Paytm:
             cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
-
+            printInputField();
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
             {
                 do
                 {
+                    cout << printtabs(9) << fggreen <<"Enter valid contact number" <<endl;
+                    printInputField();
                     cin >> contact;
-                } while (isContactCorrect(contact));
+                } while (!isContactCorrect(contact));
             }
             paymentUsing = contact;
             tempMode = "PAYTM";
             break;
         case GooglePay:
             cout<<printtabs(8)<<fggreen << "Do you wish to use your current number(Y/n): " << contact << endl;
-
+            printInputField();
             cin >> choice;
             if (!(choice == 'Y' || choice == 'y'))
             {
                 do
                 {
+                    cout << printtabs(9) << fggreen <<"Enter valid contact number" <<endl;
+                    printInputField();
                     cin >> contact;
-                } while (isContactCorrect(contact));
+                } while (!isContactCorrect(contact));
             }
             paymentUsing = contact;
             tempMode = "GOOGLE PAY";
             break;
         default:
-            logStream << "No such banking option" << endl;
-            break;
+            return ;
         }
         int orderID1 = state.OrderCount++;
-        cout<<printtabs(8)<<fggreen << id << " " << orderID1 << " " << tempMode << " " << paymentUsing << endl;
+        cout<<printtabs(8)<<fggreen <<"Order details: "<<endl<<printtabs(9)<<"Order Id: " << orderID1 \
+         << endl <<printtabs(9)<<"Payment Mode: " <<tempMode << endl << printtabs(9)<<"Payment Using: "<<paymentUsing << endl;
         addTransaction(id, 1, totalCost, orderID1, tempMode, currentTime, paymentUsing);
         string deliveryPersonID=find_unassigned_deliveryPerson();
         vector<pair<int,int>>tempOrder;
         for(auto y:Cart)tempOrder.push_back({y.first.product_id, y.second});
-        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"????????");
+        insertOrder(to_string(orderID1),tempOrder, paymentUsing,tempMode,currentTime, id,"??:??:??");
         if(deliveryPersonID=="#"){
             add_unassginedOrder(to_string(orderID1));
         }
@@ -996,7 +1006,10 @@ public:
             assign_order(deliveryPersonID, orderID1);
             delete_unassigned_deliveryPerson(deliveryPersonID);
         }
-
+        cout<<printtabs(9) <<fgblue<< "Your order has been placed. Press ENTER to go back.";
+        getline(cin,tmp);
+        getline(cin,tmp);
+        Cart.clear();
     }
 
     void addToInventory(product productToAdd)

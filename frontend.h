@@ -1,10 +1,10 @@
 #include "deliveryPerson.h"
-User *runTimeUserGlobal;
+User *runTimeUserGlobal; // user for whole program runtime
 
 void customerDashboard(customer *);
 void nextToMainPage(User *, int);
 void mainPage();
-void mainPage()
+void mainPage() // returns to main page and creates a new instance for user
 {
     int choice;
     runTimeUserGlobal = new User;
@@ -41,12 +41,6 @@ void mainPage()
         logging.close();
         exit(0);
     }
-    else if (choice == 999)
-    {
-        int x;
-        printHeader();
-        printOption(9, 0, ">>>admindash<<<<");
-    }
     else
     {
         cout << printtabs(9) << fgred << "Invalid Choice...!!" << endl;
@@ -56,7 +50,7 @@ void mainPage()
         delayBy(3);
         mainPage();
     }
-    logStream << "mainpage " << runTimeUserGlobal->userType;
+    logStream << " mainpage " << runTimeUserGlobal->userType;
     printHeader();
     cout << endl;
     cout << endl;
@@ -64,11 +58,11 @@ void mainPage()
     cout << endl
          << endl
          << endl;
-    delayBy(2);
-    nextToMainPage(runTimeUserGlobal, choice);
+    delayBy(2);                                //creates an artificial delay
+    nextToMainPage(runTimeUserGlobal, choice); // redirects to next page
 }
 
-void customerDashBoard(customer *customerObject)
+void customerDashBoard(customer *customerObject) // dashboard for user of type customer
 {
     printHeader();
     delayBy(1);
@@ -83,9 +77,9 @@ void customerDashBoard(customer *customerObject)
     printOption(9, 0, "SHOW TOP PRODUCTS", 2);
     printOption(9, 0, "EDIT PROFILE", 3);
     printOption(9, 0, "DELETE PROFILE", 4);
-    printOption(9,0,"Show WishList ",5);
-    printOption(9,0,"Show Cart ",6);
-    printOption(9,0,"Check Order Status ",7);
+    printOption(9, 0, "Show WishList ", 5);
+    printOption(9, 0, "Show Cart ", 6);
+    printOption(9, 0, "Check Order Status ", 7);
     printOption(9, 0, "Show Transactions ", 8);
     printOption(9, 0, "Show Unfinished Transactions ", 9);
     printOption(9, 3, "LOGOUT ", 10);
@@ -119,20 +113,20 @@ void customerDashBoard(customer *customerObject)
             delayBy(1.6);
             mainPage();
         }
-        else customerDashBoard(customerObject);
+        else
+            customerDashBoard(customerObject);
     }
-    else if(choice==5)
+    else if (choice == 5)
     {
         customerObject->displayWishlist();
         customerDashBoard(customerObject);
     }
-    else if(choice==6)
+    else if (choice == 6)
     {
         customerObject->displayCart();
         customerDashBoard(customerObject);
-        
     }
-    else if(choice==7)
+    else if (choice == 7)
     {
         customerObject->checkStatus();
         customerDashBoard(customerObject);
@@ -142,7 +136,7 @@ void customerDashBoard(customer *customerObject)
         customerObject->showAllTransaction();
         customerDashBoard(customerObject);
     }
-    else if(choice==9)
+    else if (choice == 9)
     {
         customerObject->displayUnfinishedOrders();
         customerDashBoard(customerObject);
@@ -151,7 +145,7 @@ void customerDashBoard(customer *customerObject)
         mainPage();
 }
 
-void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
+void shopKeeperDashBoard(shopKeeper *shopkeeperObject) // dashboard for user of type shopkeeper
 {
     printHeader();
     delayBy(0.5);
@@ -173,7 +167,7 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
     printOption(9, 5, "DELETE PROFILE", 8);
     printInputField();
     int choice;
-    cin>>choice;
+    cin >> choice;
     switch (choice)
     {
     case 1:
@@ -204,14 +198,17 @@ void shopKeeperDashBoard(shopKeeper *shopkeeperObject)
         mainPage();
         break;
     case 8:
-        if(systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))mainPage();
-        else shopKeeperDashBoard(shopkeeperObject);
+        if (systemAdmin.deleteID(shopkeeperObject->userID, shopkeeperObject->username))
+            mainPage();
+        else
+            shopKeeperDashBoard(shopkeeperObject);
     default:
         shopKeeperDashBoard(shopkeeperObject);
     }
 }
 
-void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
+void deliveryPersonDashBoard(deliverPerson *deliverPersonObject) // dashboard for user of type deliveryPerson
+{
     printHeader();
     delayBy(0.5);
     printOption(9, 6, "ASSIGNED ORDER", 1);
@@ -225,45 +222,46 @@ void deliveryPersonDashBoard(deliverPerson *deliverPersonObject){
     cin >> choice;
     switch (choice)
     {
-        case 1:
-            deliverPersonObject ->checkIfOrderIsAssigned();
-            deliveryPersonDashBoard(deliverPersonObject);
-            break;
-        case 2:
-            deliverPersonObject ->getProductInfoFromId();
-            deliveryPersonDashBoard(deliverPersonObject);
-            break;
-        case 3:
-            deliverPersonObject ->updateStatus();
-            deliveryPersonDashBoard(deliverPersonObject);
-            break;
-        case 4:
-            deliverPersonObject ->updateProfile();
-            deliveryPersonDashBoard(deliverPersonObject);
-            break;
-        case 5:
+    case 1:
+        deliverPersonObject->checkIfOrderIsAssigned();
+        deliveryPersonDashBoard(deliverPersonObject);
+        break;
+    case 2:
+        deliverPersonObject->getProductInfoFromId();
+        deliveryPersonDashBoard(deliverPersonObject);
+        break;
+    case 3:
+        deliverPersonObject->updateStatus();
+        deliveryPersonDashBoard(deliverPersonObject);
+        break;
+    case 4:
+        deliverPersonObject->updateProfile();
+        deliveryPersonDashBoard(deliverPersonObject);
+        break;
+    case 5:
+        mainPage();
+        break;
+    case 6:
+        if (systemAdmin.deleteID(deliverPersonObject->userID, deliverPersonObject->username))
+        {
+            printHeader();
+            cout << endl
+                 << endl
+                 << endl;
+            cout << printtabs(8) << fgred << "It was good having you" << endl;
+            delayBy(1.6);
             mainPage();
-            break;
-        case 6:
-            if (systemAdmin.deleteID(deliverPersonObject->userID, deliverPersonObject->username))
-            {
-                printHeader();
-                cout << endl
-                    << endl
-                    << endl;
-                cout << printtabs(8) << fgred << "It was good having you" << endl;
-                delayBy(1.6);
-                mainPage();
-            }
-            else deliveryPersonDashBoard(deliverPersonObject);
-            break;
-        default:
+        }
+        else
             deliveryPersonDashBoard(deliverPersonObject);
-            break;
+        break;
+    default:
+        deliveryPersonDashBoard(deliverPersonObject);
+        break;
     }
 }
 
-void nextToMainPage(User *runTimeUser, int choice)
+void nextToMainPage(User *runTimeUser, int choice) // redirects to next page based on type of user
 {
     logStream << "here1 " << runTimeUser->userType << " " << runTimeUser->userID << endl;
     if (runTimeUser->userID[0] == 'C')
@@ -280,11 +278,13 @@ void nextToMainPage(User *runTimeUser, int choice)
         logStream << "here1 " << runTimeShopKeeper->userType << endl;
         shopKeeperDashBoard(runTimeShopKeeper);
     }
-    else if(runTimeUser->userID[0] == 'D'){
+    else if (runTimeUser->userID[0] == 'D')
+    {
         deliverPerson *runTimeDeliveryPerson;
         runTimeDeliveryPerson = new deliverPerson(runTimeUser->finalProfile, choice);
         logStream << "here1 " << runTimeDeliveryPerson->userType << endl;
         deliveryPersonDashBoard(runTimeDeliveryPerson);
     }
-    else mainPage();
+    else
+        mainPage();
 }
