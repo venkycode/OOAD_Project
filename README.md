@@ -12,6 +12,9 @@ A CLI based online order,delivery and tracking system, completed under Dr. Anand
   - Used Object Oriented Programming concepts and kept the code modular by implementing different headers for each type of user , namely Admin,Customer and Delivery Person.
   - Used SQLite 3's C++ API to handle actions linke order tracking and transaction records.
   - Worked in a team of 3 people and understood importance of version control systems.
+  - Implemented various functionalities in CLI interface like live refreshing after every input , password hiding when the user is entering passwords in CLI.
+  - Implemented basic password security standards by only storing hashes of user password.
+  - Implemented a mechanism which will log major activities of program runtime in a text file. This later helped in debugging.
   - Tried to host the database on web but faced difficulties due to C++ limitations.
 
 Install Sqlite dependencies from https://sqlite.org/download.html  
